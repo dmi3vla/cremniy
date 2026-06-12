@@ -1,0 +1,12 @@
+build/
+third_party/
+*.o
+*.obj
+*.moc
+moc_*.cpp
+qrc_*.cpp
+ui_*.h
+*.pro.user
+*.autosave
+.cache/
+compile_commands.json
