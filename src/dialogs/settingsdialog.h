@@ -10,6 +10,7 @@ class QPushButton;
 class QSpinBox;
 class QPlainTextEdit;
 class QTabWidget;
+class QWidget;
 
 class SettingsDialog : public QDialog
 {
@@ -26,11 +27,22 @@ private slots:
     void onImportIni();
     void onAccept();
     void onBackendChanged(int index);
+    void onActiveEndpointChanged(int index);
+    void onAddEndpoint();
+    void onEditEndpoint();
+    void onDeleteEndpoint();
+    void onSaveEndpointEdit();
+    void onCancelEndpointEdit();
+    void onToggleApiKeyVisibility();
 
 private:
     void loadFromSettings();
     void updateUiEnabledState();
     void updateDependencyStatus();
+    void refreshEndpointCombo();
+    void showEndpointEditor(int index);
+    void hideEndpointEditor();
+    bool validateEndpointEditor() const;
 
     QComboBox   *m_backendCombo = nullptr;
     QLineEdit   *m_objdumpPath  = nullptr;
@@ -53,9 +65,25 @@ private:
     QPushButton *m_okBtn        = nullptr;
     QPushButton *m_cancelBtn    = nullptr;
 
-    // AI Agent settings
-    QLineEdit      *m_llmApiKey      = nullptr;
-    QComboBox      *m_llmModelCombo  = nullptr;
+    // AI Agent endpoint settings
+    QComboBox      *m_endpointCombo = nullptr;
+    QPushButton    *m_addEndpointBtn = nullptr;
+    QPushButton    *m_editEndpointBtn = nullptr;
+    QPushButton    *m_deleteEndpointBtn = nullptr;
+
+    QWidget        *m_endpointEditor = nullptr;
+    QLineEdit      *m_endpointNameEdit = nullptr;
+    QLineEdit      *m_endpointBaseUrlEdit = nullptr;
+    QLineEdit      *m_endpointApiKeyEdit = nullptr;
+    QPushButton    *m_endpointApiKeyToggleBtn = nullptr;
+    QComboBox      *m_endpointModelCombo = nullptr;
+    QComboBox      *m_endpointFormatCombo = nullptr;
+    QLabel         *m_endpointValidationLabel = nullptr;
+    QPushButton    *m_endpointSaveBtn = nullptr;
+    QPushButton    *m_endpointCancelBtn = nullptr;
+    int             m_editingEndpointIndex = -1;
+    bool            m_refreshingEndpoints = false;
+
     QPlainTextEdit *m_llmSystemPrompt = nullptr;
     QSpinBox       *m_llmMaxTokens   = nullptr;
 

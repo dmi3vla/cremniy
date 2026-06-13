@@ -4,9 +4,13 @@
 #include <QObject>
 #include <QJsonArray>
 #include <QJsonObject>
+#include <QUrl>
+
+#include <QMap>
 
 class QNetworkAccessManager;
 class QNetworkReply;
+struct ApiEndpoint;
 
 /**
  * @brief Anthropic Messages API client with SSE streaming.
@@ -67,6 +71,14 @@ private slots:
 private:
     void processSSELine(const QString& line);
     void processSSEEvent(const QString& eventType, const QByteArray& data);
+    QJsonArray convertMessagesForOpenAI(const QJsonArray& messages) const;
+    QJsonArray convertToolsForOpenAI(const QJsonArray& tools) const;
+    QUrl endpointUrl(const ApiEndpoint& endpoint) const;
+
+    QJsonObject buildAnthropicRequest(const QJsonArray& messages, const QJsonArray& tools);
+    QJsonObject buildOpenAIRequest(const QJsonArray& messages, const QJsonArray& tools);
+    void processAnthropicSSEEvent(const QString& eventType, const QByteArray& data);
+    void processOpenAISSEEvent(const QByteArray& data);
 
     QNetworkAccessManager* m_nam = nullptr;
     QNetworkReply* m_reply = nullptr;
@@ -82,7 +94,11 @@ private:
     QJsonObject m_accumulatedToolInput;
     QString m_toolInputBuffer;  // raw JSON string for tool input
 
+    // OpenAI tool calls accumulation
+    QMap<int, QJsonObject> m_accumulatedOpenAIToolCalls;
+
     bool m_busy = false;
+    bool m_currentRequestIsOpenAI = false;
 };
 
 #endif // LLM_CLIENT_H

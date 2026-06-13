@@ -86,6 +86,8 @@ qt_add_executable(${PROJECT_NAME}
     Agent/markdown_highlighter.h
     Agent/llm_client.cpp
     Agent/llm_client.h
+    Agent/endpoint_manager.cpp
+    Agent/endpoint_manager.h
     Agent/conversation_history.cpp
     Agent/conversation_history.h
     Agent/agent_session.cpp

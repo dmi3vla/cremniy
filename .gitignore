@@ -11,3 +11,12 @@ ui_*.h
 *.autosave
 .cache/
 compile_commands.json
+
+# Cremniy local state / secrets
+secrets.ini
+**/secrets.ini
+keyssh
+*.pem
+*.key
+.cremniy/chat_history.json
+.cremniy/
