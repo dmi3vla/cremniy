@@ -78,8 +78,12 @@ qt_add_executable(${PROJECT_NAME}
     ui/toolstabwidget.cpp
     ui/toolstabwidget.h
 
-
-
+    Agent/chat_panel.cpp
+    Agent/chat_panel.h
+    Agent/chat_message.cpp
+    Agent/chat_message.h
+    Agent/markdown_highlighter.cpp
+    Agent/markdown_highlighter.h
 )
 target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}

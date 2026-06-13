@@ -8,7 +8,10 @@
 #include <qmenubar.h>
 #include <qsplitter.h>
 #include <qstatusbar.h>
+#include <QDockWidget>
 #include "widgets/terminal/terminalwidget.h"
+
+class ChatPanel;
 
 class IDEWindow : public QMainWindow
 {
@@ -51,6 +54,10 @@ private:
 
     // - - Terminal Widget - -
     TerminalWidget* m_terminal;
+
+    // - - AI Chat Widget - -
+    ChatPanel* m_chatPanel;
+    QDockWidget* m_chatDock;
 
 
 public slots:

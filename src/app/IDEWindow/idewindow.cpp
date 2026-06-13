@@ -8,6 +8,7 @@
 #include <QApplication>
 #include "dialogs/settingsdialog.h"
 #include "ui/MenuBar/menubarbuilder.h"
+#include "Agent/chat_panel.h"
 
 IDEWindow::IDEWindow(QString ProjectPath, QWidget *parent)
     : QMainWindow(parent)
@@ -88,6 +89,15 @@ IDEWindow::IDEWindow(QString ProjectPath, QWidget *parent)
     m_filesTreeView->setContextMenuPolicy(Qt::CustomContextMenu);
 
     m_mainLayout->setContentsMargins(0,0,0,0);
+
+    // - - AI Chat Dock - -
+    m_chatPanel = new ChatPanel(this);
+    m_chatDock = new QDockWidget(tr("AI Assistant"), this);
+    m_chatDock->setWidget(m_chatPanel);
+    m_chatDock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetClosable);
+    m_chatDock->setMinimumWidth(280);
+    addDockWidget(Qt::RightDockWidgetArea, m_chatDock);
+    m_chatDock->setVisible(true);
 
     while (m_filesTabWidget->count() > 0) {
         m_filesTabWidget->removeTab(0);
