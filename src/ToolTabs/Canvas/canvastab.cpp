@@ -7,6 +7,8 @@
 #include <QFileInfo>
 #include <QDir>
 #include <QtMath>
+#include <QSlider>
+#include <QResizeEvent>
 
 static bool registered = [](){
     ToolTabFactory::instance().registerTab("4", [](FileDataBuffer* buffer){
@@ -38,6 +40,15 @@ CanvasTab::CanvasTab(FileDataBuffer* buffer, QWidget* parent)
     auto* resetBtn = createToolButton("Reset", "Reset Zoom");
     auto* refreshBtn = createToolButton("Refresh", "Refresh Graph");
 
+    // Gource controls
+    auto* playBtn = createToolButton("Play", "Play git history");
+    auto* pauseBtn = createToolButton("Pause", "Pause playback");
+    auto* speedSlider = new QSlider(Qt::Horizontal, this);
+    speedSlider->setRange(1, 10);
+    speedSlider->setValue(2);
+    speedSlider->setFixedWidth(80);
+    speedSlider->setToolTip("Playback speed");
+
     connect(zoomInBtn, &QToolButton::clicked, m_canvasView, &CanvasView::zoomIn);
     connect(zoomOutBtn, &QToolButton::clicked, m_canvasView, &CanvasView::zoomOut);
     connect(resetBtn, &QToolButton::clicked, m_canvasView, &CanvasView::resetZoom);
@@ -52,12 +63,40 @@ CanvasTab::CanvasTab(FileDataBuffer* buffer, QWidget* parent)
     toolbarLayout->addWidget(zoomOutBtn);
     toolbarLayout->addWidget(resetBtn);
     toolbarLayout->addStretch();
+    toolbarLayout->addWidget(playBtn);
+    toolbarLayout->addWidget(pauseBtn);
+    toolbarLayout->addWidget(speedSlider);
+    toolbarLayout->addStretch();
     toolbarLayout->addWidget(refreshBtn);
 
     layout->addWidget(toolbar);
     layout->addWidget(m_canvasView);
 
+    // Layer panel (overlay top-right)
+    m_layerPanel = new LayerPanel(this);
+    m_layerPanel->setFixedSize(120, 90);
+    m_layerPanel->move(width() - 130, 40);
+    m_layerPanel->raise();
+
+    // Minimap (overlay bottom-right)
+    m_minimap = new Minimap(m_canvasView, this);
+    m_minimap->move(width() - 170, height() - 130);
+    m_minimap->raise();
+
+    // Gource animator
+    m_animator = nullptr;
     m_parser = nullptr;
+
+    connect(playBtn, &QToolButton::clicked, this, [this]() {
+        if (m_animator) m_animator->play();
+    });
+    connect(pauseBtn, &QToolButton::clicked, this, [this]() {
+        if (m_animator) m_animator->pause();
+    });
+    connect(speedSlider, &QSlider::valueChanged, this, [this](int val) {
+        if (m_animator) m_animator->setSpeed(val);
+    });
+    connect(m_layerPanel, &LayerPanel::layerToggled, this, &CanvasTab::applyLayerFilters);
 }
 
 void CanvasTab::setFile(QString filepath)
@@ -71,6 +110,11 @@ void CanvasTab::setFile(QString filepath)
         layoutNodesRadial(graph);
     });
     m_parser->watchForChanges();
+
+    // Gource animator
+    m_animator = new GourceAnimator(m_projectPath, this);
+    connect(m_animator, &GourceAnimator::commitReady, this, &CanvasTab::onGourceCommit);
+    m_animator->loadHistory();
 }
 
 void CanvasTab::setTabData()
@@ -227,4 +271,45 @@ QToolButton* CanvasTab::createToolButton(const QString& text, const QString& too
         "QToolButton:hover { background: #4a4a5a; }"
     );
     return btn;
+}
+
+void CanvasTab::applyLayerFilters()
+{
+    bool showInclude = m_layerPanel->isIncludeLayerOn();
+    bool showCall = m_layerPanel->isCallLayerOn();
+    bool showGit = m_layerPanel->isGitLayerOn();
+
+    for (auto* edge : m_edges) {
+        bool visible = true;
+        switch (edge->edgeType()) {
+        case DependencyEdge::Include: visible = showInclude; break;
+        case DependencyEdge::Call:    visible = showCall; break;
+        case DependencyEdge::Inherit: visible = true; break;
+        }
+        edge->setVisible(visible);
+    }
+
+    Q_UNUSED(showGit)
+    m_layerPanel->saveState();
+}
+
+void CanvasTab::onGourceCommit(const GitCommit& commit)
+{
+    for (const QString& file : commit.files) {
+        QString fullPath = m_projectPath + "/" + file;
+        if (m_nodes.contains(fullPath)) {
+            m_nodes[fullPath]->startPulse();
+        }
+    }
+
+    m_minimap->updateViewportRect();
+}
+
+void CanvasTab::resizeEvent(QResizeEvent* event)
+{
+    ToolTab::resizeEvent(event);
+    if (m_layerPanel)
+        m_layerPanel->move(width() - 130, 40);
+    if (m_minimap)
+        m_minimap->move(width() - 170, height() - 130);
 }

@@ -5,9 +5,13 @@
 #include "canvas_view.h"
 #include "canvas_layout.h"
 #include "dependency_parser.h"
+#include "gource_animator.h"
+#include "layer_panel.h"
+#include "minimap.h"
 #include <QVBoxLayout>
 #include <QToolButton>
 #include <QLabel>
+#include <QSlider>
 
 class FileNode;
 class DependencyEdge;
@@ -30,6 +34,9 @@ public slots:
     void highlightActiveFile(const QString& filePath);
     void highlightDependencies(const QString& filePath);
 
+protected:
+    void resizeEvent(QResizeEvent* event) override;
+
 private slots:
     void onGraphReady(DependencyGraph graph);
     void onNodeClicked(const QString& filePath);
@@ -39,6 +46,9 @@ private:
     CanvasView* m_canvasView;
     DependencyParser* m_parser;
     CanvasLayout* m_layout;
+    GourceAnimator* m_animator;
+    LayerPanel* m_layerPanel;
+    Minimap* m_minimap;
     QString m_projectPath;
 
     QMap<QString, FileNode*> m_nodes;
@@ -49,6 +59,8 @@ private:
     void layoutNodesRadial(const DependencyGraph& graph);
     void clearCanvas();
     QToolButton* createToolButton(const QString& text, const QString& tooltip);
+    void applyLayerFilters();
+    void onGourceCommit(const GitCommit& commit);
 };
 
 #endif // CANVASTAB_H
