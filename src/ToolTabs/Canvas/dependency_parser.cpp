@@ -96,6 +96,11 @@ DependencyParser::DependencyParser(const QString& projectPath, QObject* parent)
 
 void DependencyParser::startParsing()
 {
+    if (m_workerThread.isRunning()) {
+        m_workerThread.quit();
+        m_workerThread.wait();
+    }
+
     auto* worker = new DependencyParserWorker(m_projectPath);
     worker->moveToThread(&m_workerThread);
 
@@ -116,8 +121,12 @@ void DependencyParser::watchForChanges()
 
 void DependencyParser::onGraphReady(DependencyGraph graph)
 {
+    bool isFirst = m_graph.allFiles.isEmpty();
     m_graph = graph;
-    emit graphReady(graph);
+    if (isFirst)
+        emit graphReady(graph);
+    else
+        emit graphUpdated(graph);
 }
 
 void DependencyParser::onDirectoryChanged(const QString& path)

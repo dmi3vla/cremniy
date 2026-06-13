@@ -23,6 +23,7 @@ CanvasTab::CanvasTab(FileDataBuffer* buffer, QWidget* parent)
     layout->setSpacing(0);
 
     m_canvasView = new CanvasView(this);
+    m_layout = new CanvasLayout(this);
 
     // Toolbar
     auto* toolbar = new QWidget(this);
@@ -64,6 +65,12 @@ void CanvasTab::setFile(QString filepath)
     m_projectPath = QFileInfo(filepath).absolutePath();
     m_parser = new DependencyParser(m_projectPath, this);
     connect(m_parser, &DependencyParser::graphReady, this, &CanvasTab::onGraphReady);
+    connect(m_parser, &DependencyParser::graphUpdated, this, [this](DependencyGraph graph) {
+        m_currentGraph = graph;
+        buildGraph(graph);
+        layoutNodesRadial(graph);
+    });
+    m_parser->watchForChanges();
 }
 
 void CanvasTab::setTabData()
@@ -82,6 +89,7 @@ void CanvasTab::saveTabData()
 
 void CanvasTab::onGraphReady(DependencyGraph graph)
 {
+    m_currentGraph = graph;
     buildGraph(graph);
     layoutNodesRadial(graph);
 }
@@ -121,18 +129,12 @@ void CanvasTab::layoutNodesRadial(const DependencyGraph& graph)
     if (graph.allFiles.isEmpty())
         return;
 
-    int nodeCount = graph.allFiles.size();
-    qreal radius = qSqrt(nodeCount) * 80;
-    qreal angleStep = 2 * M_PI / nodeCount;
+    QMap<QString, QPointF> targets;
+    m_layout->computeTargets(graph, targets);
 
-    for (int i = 0; i < graph.allFiles.size(); ++i) {
-        const QString& file = graph.allFiles[i];
-        if (!m_nodes.contains(file)) continue;
-
-        qreal angle = i * angleStep;
-        qreal x = radius * qCos(angle);
-        qreal y = radius * qSin(angle);
-        m_nodes[file]->setPos(x, y);
+    for (auto it = targets.begin(); it != targets.end(); ++it) {
+        if (m_nodes.contains(it.key()))
+            m_nodes[it.key()]->setPos(it.value());
     }
 
     for (auto* edge : m_edges)

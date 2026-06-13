@@ -3,6 +3,8 @@ target_sources(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/canvastab.h
     ${CMAKE_CURRENT_SOURCE_DIR}/canvas_view.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/canvas_view.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/canvas_layout.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/canvas_layout.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dependency_parser.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dependency_parser.h
     ${CMAKE_CURRENT_SOURCE_DIR}/nodes/file_node.cpp

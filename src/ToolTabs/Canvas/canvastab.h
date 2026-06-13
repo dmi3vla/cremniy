@@ -3,6 +3,7 @@
 
 #include "core/ToolTab.h"
 #include "canvas_view.h"
+#include "canvas_layout.h"
 #include "dependency_parser.h"
 #include <QVBoxLayout>
 #include <QToolButton>
@@ -40,10 +41,12 @@ private slots:
 private:
     CanvasView* m_canvasView;
     DependencyParser* m_parser;
+    CanvasLayout* m_layout;
     QString m_projectPath;
 
     QMap<QString, FileNode*> m_nodes;
     QList<DependencyEdge*> m_edges;
+    DependencyGraph m_currentGraph;
 
     void buildGraph(const DependencyGraph& graph);
     void layoutNodesRadial(const DependencyGraph& graph);
