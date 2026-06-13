@@ -6,6 +6,7 @@
 #include <QStringList>
 #include <QThread>
 #include <QFileSystemWatcher>
+#include <QMetaType>
 #include <unordered_map>
 
 struct DependencyGraph {
@@ -17,6 +18,8 @@ struct DependencyGraph {
         allFiles.clear();
     }
 };
+
+Q_DECLARE_METATYPE(DependencyGraph)
 
 class DependencyParserWorker : public QObject
 {
@@ -46,6 +49,7 @@ class DependencyParser : public QObject
 
 public:
     explicit DependencyParser(const QString& projectPath, QObject* parent = nullptr);
+    ~DependencyParser();
 
     void startParsing();
     void watchForChanges();

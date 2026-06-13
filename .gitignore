@@ -1,4 +1,5 @@
 build/
+tests/build/
 third_party/
 *.o
 *.obj

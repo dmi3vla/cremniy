@@ -50,3 +50,14 @@ Create a **unified tool for system programming** that eliminates the need for sc
 - Build user projects
 - Debugger for running programs
 - Memory viewer for running programs
+
+## Infinite Canvas (in progress)
+
+Dependency graph visualization with gource-style animation:
+
+- [x] Phase 1 — Basic canvas (QGraphicsView, pan/zoom/grid)
+- [x] Phase 2 — Canvas core (FileNode, DependencyEdge, CanvasTab)
+- [x] Phase 3 — Dependency parser (async #include parsing, directory-clustered layout, live updates)
+- [x] Phase 4 — Editor integration (click→editor, hover preview, context menu)
+- [x] Phase 5 — Gource visualization (git history playback, filter layers, minimap)
+- [ ] Phase 6 — Tests & documentation

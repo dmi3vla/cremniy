@@ -69,3 +69,44 @@ If there is no corresponding task, simply describe the changes in the PR.
 
 All contributors will be added to [ACKNOWLEDGEMENTS.md](ACKNOWLEDGEMENTS.md)  
 and mentioned at the end of each video on the [YouTube channel](https://www.youtube.com/@igmunv)
+
+## Canvas Module Architecture
+
+The infinite canvas module lives in `src/ToolTabs/Canvas/` and follows the ToolTab pattern:
+
+```
+Canvas/
+  canvastab.h/cpp       — main tab, graph building, signal wiring
+  canvas_view.h/cpp     — QGraphicsView with pan/zoom/grid
+  canvas_layout.h/cpp   — directory-clustered radial tree layout
+  dependency_parser.h/cpp — async #include parser (QThread worker)
+  gource_animator.h/cpp — git log reader, playback controls
+  layer_panel.h/cpp     — edge type filter toggles (QSettings)
+  minimap.h/cpp         — 160x120 viewport overlay
+  nodes/
+    file_node.h/cpp     — QGraphicsObject: hover, pulse, context menu
+  edges/
+    dependency_edge.h/cpp — animated Bezier edges
+```
+
+### Adding a new edge type
+
+1. Add enum value to `DependencyEdge::EdgeType`
+2. Add color case in `DependencyEdge::edgeColor()`
+3. Add toggle checkbox in `LayerPanel`
+4. Update `CanvasTab::applyLayerFilters()`
+
+### Adding a new layout algorithm
+
+1. Create a method in `CanvasLayout` (or subclass)
+2. Compute target positions into `QMap<QString, QPointF>`
+3. Use `animateToTargets()` for smooth transitions
+4. Wire up in `CanvasTab::layoutNodesRadial()`
+
+### Running canvas tests
+
+```bash
+cd tests && mkdir build && cd build
+cmake .. -DCMAKE_PREFIX_PATH=../../third_party/qt-install
+cmake --build . && ./test_dependency_parser
+```

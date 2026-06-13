@@ -94,6 +94,14 @@ DependencyParser::DependencyParser(const QString& projectPath, QObject* parent)
 {
 }
 
+DependencyParser::~DependencyParser()
+{
+    if (m_workerThread.isRunning()) {
+        m_workerThread.quit();
+        m_workerThread.wait();
+    }
+}
+
 void DependencyParser::startParsing()
 {
     if (m_workerThread.isRunning()) {
