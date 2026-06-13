@@ -30,6 +30,7 @@ ToolsTabWidget::ToolsTabWidget(QWidget *parent, QString path)
         connect(tab, &ToolTab::refreshDataAllTabsSignal, this, &ToolsTabWidget::refreshDataAllTabs);
         connect(tab, &ToolTab::modifyData, this, &ToolsTabWidget::setupStar);
         connect(tab, &ToolTab::dataEqual, this, &ToolsTabWidget::removeStar);
+        connect(tab, &ToolTab::fileOpenRequested, this, &ToolsTabWidget::fileOpenRequested);
 
         if (tab) this->addTab(tab, tab->toolIcon(), tab->toolName());
     }

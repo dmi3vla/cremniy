@@ -26,6 +26,7 @@ signals:
     void removeStarSignal(FileTab* tab);
     void setupStarSignal(FileTab* tab);
     void saveFileSignal();
+    void fileOpenRequested(const QString& filePath);
 
 };
 

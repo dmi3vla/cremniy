@@ -98,10 +98,33 @@ void CanvasTab::buildGraph(const DependencyGraph& graph)
 {
     clearCanvas();
 
+    // Build incoming deps map
+    QMap<QString, QStringList> incomingDeps;
+    for (auto it = graph.includes.begin(); it != graph.includes.end(); ++it) {
+        for (const QString& to : it->second) {
+            incomingDeps[to].append(it->first);
+        }
+    }
+
     for (const QString& file : graph.allFiles) {
         auto* node = new FileNode(file);
         connect(node, &FileNode::clicked, this, &CanvasTab::onNodeClicked);
         connect(node, &FileNode::doubleClicked, this, &CanvasTab::onNodeDoubleClicked);
+        connect(node, &FileNode::openInEditor, this, [this](const QString& path) {
+            emit fileOpenRequested(path);
+        });
+        connect(node, &FileNode::openInHexEditor, this, [this](const QString& path) {
+            emit fileOpenRequested(path);
+        });
+        connect(node, &FileNode::hideUnconnected, this, &CanvasTab::highlightDependencies);
+
+        // Set dependency info for tooltip
+        auto incIt = graph.includes.find(file);
+        if (incIt != graph.includes.end())
+            node->setOutgoingDeps(incIt->second);
+        if (incomingDeps.contains(file))
+            node->setIncomingDeps(incomingDeps[file]);
+
         m_canvasView->scene()->addItem(node);
         m_nodes[file] = node;
     }

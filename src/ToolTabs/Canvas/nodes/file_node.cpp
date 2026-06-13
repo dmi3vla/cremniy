@@ -1,8 +1,14 @@
 #include "file_node.h"
 #include <QStyleOptionGraphicsItem>
 #include <QGraphicsSceneMouseEvent>
+#include <QGraphicsSceneContextMenuEvent>
 #include <QFileIconProvider>
 #include <QToolTip>
+#include <QTextStream>
+#include <QDateTime>
+#include <QMenu>
+#include <QClipboard>
+#include <QApplication>
 
 FileNode::FileNode(const QString& filePath, QGraphicsItem* parent)
     : QGraphicsObject(parent)
@@ -118,9 +124,39 @@ QColor FileNode::stateColor() const
 
 QString FileNode::tooltipText() const
 {
-    QString tip = m_filePath;
-    if (m_depCount > 0)
-        tip += "\n" + QString::number(m_depCount) + " dependencies";
+    QString tip = m_filePath + "\n";
+
+    // File preview (first 8 lines)
+    QFile file(m_filePath);
+    if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        QTextStream in(&file);
+        QStringList lines;
+        for (int i = 0; i < 8 && !in.atEnd(); ++i)
+            lines.append(in.readLine());
+        file.close();
+        if (!lines.isEmpty()) {
+            tip += "\n--- Preview ---\n";
+            tip += lines.join("\n");
+            tip += "\n";
+        }
+    }
+
+    // Dependencies
+    if (!m_outgoingDeps.isEmpty()) {
+        tip += "\nIncludes (" + QString::number(m_outgoingDeps.size()) + "):";
+        for (const QString& dep : m_outgoingDeps)
+            tip += "\n  " + QFileInfo(dep).fileName();
+    }
+    if (!m_incomingDeps.isEmpty()) {
+        tip += "\nIncluded by (" + QString::number(m_incomingDeps.size()) + "):";
+        for (const QString& dep : m_incomingDeps)
+            tip += "\n  " + QFileInfo(dep).fileName();
+    }
+
+    // Last modified
+    QFileInfo fi(m_filePath);
+    tip += "\n\nModified: " + fi.lastModified().toString("yyyy-MM-dd HH:mm:ss");
+
     return tip;
 }
 
@@ -151,6 +187,37 @@ void FileNode::hoverLeaveEvent(QGraphicsSceneHoverEvent* event)
     Q_UNUSED(event)
     m_hovered = false;
     update();
+}
+
+void FileNode::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
+{
+    QMenu menu;
+
+    menu.addAction("Open in Editor", [this]() {
+        emit openInEditor(m_filePath);
+    });
+
+    menu.addAction("Open in HEX Editor", [this]() {
+        emit openInHexEditor(m_filePath);
+    });
+
+    menu.addSeparator();
+
+    menu.addAction("Show Dependencies", [this]() {
+        emit clicked(m_filePath);
+    });
+
+    menu.addAction("Hide Unconnected", [this]() {
+        emit hideUnconnected(m_filePath);
+    });
+
+    menu.addSeparator();
+
+    menu.addAction("Copy Path", [this]() {
+        QApplication::clipboard()->setText(m_filePath);
+    });
+
+    menu.exec(event->screenPos());
 }
 
 QVariant FileNode::itemChange(GraphicsItemChange change, const QVariant& value)

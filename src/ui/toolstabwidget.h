@@ -36,6 +36,7 @@ signals:
     void removeStarSignal();
     void setupStarSignal();
     void saveFileSignal();
+    void fileOpenRequested(const QString& filePath);
 
 };
 

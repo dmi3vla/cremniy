@@ -40,6 +40,9 @@ void FilesTabWidget::openFile(QString filePath, QString tabTitle) {
     // - - Connects - -
     connect(filetab, &FileTab::removeStarSignal, this, &FilesTabWidget::removeStar);
     connect(filetab, &FileTab::setupStarSignal, this, &FilesTabWidget::setupStar);
+    connect(filetab, &FileTab::fileOpenRequested, this, [this](const QString& path) {
+        openFile(path, QFileInfo(path).fileName());
+    });
 }
 
 void FilesTabWidget::removeStar(FileTab *tab) {

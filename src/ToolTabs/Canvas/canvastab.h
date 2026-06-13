@@ -30,9 +30,6 @@ public slots:
     void highlightActiveFile(const QString& filePath);
     void highlightDependencies(const QString& filePath);
 
-signals:
-    void fileOpenRequested(const QString& filePath);
-
 private slots:
     void onGraphReady(DependencyGraph graph);
     void onNodeClicked(const QString& filePath);
