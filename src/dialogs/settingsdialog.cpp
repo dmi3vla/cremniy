@@ -15,6 +15,7 @@
 #include <QPushButton>
 #include <QSpinBox>
 #include <QStandardPaths>
+#include <QTabWidget>
 #include <QVBoxLayout>
 
 static QString resolvedExecutable(const QString &userPath, const QString &exeName)
@@ -50,96 +51,11 @@ SettingsDialog::SettingsDialog(QWidget *parent)
 
     auto *root = new QVBoxLayout(this);
 
-    auto *form = new QFormLayout();
-    form->setLabelAlignment(Qt::AlignRight | Qt::AlignVCenter);
-
-    m_backendCombo = new QComboBox(this);
-    m_backendCombo->addItem(tr("objdump"),  static_cast<int>(AppSettings::DisasmBackend::Objdump));
-    m_backendCombo->addItem(tr("radare2"),  static_cast<int>(AppSettings::DisasmBackend::Radare2));
-    form->addRow(tr("Disassembler backend"), m_backendCombo);
-
-    // Common disassembler options
-    {
-        m_insnLimit = new QSpinBox(this);
-        m_insnLimit->setRange(50, 200000);
-        m_insnLimit->setSingleStep(250);
-        m_insnLimit->setToolTip(tr("Maximum number of instructions per section (keeps UI responsive)"));
-        form->addRow(tr("Instruction limit/section"), m_insnLimit);
-
-        m_syntaxCombo = new QComboBox(this);
-        m_syntaxCombo->addItem(tr("Intel"), static_cast<int>(AppSettings::AsmSyntax::Intel));
-        m_syntaxCombo->addItem(tr("AT&T"),  static_cast<int>(AppSettings::AsmSyntax::Att));
-        form->addRow(tr("Assembly syntax"), m_syntaxCombo);
-    }
-
-    // objdump path row
-    {
-        auto *row = new QWidget(this);
-        auto *rowLayout = new QHBoxLayout(row);
-        rowLayout->setContentsMargins(0, 0, 0, 0);
-        m_objdumpPath = new QLineEdit(row);
-        m_objdumpPath->setPlaceholderText(tr("Leave empty to use PATH lookup"));
-        m_objdumpStatus = new QLabel(row);
-        m_objdumpStatus->setMinimumWidth(150);
-        m_objdumpStatus->setTextInteractionFlags(Qt::TextSelectableByMouse);
-        auto *browse = new QPushButton(tr("Browse…"), row);
-        browse->setFixedWidth(90);
-        rowLayout->addWidget(m_objdumpPath, 1);
-        rowLayout->addWidget(m_objdumpStatus);
-        rowLayout->addWidget(browse);
-        form->addRow(tr("objdump path"), row);
-        connect(browse, &QPushButton::clicked, this, &SettingsDialog::onBrowseObjdump);
-        connect(m_objdumpPath, &QLineEdit::textChanged, this, &SettingsDialog::updateDependencyStatus);
-    }
-
-    // radare2 path row
-    {
-        auto *row = new QWidget(this);
-        auto *rowLayout = new QHBoxLayout(row);
-        rowLayout->setContentsMargins(0, 0, 0, 0);
-        m_radare2Path = new QLineEdit(row);
-        m_radare2Path->setPlaceholderText(tr("Path to r2 (radare2) executable"));
-        m_radare2Status = new QLabel(row);
-        m_radare2Status->setMinimumWidth(150);
-        m_radare2Status->setTextInteractionFlags(Qt::TextSelectableByMouse);
-        auto *browse = new QPushButton(tr("Browse…"), row);
-        browse->setFixedWidth(90);
-        rowLayout->addWidget(m_radare2Path, 1);
-        rowLayout->addWidget(m_radare2Status);
-        rowLayout->addWidget(browse);
-        form->addRow(tr("radare2 path"), row);
-        connect(browse, &QPushButton::clicked, this, &SettingsDialog::onBrowseRadare2);
-        connect(m_radare2Path, &QLineEdit::textChanged, this, &SettingsDialog::updateDependencyStatus);
-    }
-
-    // 'file' tool is used by objdump backend for arch detection.
-    {
-        auto *row = new QWidget(this);
-        auto *rowLayout = new QHBoxLayout(row);
-        rowLayout->setContentsMargins(0, 0, 0, 0);
-        m_fileStatus = new QLabel(row);
-        m_fileStatus->setTextInteractionFlags(Qt::TextSelectableByMouse);
-        rowLayout->addWidget(m_fileStatus, 1);
-        form->addRow(tr("Dependency: file(1)"), row);
-    }
-
-    // radare2 options
-    {
-        m_r2AnalysisCombo = new QComboBox(this);
-        m_r2AnalysisCombo->addItem(tr("None (fast)"), static_cast<int>(AppSettings::Radare2AnalysisLevel::None));
-        m_r2AnalysisCombo->addItem(tr("aa (basic)"),  static_cast<int>(AppSettings::Radare2AnalysisLevel::Aa));
-        m_r2AnalysisCombo->addItem(tr("aaa (full)"),  static_cast<int>(AppSettings::Radare2AnalysisLevel::Aaa));
-        form->addRow(tr("radare2 analysis"), m_r2AnalysisCombo);
-
-        m_r2PreCommands = new QPlainTextEdit(this);
-        m_r2PreCommands->setPlaceholderText(tr("Optional r2 commands before JSON queries (one per line). Example:\n"
-                                               "e asm.syntax=intel\n"
-                                               "e asm.bits=64"));
-        m_r2PreCommands->setFixedHeight(90);
-        form->addRow(tr("radare2 pre-commands"), m_r2PreCommands);
-    }
-
-    root->addLayout(form);
+    // Tab widget with pages
+    auto *tabs = new QTabWidget(this);
+    tabs->addTab(createDisassemblerPage(), tr("Disassembler"));
+    tabs->addTab(createAgentPage(), tr("AI Agent"));
+    root->addWidget(tabs, 1);
 
     // buttons
     auto *btnRow = new QHBoxLayout();
@@ -172,6 +88,149 @@ SettingsDialog::SettingsDialog(QWidget *parent)
     loadFromSettings();
     updateUiEnabledState();
     updateDependencyStatus();
+}
+
+QWidget* SettingsDialog::createDisassemblerPage()
+{
+    auto *page = new QWidget(this);
+    auto *form = new QFormLayout(page);
+    form->setLabelAlignment(Qt::AlignRight | Qt::AlignVCenter);
+
+    m_backendCombo = new QComboBox(page);
+    m_backendCombo->addItem(tr("objdump"),  static_cast<int>(AppSettings::DisasmBackend::Objdump));
+    m_backendCombo->addItem(tr("radare2"),  static_cast<int>(AppSettings::DisasmBackend::Radare2));
+    form->addRow(tr("Disassembler backend"), m_backendCombo);
+
+    // Common disassembler options
+    {
+        m_insnLimit = new QSpinBox(page);
+        m_insnLimit->setRange(50, 200000);
+        m_insnLimit->setSingleStep(250);
+        m_insnLimit->setToolTip(tr("Maximum number of instructions per section (keeps UI responsive)"));
+        form->addRow(tr("Instruction limit/section"), m_insnLimit);
+
+        m_syntaxCombo = new QComboBox(page);
+        m_syntaxCombo->addItem(tr("Intel"), static_cast<int>(AppSettings::AsmSyntax::Intel));
+        m_syntaxCombo->addItem(tr("AT&T"),  static_cast<int>(AppSettings::AsmSyntax::Att));
+        form->addRow(tr("Assembly syntax"), m_syntaxCombo);
+    }
+
+    // objdump path row
+    {
+        auto *row = new QWidget(page);
+        auto *rowLayout = new QHBoxLayout(row);
+        rowLayout->setContentsMargins(0, 0, 0, 0);
+        m_objdumpPath = new QLineEdit(row);
+        m_objdumpPath->setPlaceholderText(tr("Leave empty to use PATH lookup"));
+        m_objdumpStatus = new QLabel(row);
+        m_objdumpStatus->setMinimumWidth(150);
+        m_objdumpStatus->setTextInteractionFlags(Qt::TextSelectableByMouse);
+        auto *browse = new QPushButton(tr("Browse…"), row);
+        browse->setFixedWidth(90);
+        rowLayout->addWidget(m_objdumpPath, 1);
+        rowLayout->addWidget(m_objdumpStatus);
+        rowLayout->addWidget(browse);
+        form->addRow(tr("objdump path"), row);
+        connect(browse, &QPushButton::clicked, this, &SettingsDialog::onBrowseObjdump);
+        connect(m_objdumpPath, &QLineEdit::textChanged, this, &SettingsDialog::updateDependencyStatus);
+    }
+
+    // radare2 path row
+    {
+        auto *row = new QWidget(page);
+        auto *rowLayout = new QHBoxLayout(row);
+        rowLayout->setContentsMargins(0, 0, 0, 0);
+        m_radare2Path = new QLineEdit(row);
+        m_radare2Path->setPlaceholderText(tr("Path to r2 (radare2) executable"));
+        m_radare2Status = new QLabel(row);
+        m_radare2Status->setMinimumWidth(150);
+        m_radare2Status->setTextInteractionFlags(Qt::TextSelectableByMouse);
+        auto *browse = new QPushButton(tr("Browse…"), row);
+        browse->setFixedWidth(90);
+        rowLayout->addWidget(m_radare2Path, 1);
+        rowLayout->addWidget(m_radare2Status);
+        rowLayout->addWidget(browse);
+        form->addRow(tr("radare2 path"), row);
+        connect(browse, &QPushButton::clicked, this, &SettingsDialog::onBrowseRadare2);
+        connect(m_radare2Path, &QLineEdit::textChanged, this, &SettingsDialog::updateDependencyStatus);
+    }
+
+    // 'file' tool is used by objdump backend for arch detection.
+    {
+        auto *row = new QWidget(page);
+        auto *rowLayout = new QHBoxLayout(row);
+        rowLayout->setContentsMargins(0, 0, 0, 0);
+        m_fileStatus = new QLabel(row);
+        m_fileStatus->setTextInteractionFlags(Qt::TextSelectableByMouse);
+        rowLayout->addWidget(m_fileStatus, 1);
+        form->addRow(tr("Dependency: file(1)"), row);
+    }
+
+    // radare2 options
+    {
+        m_r2AnalysisCombo = new QComboBox(page);
+        m_r2AnalysisCombo->addItem(tr("None (fast)"), static_cast<int>(AppSettings::Radare2AnalysisLevel::None));
+        m_r2AnalysisCombo->addItem(tr("aa (basic)"),  static_cast<int>(AppSettings::Radare2AnalysisLevel::Aa));
+        m_r2AnalysisCombo->addItem(tr("aaa (full)"),  static_cast<int>(AppSettings::Radare2AnalysisLevel::Aaa));
+        form->addRow(tr("radare2 analysis"), m_r2AnalysisCombo);
+
+        m_r2PreCommands = new QPlainTextEdit(page);
+        m_r2PreCommands->setPlaceholderText(tr("Optional r2 commands before JSON queries (one per line). Example:\n"
+                                               "e asm.syntax=intel\n"
+                                               "e asm.bits=64"));
+        m_r2PreCommands->setFixedHeight(90);
+        form->addRow(tr("radare2 pre-commands"), m_r2PreCommands);
+    }
+
+    return page;
+}
+
+QWidget* SettingsDialog::createAgentPage()
+{
+    auto *page = new QWidget(this);
+    auto *form = new QFormLayout(page);
+    form->setLabelAlignment(Qt::AlignRight | Qt::AlignVCenter);
+
+    // API Key
+    m_llmApiKey = new QLineEdit(page);
+    m_llmApiKey->setPlaceholderText(tr("sk-ant-..."));
+    m_llmApiKey->setEchoMode(QLineEdit::Password);
+    m_llmApiKey->setToolTip(tr("Anthropic API key. Stored locally in QSettings (never exported)."));
+    form->addRow(tr("API Key"), m_llmApiKey);
+
+    // Model selection
+    m_llmModelCombo = new QComboBox(page);
+    m_llmModelCombo->setEditable(true);
+    m_llmModelCombo->addItem("claude-sonnet-4-20250514");
+    m_llmModelCombo->addItem("claude-opus-4-20250514");
+    m_llmModelCombo->addItem("claude-3-5-haiku-20241022");
+    m_llmModelCombo->setToolTip(tr("Model name for the Anthropic Messages API. You can type a custom model name."));
+    form->addRow(tr("Model"), m_llmModelCombo);
+
+    // Max tokens
+    m_llmMaxTokens = new QSpinBox(page);
+    m_llmMaxTokens->setRange(256, 128000);
+    m_llmMaxTokens->setSingleStep(512);
+    m_llmMaxTokens->setToolTip(tr("Maximum number of tokens in the response."));
+    form->addRow(tr("Max tokens"), m_llmMaxTokens);
+
+    // System prompt
+    m_llmSystemPrompt = new QPlainTextEdit(page);
+    m_llmSystemPrompt->setPlaceholderText(tr("System prompt for the AI assistant..."));
+    m_llmSystemPrompt->setMinimumHeight(120);
+    m_llmSystemPrompt->setToolTip(tr("System prompt prepended to every conversation."));
+    form->addRow(tr("System prompt"), m_llmSystemPrompt);
+
+    // Info label
+    auto *infoLabel = new QLabel(
+        tr("⚠ API key is stored locally via QSettings and is never exported to INI files."),
+        page
+    );
+    infoLabel->setWordWrap(true);
+    infoLabel->setStyleSheet("color: #b08030; font-size: 11px; margin-top: 8px;");
+    form->addRow(infoLabel);
+
+    return page;
 }
 
 void SettingsDialog::onExportIni()
@@ -215,6 +274,7 @@ void SettingsDialog::onImportIni()
 
 void SettingsDialog::loadFromSettings()
 {
+    // Disassembler settings
     const auto backend = AppSettings::disasmBackend();
     const int want = static_cast<int>(backend);
     int idx = m_backendCombo->findData(want);
@@ -239,6 +299,20 @@ void SettingsDialog::loadFromSettings()
     }
 
     m_r2PreCommands->setPlainText(AppSettings::radare2PreCommands().replace(';', '\n'));
+
+    // AI Agent settings
+    m_llmApiKey->setText(AppSettings::llmApiKey());
+
+    const QString model = AppSettings::llmModel();
+    int modelIdx = m_llmModelCombo->findText(model);
+    if (modelIdx >= 0) {
+        m_llmModelCombo->setCurrentIndex(modelIdx);
+    } else {
+        m_llmModelCombo->setEditText(model);
+    }
+
+    m_llmMaxTokens->setValue(AppSettings::llmMaxTokens());
+    m_llmSystemPrompt->setPlainText(AppSettings::llmSystemPrompt());
 }
 
 void SettingsDialog::updateUiEnabledState()
@@ -322,6 +396,7 @@ void SettingsDialog::onTestTools()
 
 void SettingsDialog::onAccept()
 {
+    // Disassembler settings
     const int backendInt = m_backendCombo->currentData().toInt();
     const auto backend = (backendInt == static_cast<int>(AppSettings::DisasmBackend::Radare2))
         ? AppSettings::DisasmBackend::Radare2
@@ -339,6 +414,12 @@ void SettingsDialog::onAccept()
                             .split('\n', Qt::SkipEmptyParts)
                             .join(';');
     AppSettings::setRadare2PreCommands(pre);
+
+    // AI Agent settings
+    AppSettings::setLlmApiKey(m_llmApiKey->text());
+    AppSettings::setLlmModel(m_llmModelCombo->currentText());
+    AppSettings::setLlmMaxTokens(m_llmMaxTokens->value());
+    AppSettings::setLlmSystemPrompt(m_llmSystemPrompt->toPlainText());
 
     // emit GlobalWidgetsManager::instance().actionTriggered("settingsChanged");
     accept();
@@ -376,4 +457,3 @@ void SettingsDialog::updateDependencyStatus()
         m_fileStatus->setToolTip(ok ? fileExe : tr("The objdump backend uses 'file -b <path>' for arch detection"));
     }
 }
-

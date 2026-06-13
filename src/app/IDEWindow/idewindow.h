@@ -12,6 +12,7 @@
 #include "widgets/terminal/terminalwidget.h"
 
 class ChatPanel;
+class AgentSession;
 
 class IDEWindow : public QMainWindow
 {
@@ -58,6 +59,7 @@ private:
     // - - AI Chat Widget - -
     ChatPanel* m_chatPanel;
     QDockWidget* m_chatDock;
+    AgentSession* m_agentSession;
 
 
 public slots:

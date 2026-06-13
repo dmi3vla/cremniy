@@ -9,6 +9,7 @@ class QLineEdit;
 class QPushButton;
 class QSpinBox;
 class QPlainTextEdit;
+class QTabWidget;
 
 class SettingsDialog : public QDialog
 {
@@ -51,6 +52,15 @@ private:
     QPushButton *m_importBtn    = nullptr;
     QPushButton *m_okBtn        = nullptr;
     QPushButton *m_cancelBtn    = nullptr;
+
+    // AI Agent settings
+    QLineEdit      *m_llmApiKey      = nullptr;
+    QComboBox      *m_llmModelCombo  = nullptr;
+    QPlainTextEdit *m_llmSystemPrompt = nullptr;
+    QSpinBox       *m_llmMaxTokens   = nullptr;
+
+    QWidget* createDisassemblerPage();
+    QWidget* createAgentPage();
 };
 
 #endif // SETTINGSDIALOG_H

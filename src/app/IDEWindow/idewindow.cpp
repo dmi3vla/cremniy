@@ -9,6 +9,7 @@
 #include "dialogs/settingsdialog.h"
 #include "ui/MenuBar/menubarbuilder.h"
 #include "Agent/chat_panel.h"
+#include "Agent/agent_session.h"
 
 IDEWindow::IDEWindow(QString ProjectPath, QWidget *parent)
     : QMainWindow(parent)
@@ -98,6 +99,8 @@ IDEWindow::IDEWindow(QString ProjectPath, QWidget *parent)
     m_chatDock->setMinimumWidth(280);
     addDockWidget(Qt::RightDockWidgetArea, m_chatDock);
     m_chatDock->setVisible(true);
+
+    m_agentSession = new AgentSession(ProjectPath, m_chatPanel, this);
 
     while (m_filesTabWidget->count() > 0) {
         m_filesTabWidget->removeTab(0);

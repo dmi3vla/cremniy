@@ -9,7 +9,7 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 6.8.3 REQUIRED COMPONENTS Widgets Test)
+find_package(Qt6 6.8.3 REQUIRED COMPONENTS Widgets Test Network)
 
 set(PROJECT_SOURCES
         main.cpp
@@ -84,7 +84,17 @@ qt_add_executable(${PROJECT_NAME}
     Agent/chat_message.h
     Agent/markdown_highlighter.cpp
     Agent/markdown_highlighter.h
-)
+    Agent/llm_client.cpp
+    Agent/llm_client.h
+    Agent/conversation_history.cpp
+    Agent/conversation_history.h
+    Agent/agent_session.cpp
+    Agent/agent_session.h
+    Agent/tools/agent_tool.h
+    Agent/tools/tool_registry.cpp
+    Agent/tools/tool_registry.h
+    Agent/tools/agent_tools.cpp
+    Agent/tools/agent_tools.h)
 target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets
@@ -102,7 +112,7 @@ foreach(dir ${TOOLTAB_DIRS})
     endif()
 endforeach()
 
-target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Widgets)
+target_link_libraries(${PROJECT_NAME} PRIVATE Qt6::Widgets Qt6::Network)
 
 find_program(WINDEPLOYQT_EXECUTABLE windeployqt)
 

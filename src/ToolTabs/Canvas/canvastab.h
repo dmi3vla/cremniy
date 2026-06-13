@@ -26,6 +26,8 @@ public:
     QString toolName() const override { return "Canvas"; }
     QIcon toolIcon() const override { return QIcon(":/icons/canvas.png"); }
 
+    DependencyGraph currentGraph() const { return m_currentGraph; }
+
 public slots:
     void setFile(QString filepath) override;
     void setTabData() override;
@@ -33,6 +35,8 @@ public slots:
 
     void highlightActiveFile(const QString& filePath);
     void highlightDependencies(const QString& filePath);
+    void startNodePulsing(const QString& filePath);
+    void stopNodePulsing();
 
 protected:
     void resizeEvent(QResizeEvent* event) override;
@@ -61,6 +65,9 @@ private:
     QToolButton* createToolButton(const QString& text, const QString& tooltip);
     void applyLayerFilters();
     void onGourceCommit(const GitCommit& commit);
+
+    QTimer* m_pulseTimer = nullptr;
+    QString m_pulsingFilePath;
 };
 
 #endif // CANVASTAB_H

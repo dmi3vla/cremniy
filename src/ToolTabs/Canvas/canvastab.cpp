@@ -9,6 +9,7 @@
 #include <QtMath>
 #include <QSlider>
 #include <QResizeEvent>
+#include <QTimer>
 
 static bool registered = [](){
     ToolTabFactory::instance().registerTab("4", [](FileDataBuffer* buffer){
@@ -312,4 +313,30 @@ void CanvasTab::resizeEvent(QResizeEvent* event)
         m_layerPanel->move(width() - 130, 40);
     if (m_minimap)
         m_minimap->move(width() - 170, height() - 130);
+}
+
+void CanvasTab::startNodePulsing(const QString& filePath)
+{
+    stopNodePulsing();
+    m_pulsingFilePath = filePath;
+    if (!m_pulseTimer) {
+        m_pulseTimer = new QTimer(this);
+        connect(m_pulseTimer, &QTimer::timeout, this, [this]() {
+            FileNode* node = m_nodes.value(m_pulsingFilePath, nullptr);
+            if (node) {
+                node->startPulse();
+            } else {
+                stopNodePulsing();
+            }
+        });
+    }
+    m_pulseTimer->start(800);
+}
+
+void CanvasTab::stopNodePulsing()
+{
+    if (m_pulseTimer) {
+        m_pulseTimer->stop();
+    }
+    m_pulsingFilePath.clear();
 }

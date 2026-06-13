@@ -44,7 +44,21 @@ public:
     static QString radare2PreCommands();
     static void setRadare2PreCommands(const QString &cmds);
 
+    // --- AI Agent settings ---
+    static QString llmApiKey();
+    static void setLlmApiKey(const QString &key);
+
+    static QString llmModel();
+    static void setLlmModel(const QString &model);
+
+    static QString llmSystemPrompt();
+    static void setLlmSystemPrompt(const QString &prompt);
+
+    static int llmMaxTokens();
+    static void setLlmMaxTokens(int tokens);
+
     // Import/export settings to share with others (INI file).
+    // NOTE: API key is intentionally excluded from export/import.
     static bool exportToIni(const QString &filePath, QString *error = nullptr);
     static bool importFromIni(const QString &filePath, QString *error = nullptr);
 
@@ -56,6 +70,10 @@ private:
     static QString keyRadare2AnalysisLevel();
     static QString keyAsmSyntax();
     static QString keyRadare2PreCommands();
+    static QString keyLlmApiKey();
+    static QString keyLlmModel();
+    static QString keyLlmSystemPrompt();
+    static QString keyLlmMaxTokens();
 };
 
 #endif // APPSETTINGS_H

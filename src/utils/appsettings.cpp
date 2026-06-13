@@ -97,6 +97,60 @@ void AppSettings::setRadare2PreCommands(const QString &cmds)
     settings().setValue(keyRadare2PreCommands(), cmds.trimmed());
 }
 
+// --- AI Agent settings ---
+
+QString AppSettings::keyLlmApiKey()       { return "agent/apiKey"; }
+QString AppSettings::keyLlmModel()        { return "agent/model"; }
+QString AppSettings::keyLlmSystemPrompt() { return "agent/systemPrompt"; }
+QString AppSettings::keyLlmMaxTokens()    { return "agent/maxTokens"; }
+
+QString AppSettings::llmApiKey()
+{
+    return settings().value(keyLlmApiKey()).toString().trimmed();
+}
+
+void AppSettings::setLlmApiKey(const QString &key)
+{
+    settings().setValue(keyLlmApiKey(), key.trimmed());
+}
+
+QString AppSettings::llmModel()
+{
+    return settings().value(keyLlmModel(), "claude-sonnet-4-20250514").toString().trimmed();
+}
+
+void AppSettings::setLlmModel(const QString &model)
+{
+    settings().setValue(keyLlmModel(), model.trimmed());
+}
+
+QString AppSettings::llmSystemPrompt()
+{
+    return settings().value(keyLlmSystemPrompt(),
+        "You are an AI assistant embedded in the Cremniy IDE. "
+        "Help the user with code analysis, debugging, and system programming tasks. "
+        "You have access to the project files through tools."
+    ).toString();
+}
+
+void AppSettings::setLlmSystemPrompt(const QString &prompt)
+{
+    settings().setValue(keyLlmSystemPrompt(), prompt);
+}
+
+int AppSettings::llmMaxTokens()
+{
+    const int v = settings().value(keyLlmMaxTokens(), 4096).toInt();
+    if (v < 256) return 256;
+    if (v > 128000) return 128000;
+    return v;
+}
+
+void AppSettings::setLlmMaxTokens(int tokens)
+{
+    settings().setValue(keyLlmMaxTokens(), tokens);
+}
+
 static void copyKeys(QSettings &dst, QSettings &src)
 {
     const QStringList keys = src.allKeys();
@@ -115,6 +169,8 @@ bool AppSettings::exportToIni(const QString &filePath, QString *error)
     QSettings out(fi.filePath(), QSettings::IniFormat);
     out.clear();
     copyKeys(out, settings());
+    // Remove API key from exported file for security
+    out.remove(keyLlmApiKey());
     out.sync();
     if (out.status() != QSettings::NoError) {
         if (error) *error = QObject::tr("Failed to write INI file");
@@ -138,6 +194,7 @@ bool AppSettings::importFromIni(const QString &filePath, QString *error)
     }
 
     // Only import known keys (so random settings won't pollute).
+    // NOTE: API key is intentionally excluded from import.
     const QStringList allowed = {
         keyDisasmBackend(),
         keyObjdumpPath(),
@@ -146,6 +203,9 @@ bool AppSettings::importFromIni(const QString &filePath, QString *error)
         keyRadare2AnalysisLevel(),
         keyAsmSyntax(),
         keyRadare2PreCommands(),
+        keyLlmModel(),
+        keyLlmSystemPrompt(),
+        keyLlmMaxTokens(),
     };
 
     for (const QString &k : allowed) {
@@ -159,4 +219,5 @@ bool AppSettings::importFromIni(const QString &filePath, QString *error)
     }
     return true;
 }
+
 

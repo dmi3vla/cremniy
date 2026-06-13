@@ -9,6 +9,8 @@
 #include <QMenu>
 #include <QClipboard>
 #include <QApplication>
+#include <QLineEdit>
+#include <QDockWidget>
 
 FileNode::FileNode(const QString& filePath, QGraphicsItem* parent)
     : QGraphicsObject(parent)
@@ -209,6 +211,37 @@ void FileNode::contextMenuEvent(QGraphicsSceneContextMenuEvent* event)
 
     menu.addAction("Hide Unconnected", [this]() {
         emit hideUnconnected(m_filePath);
+    });
+
+    menu.addAction("Ask AI Agent", [this]() {
+        QWidget* activeWin = nullptr;
+        for (QWidget* w : QApplication::topLevelWidgets()) {
+            if (w->inherits("QMainWindow")) {
+                activeWin = w;
+                break;
+            }
+        }
+        if (activeWin) {
+            QDockWidget* chatDock = nullptr;
+            for (QDockWidget* dock : activeWin->findChildren<QDockWidget*>()) {
+                if (dock->widget() && (dock->widget()->inherits("ChatPanel") || dock->widget()->metaObject()->className() == QString("ChatPanel"))) {
+                    chatDock = dock;
+                    break;
+                }
+            }
+            if (chatDock) {
+                chatDock->setVisible(true);
+                chatDock->raise();
+                QWidget* chatPanel = chatDock->widget();
+                if (chatPanel) {
+                    QLineEdit* input = chatPanel->findChild<QLineEdit*>();
+                    if (input) {
+                        input->setText(QString("Tell me about the file: %1").arg(QFileInfo(m_filePath).fileName()));
+                        input->setFocus();
+                    }
+                }
+            }
+        }
     });
 
     menu.addSeparator();
