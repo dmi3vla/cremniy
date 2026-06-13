@@ -60,4 +60,4 @@ Dependency graph visualization with gource-style animation:
 - [x] Phase 3 — Dependency parser (async #include parsing, directory-clustered layout, live updates)
 - [x] Phase 4 — Editor integration (click→editor, hover preview, context menu)
 - [x] Phase 5 — Gource visualization (git history playback, filter layers, minimap)
-- [ ] Phase 6 — Tests & documentation
+- [x] Phase 6 — Tests & documentation
