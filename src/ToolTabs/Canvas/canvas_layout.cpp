@@ -7,7 +7,6 @@
 CanvasLayout::CanvasLayout(QObject* parent)
     : QObject(parent)
 {
-    connect(&m_animationTimer, &QTimer::timeout, this, &CanvasLayout::animationTick);
 }
 
 void CanvasLayout::computeTargets(const DependencyGraph& graph, QMap<QString, QPointF>& targets)
@@ -113,49 +112,32 @@ void CanvasLayout::layoutTree(LayoutNode& node, qreal startAngle, qreal endAngle
     }
 }
 
-void CanvasLayout::animateToTargets(QMap<QString, FileNode*>& nodes, int durationMs)
+void CanvasLayout::animateNodesToPositions(
+    const QMap<QString, QPointF>& targetPositions,
+    QMap<QString, FileNode*>& nodes,
+    int durationMs)
 {
-    if (m_animationTimer.isActive())
-        m_animationTimer.stop();
-
-    m_animNodes = &nodes;
-    m_targetPos.clear();
-    m_startPos.clear();
-
-    for (auto it = nodes.begin(); it != nodes.end(); ++it) {
-        m_startPos[it.key()] = it.value()->pos();
-        m_targetPos[it.key()] = it.value()->pos();
+    if (m_posGroup) {
+        m_posGroup->stop();
+        m_posGroup->deleteLater();
     }
 
-    m_animationStep = 0;
-    m_animationSteps = qMax(1, durationMs / 16);
-    m_animationTimer.start(16);
-}
+    m_posGroup = new QParallelAnimationGroup(this);
 
-void CanvasLayout::animationTick()
-{
-    if (!m_animNodes) {
-        m_animationTimer.stop();
-        return;
+    for (auto it = targetPositions.begin(); it != targetPositions.end(); ++it) {
+        if (!nodes.contains(it.key())) continue;
+        FileNode* node = nodes[it.key()];
+
+        auto* anim = new QPropertyAnimation(node, "pos");
+        anim->setDuration(durationMs);
+        anim->setStartValue(node->pos());
+        anim->setEndValue(it.value());
+        anim->setEasingCurve(QEasingCurve::InOutCubic);
+        m_posGroup->addAnimation(anim);
     }
 
-    m_animationStep++;
-    qreal t = static_cast<qreal>(m_animationStep) / m_animationSteps;
-    t = t * t * (3.0 - 2.0 * t);
-
-    for (auto it = m_animNodes->begin(); it != m_animNodes->end(); ++it) {
-        const QString& key = it.key();
-        if (m_startPos.contains(key) && m_targetPos.contains(key)) {
-            QPointF start = m_startPos[key];
-            QPointF end = m_targetPos[key];
-            it.value()->setPos(start + (end - start) * t);
-        }
-    }
-
-    if (m_animationStep >= m_animationSteps) {
-        m_animationTimer.stop();
-        emit animationFinished();
-    }
+    connect(m_posGroup, &QParallelAnimationGroup::finished, this, &CanvasLayout::animationFinished);
+    m_posGroup->start();
 }
 
 void CanvasLayout::cleanupTree(LayoutNode& node)

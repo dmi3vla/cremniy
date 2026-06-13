@@ -7,11 +7,14 @@
 #include <QString>
 #include <QFileInfo>
 #include <QPropertyAnimation>
+#include <QParallelAnimationGroup>
 
 class FileNode : public QGraphicsObject
 {
     Q_OBJECT
     Q_PROPERTY(qreal pulseOpacity READ pulseOpacity WRITE setPulseOpacity)
+    Q_PROPERTY(qreal appearOpacity READ appearOpacity WRITE setAppearOpacity)
+    Q_PROPERTY(qreal appearScale READ appearScale WRITE setAppearScale)
 
 public:
     enum State { Normal, Selected, Active };
@@ -38,6 +41,13 @@ public:
     qreal pulseOpacity() const { return m_pulseOpacity; }
     void setPulseOpacity(qreal opacity) { m_pulseOpacity = opacity; update(); }
 
+    void playAppearAnimation(int durationMs = 300);
+    void playDisappearAnimation(int durationMs = 250);
+    qreal appearOpacity() const { return m_appearOpacity; }
+    void setAppearOpacity(qreal opacity) { m_appearOpacity = opacity; update(); }
+    qreal appearScale() const { return m_appearScale; }
+    void setAppearScale(qreal scale) { m_appearScale = scale; update(); }
+
 signals:
     void clicked(const QString& filePath);
     void doubleClicked(const QString& filePath);
@@ -45,6 +55,7 @@ signals:
     void openInEditor(const QString& filePath);
     void openInHexEditor(const QString& filePath);
     void hideUnconnected(const QString& filePath);
+    void disappearFinished();
 
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent* event) override;
@@ -62,9 +73,13 @@ private:
     int m_depCount = 0;
     bool m_hovered = false;
     qreal m_pulseOpacity = 0.0;
+    qreal m_appearOpacity = 1.0;
+    qreal m_appearScale = 1.0;
     QStringList m_incomingDeps;
     QStringList m_outgoingDeps;
     QPropertyAnimation* m_pulseAnim = nullptr;
+    QParallelAnimationGroup* m_appearGroup = nullptr;
+    QParallelAnimationGroup* m_disappearGroup = nullptr;
     static constexpr qreal WIDTH = 160;
     static constexpr qreal HEIGHT = 50;
     static constexpr qreal ICON_SIZE = 20;

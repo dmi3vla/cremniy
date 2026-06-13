@@ -35,7 +35,10 @@ void FileNode::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, 
     Q_UNUSED(option)
     Q_UNUSED(widget)
 
+    painter->save();
     painter->setRenderHint(QPainter::Antialiasing);
+    painter->setOpacity(m_appearOpacity);
+    painter->scale(m_appearScale, m_appearScale);
     QRectF rect = boundingRect();
 
     // Pulse glow
@@ -87,6 +90,8 @@ void FileNode::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, 
         painter->drawText(countRect, Qt::AlignLeft | Qt::AlignVCenter,
                           QString::number(m_depCount) + (m_depCount == 1 ? " dep" : " deps"));
     }
+
+    painter->restore();
 }
 
 void FileNode::setState(State state)
@@ -114,6 +119,82 @@ void FileNode::startPulse()
     m_pulseAnim->setEndValue(0.0);
     m_pulseAnim->setEasingCurve(QEasingCurve::OutQuad);
     m_pulseAnim->start(QAbstractAnimation::DeleteWhenStopped);
+}
+
+void FileNode::playAppearAnimation(int durationMs)
+{
+    if (m_appearGroup) {
+        m_appearGroup->stop();
+        m_appearGroup->deleteLater();
+    }
+    if (m_disappearGroup) {
+        m_disappearGroup->stop();
+        m_disappearGroup->deleteLater();
+        m_disappearGroup = nullptr;
+    }
+
+    setOpacity(0.0);
+    m_appearOpacity = 0.0;
+    m_appearScale = 0.5;
+
+    m_appearGroup = new QParallelAnimationGroup(this);
+
+    auto* opacityAnim = new QPropertyAnimation(this, "appearOpacity");
+    opacityAnim->setDuration(durationMs);
+    opacityAnim->setStartValue(0.0);
+    opacityAnim->setEndValue(1.0);
+    opacityAnim->setEasingCurve(QEasingCurve::OutBack);
+
+    auto* scaleAnim = new QPropertyAnimation(this, "appearScale");
+    scaleAnim->setDuration(durationMs);
+    scaleAnim->setStartValue(0.5);
+    scaleAnim->setEndValue(1.0);
+    scaleAnim->setEasingCurve(QEasingCurve::OutBack);
+
+    m_appearGroup->addAnimation(opacityAnim);
+    m_appearGroup->addAnimation(scaleAnim);
+
+    connect(m_appearGroup, &QParallelAnimationGroup::finished, this, [this]() {
+        setOpacity(1.0);
+        m_appearOpacity = 1.0;
+        m_appearScale = 1.0;
+    });
+
+    m_appearGroup->start();
+}
+
+void FileNode::playDisappearAnimation(int durationMs)
+{
+    if (m_disappearGroup) {
+        m_disappearGroup->stop();
+        m_disappearGroup->deleteLater();
+    }
+    if (m_appearGroup) {
+        m_appearGroup->stop();
+        m_appearGroup->deleteLater();
+        m_appearGroup = nullptr;
+    }
+
+    m_disappearGroup = new QParallelAnimationGroup(this);
+
+    auto* opacityAnim = new QPropertyAnimation(this, "appearOpacity");
+    opacityAnim->setDuration(durationMs);
+    opacityAnim->setStartValue(m_appearOpacity);
+    opacityAnim->setEndValue(0.0);
+    opacityAnim->setEasingCurve(QEasingCurve::InCubic);
+
+    auto* scaleAnim = new QPropertyAnimation(this, "appearScale");
+    scaleAnim->setDuration(durationMs);
+    scaleAnim->setStartValue(m_appearScale);
+    scaleAnim->setEndValue(0.3);
+    scaleAnim->setEasingCurve(QEasingCurve::InCubic);
+
+    m_disappearGroup->addAnimation(opacityAnim);
+    m_disappearGroup->addAnimation(scaleAnim);
+
+    connect(m_disappearGroup, &QParallelAnimationGroup::finished, this, &FileNode::disappearFinished);
+
+    m_disappearGroup->start();
 }
 
 QColor FileNode::stateColor() const

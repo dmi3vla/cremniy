@@ -5,9 +5,9 @@
 #include <QMap>
 #include <QString>
 #include <QStringList>
-#include <QTimer>
 #include <QObject>
 #include <QHash>
+#include <QParallelAnimationGroup>
 #include "dependency_parser.h"
 
 struct LayoutNode {
@@ -25,25 +25,22 @@ public:
     explicit CanvasLayout(QObject* parent = nullptr);
 
     void computeTargets(const DependencyGraph& graph, QMap<QString, QPointF>& targets);
-    void animateToTargets(QMap<QString, class FileNode*>& nodes, int durationMs = 600);
+    void animateNodesToPositions(
+        const QMap<QString, QPointF>& targetPositions,
+        QMap<QString, class FileNode*>& nodes,
+        int durationMs = 400);
 
-    bool isAnimating() const { return m_animationTimer.isActive(); }
+    bool isAnimating() const { return m_posGroup && m_posGroup->state() == QAbstractAnimation::Running; }
 
 signals:
     void animationFinished();
 
 private:
-    QTimer m_animationTimer;
-    QMap<QString, QPointF> m_startPos;
-    QMap<QString, QPointF> m_targetPos;
-    QMap<QString, class FileNode*>* m_animNodes = nullptr;
-    int m_animationStep = 0;
-    int m_animationSteps = 0;
+    QParallelAnimationGroup* m_posGroup = nullptr;
 
     void buildTree(const QStringList& files, LayoutNode& root);
     void layoutTree(LayoutNode& node, qreal startAngle, qreal endAngle, qreal radius, int depth, QMap<QString, QPointF>& targets);
     void cleanupTree(LayoutNode& node);
-    void animationTick();
     QString commonPrefix(const QStringList& paths) const;
     QString relativePath(const QString& path, const QString& base) const;
 };

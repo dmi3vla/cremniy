@@ -65,6 +65,9 @@ private:
     QToolButton* createToolButton(const QString& text, const QString& tooltip);
     void applyLayerFilters();
     void onGourceCommit(const GitCommit& commit);
+    void diffGraphUpdate(const DependencyGraph& oldGraph, const DependencyGraph& newGraph);
+    QPointF computePositionForNewNode(const QString& path);
+    void connectNodeSignals(FileNode* node);
 
     QTimer* m_pulseTimer = nullptr;
     QString m_pulsingFilePath;

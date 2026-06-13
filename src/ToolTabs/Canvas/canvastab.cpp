@@ -10,6 +10,7 @@
 #include <QSlider>
 #include <QResizeEvent>
 #include <QTimer>
+#include <QSet>
 
 static bool registered = [](){
     ToolTabFactory::instance().registerTab("4", [](FileDataBuffer* buffer){
@@ -106,9 +107,7 @@ void CanvasTab::setFile(QString filepath)
     m_parser = new DependencyParser(m_projectPath, this);
     connect(m_parser, &DependencyParser::graphReady, this, &CanvasTab::onGraphReady);
     connect(m_parser, &DependencyParser::graphUpdated, this, [this](DependencyGraph graph) {
-        m_currentGraph = graph;
-        buildGraph(graph);
-        layoutNodesRadial(graph);
+        diffGraphUpdate(m_currentGraph, graph);
     });
     m_parser->watchForChanges();
 
@@ -153,15 +152,7 @@ void CanvasTab::buildGraph(const DependencyGraph& graph)
 
     for (const QString& file : graph.allFiles) {
         auto* node = new FileNode(file);
-        connect(node, &FileNode::clicked, this, &CanvasTab::onNodeClicked);
-        connect(node, &FileNode::doubleClicked, this, &CanvasTab::onNodeDoubleClicked);
-        connect(node, &FileNode::openInEditor, this, [this](const QString& path) {
-            emit fileOpenRequested(path);
-        });
-        connect(node, &FileNode::openInHexEditor, this, [this](const QString& path) {
-            emit fileOpenRequested(path);
-        });
-        connect(node, &FileNode::hideUnconnected, this, &CanvasTab::highlightDependencies);
+        connectNodeSignals(node);
 
         // Set dependency info for tooltip
         auto incIt = graph.includes.find(file);
@@ -192,6 +183,19 @@ void CanvasTab::buildGraph(const DependencyGraph& graph)
     }
 }
 
+void CanvasTab::connectNodeSignals(FileNode* node)
+{
+    connect(node, &FileNode::clicked, this, &CanvasTab::onNodeClicked);
+    connect(node, &FileNode::doubleClicked, this, &CanvasTab::onNodeDoubleClicked);
+    connect(node, &FileNode::openInEditor, this, [this](const QString& path) {
+        emit fileOpenRequested(path);
+    });
+    connect(node, &FileNode::openInHexEditor, this, [this](const QString& path) {
+        emit fileOpenRequested(path);
+    });
+    connect(node, &FileNode::hideUnconnected, this, &CanvasTab::highlightDependencies);
+}
+
 void CanvasTab::layoutNodesRadial(const DependencyGraph& graph)
 {
     if (graph.allFiles.isEmpty())
@@ -199,14 +203,117 @@ void CanvasTab::layoutNodesRadial(const DependencyGraph& graph)
 
     QMap<QString, QPointF> targets;
     m_layout->computeTargets(graph, targets);
+    m_layout->animateNodesToPositions(targets, m_nodes, 400);
+}
 
-    for (auto it = targets.begin(); it != targets.end(); ++it) {
-        if (m_nodes.contains(it.key()))
-            m_nodes[it.key()]->setPos(it.value());
+QPointF CanvasTab::computePositionForNewNode(const QString& path)
+{
+    QString dir = QFileInfo(path).absolutePath();
+
+    // Find nearest existing file in same directory
+    for (auto it = m_nodes.begin(); it != m_nodes.end(); ++it) {
+        if (QFileInfo(it.key()).absolutePath() == dir) {
+            return it.value()->pos() + QPointF(40, 30);
+        }
     }
 
-    for (auto* edge : m_edges)
-        edge->updatePosition();
+    // Fallback: place near center with offset based on file count
+    qreal offset = m_nodes.size() * 15.0;
+    return QPointF(offset - (m_nodes.size() * 7.5), offset * 0.5);
+}
+
+void CanvasTab::diffGraphUpdate(const DependencyGraph& oldGraph, const DependencyGraph& newGraph)
+{
+    QSet<QString> oldFiles(oldGraph.allFiles.begin(), oldGraph.allFiles.end());
+    QSet<QString> newFiles(newGraph.allFiles.begin(), newGraph.allFiles.end());
+
+    QSet<QString> added = newFiles - oldFiles;
+    QSet<QString> removed = oldFiles - newFiles;
+
+    // 1) Remove deleted files — animate edges first, then node
+    for (const QString& file : removed) {
+        for (int i = m_edges.size() - 1; i >= 0; --i) {
+            DependencyEdge* edge = m_edges[i];
+            if (edge->source()->filePath() == file || edge->target()->filePath() == file) {
+                edge->stopAnimations();
+                edge->playDisappearAnimation();
+                connect(edge, &DependencyEdge::disappearFinished, this, [this, edge]() {
+                    m_canvasView->scene()->removeItem(edge);
+                    m_edges.removeOne(edge);
+                    edge->deleteLater();
+                });
+            }
+        }
+        if (m_nodes.contains(file)) {
+            FileNode* node = m_nodes[file];
+            node->playDisappearAnimation();
+            connect(node, &FileNode::disappearFinished, this, [this, node, file]() {
+                m_canvasView->scene()->removeItem(node);
+                m_nodes.remove(file);
+                node->deleteLater();
+            });
+        }
+    }
+
+    // 2) Add new files
+    QMap<QString, QStringList> newIncomingDeps;
+    for (auto it = newGraph.includes.begin(); it != newGraph.includes.end(); ++it) {
+        for (const QString& to : it->second) {
+            newIncomingDeps[to].append(it->first);
+        }
+    }
+
+    for (const QString& file : added) {
+        auto* node = new FileNode(file);
+        connectNodeSignals(node);
+
+        auto incIt = newGraph.includes.find(file);
+        if (incIt != newGraph.includes.end())
+            node->setOutgoingDeps(incIt->second);
+        if (newIncomingDeps.contains(file))
+            node->setIncomingDeps(newIncomingDeps[file]);
+
+        node->setPos(computePositionForNewNode(file));
+        m_canvasView->scene()->addItem(node);
+        m_nodes[file] = node;
+        node->playAppearAnimation();
+    }
+
+    // 3) Add new edges (for both new and unchanged files)
+    for (auto it = newGraph.includes.begin(); it != newGraph.includes.end(); ++it) {
+        const QString& from = it->first;
+        const QStringList& toList = it->second;
+        if (!m_nodes.contains(from)) continue;
+
+        for (const QString& to : toList) {
+            if (!m_nodes.contains(to)) continue;
+
+            bool exists = false;
+            for (DependencyEdge* e : m_edges) {
+                if (e->source()->filePath() == from && e->target()->filePath() == to) {
+                    exists = true;
+                    break;
+                }
+            }
+            if (!exists) {
+                auto* edge = new DependencyEdge(m_nodes[from], m_nodes[to], DependencyEdge::Include);
+                m_canvasView->scene()->addItem(edge);
+                m_edges.append(edge);
+                edge->playAppearAnimation();
+            }
+        }
+    }
+
+    // 4) Update dependency counts for all remaining nodes
+    for (auto it = m_nodes.begin(); it != m_nodes.end(); ++it) {
+        int count = 0;
+        auto incIt = newGraph.includes.find(it.key());
+        if (incIt != newGraph.includes.end())
+            count = incIt->second.size();
+        it.value()->setDependencyCount(count);
+    }
+
+    m_currentGraph = newGraph;
 }
 
 void CanvasTab::clearCanvas()
