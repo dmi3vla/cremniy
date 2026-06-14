@@ -21,6 +21,30 @@ void CanvasLayout::computeTargets(const DependencyGraph& graph, QMap<QString, QP
     cleanupTree(root);
 }
 
+QMap<QString, QPointF> CanvasLayout::computeLinearChain(
+    const QStringList& orderedKeys,
+    qreal spacing,
+    qreal y,
+    Qt::Orientation orientation)
+{
+    QMap<QString, QPointF> positions;
+    if (orderedKeys.isEmpty())
+        return positions;
+
+    qreal totalLen = (orderedKeys.size() - 1) * spacing;
+    qreal startOffset = -totalLen / 2.0;
+
+    for (int i = 0; i < orderedKeys.size(); ++i) {
+        qreal pos = startOffset + i * spacing;
+        if (orientation == Qt::Horizontal)
+            positions[orderedKeys[i]] = QPointF(pos, y);
+        else
+            positions[orderedKeys[i]] = QPointF(y, pos);
+    }
+
+    return positions;
+}
+
 void CanvasLayout::buildTree(const QStringList& files, LayoutNode& root)
 {
     root.dirPath = commonPrefix(files);

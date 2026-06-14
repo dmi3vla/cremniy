@@ -8,6 +8,7 @@
 #include <QObject>
 #include <QHash>
 #include <QParallelAnimationGroup>
+#include <Qt>
 #include "dependency_parser.h"
 
 struct LayoutNode {
@@ -17,6 +18,8 @@ struct LayoutNode {
     QList<LayoutNode*> children;
 };
 
+enum class LayoutMode { Radial, LinearChain };
+
 class CanvasLayout : public QObject
 {
     Q_OBJECT
@@ -25,6 +28,11 @@ public:
     explicit CanvasLayout(QObject* parent = nullptr);
 
     void computeTargets(const DependencyGraph& graph, QMap<QString, QPointF>& targets);
+    QMap<QString, QPointF> computeLinearChain(
+        const QStringList& orderedKeys,
+        qreal spacing = 280.0,
+        qreal y = 0.0,
+        Qt::Orientation orientation = Qt::Horizontal);
     void animateNodesToPositions(
         const QMap<QString, QPointF>& targetPositions,
         QMap<QString, class FileNode*>& nodes,
