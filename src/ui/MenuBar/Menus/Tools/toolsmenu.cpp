@@ -12,12 +12,19 @@ ToolsMenu::ToolsMenu() : BaseMenu("Tools") {
   m_reverseCalculator = new QAction("Reverse Calculator", this);
   m_reverseCalculator->setShortcut(QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_R));
   this->addAction(m_reverseCalculator);
+
+  this->addSeparator();
+
+  m_generateSemanticMap = new QAction("Generate Semantic Map", this);
+  this->addAction(m_generateSemanticMap);
 }
 
 void ToolsMenu::setupConnections(IDEWindow *ideWind) {
   m_ideWindow = ideWind;
   connect(m_reverseCalculator, &QAction::triggered, this,
           &ToolsMenu::on_Open_ReverseCalculator);
+  connect(m_generateSemanticMap, &QAction::triggered, this,
+          &ToolsMenu::on_GenerateSemanticMap);
 }
 
 void ToolsMenu::on_Open_ReverseCalculator() {
@@ -30,4 +37,11 @@ void ToolsMenu::on_Open_ReverseCalculator() {
   dlg->show();
   dlg->raise();
   dlg->activateWindow();
+}
+
+void ToolsMenu::on_GenerateSemanticMap() {
+  if (m_ideWindow) {
+    // Call the slot directly on IDEWindow
+    m_ideWindow->on_GenerateSemanticMap();
+  }
 }

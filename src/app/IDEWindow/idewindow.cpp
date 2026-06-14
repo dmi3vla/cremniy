@@ -270,3 +270,11 @@ void IDEWindow::on_openSettings(){
     SettingsDialog dlg(this);
     dlg.exec();
 }
+
+void IDEWindow::on_GenerateSemanticMap(){
+    // TODO: Implement semantic map generation logic
+    // 1. Check for saved map in .cremniy/semantic_maps/ by current project/task hash
+    // 2. If file exists - load it to canvas immediately
+    // 3. If not - call Phase 2.1 (GenerateSemanticMap)
+    qDebug() << "Generate Semantic Map triggered";
+}

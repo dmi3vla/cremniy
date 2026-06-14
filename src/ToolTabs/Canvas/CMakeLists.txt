@@ -15,8 +15,14 @@ target_sources(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/minimap.h
     ${CMAKE_CURRENT_SOURCE_DIR}/nodes/file_node.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/nodes/file_node.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/nodes/step_node.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/nodes/step_node.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/nodes/cluster_group_node.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/nodes/cluster_group_node.h
     ${CMAKE_CURRENT_SOURCE_DIR}/edges/dependency_edge.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/edges/dependency_edge.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/edges/connection_edge.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/edges/connection_edge.h
     ${CMAKE_CURRENT_SOURCE_DIR}/semantic_map.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/semantic_map.h
     ${CMAKE_CURRENT_SOURCE_DIR}/semantic_map_utils.cpp

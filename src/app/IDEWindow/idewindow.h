@@ -96,10 +96,16 @@ public slots:
     */
     void on_Toggle_Terminal(bool checked);
 
+    /**
+     * @brief Generate Semantic Map
+    */
+    void on_GenerateSemanticMap();
+
 
 signals:
     void saveFileSignal();
     void CloseProject();
+    void generateSemanticMap();
 
 };
 #endif // IDEWINDOW_H
