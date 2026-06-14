@@ -413,6 +413,54 @@ void CanvasTab::onGourceCommit(const GitCommit& commit)
     m_minimap->updateViewportRect();
 }
 
+void CanvasTab::focusOnChain(const QStringList& chain)
+{
+    if (chain.isEmpty())
+        return;
+
+    // Dim all nodes first
+    for (auto* node : m_nodes)
+        node->setOpacity(0.15);
+    for (auto* edge : m_edges)
+        edge->setVisible(false);
+
+    // Highlight chain nodes
+    for (const QString& key : chain) {
+        if (m_nodes.contains(key)) {
+            m_nodes[key]->setOpacity(1.0);
+            m_nodes[key]->setState(FileNode::Active);
+        }
+    }
+
+    // Show edges between consecutive chain nodes
+    for (int i = 0; i < chain.size() - 1; ++i) {
+        if (!m_nodes.contains(chain[i]) || !m_nodes.contains(chain[i + 1]))
+            continue;
+        for (auto* edge : m_edges) {
+            bool forward = edge->source()->filePath() == chain[i] &&
+                           edge->target()->filePath() == chain[i + 1];
+            bool backward = edge->source()->filePath() == chain[i + 1] &&
+                            edge->target()->filePath() == chain[i];
+            if (forward || backward) {
+                edge->setVisible(true);
+                edge->setOpacity(1.0);
+            }
+        }
+    }
+
+    // Compute linear positions and animate
+    QMap<QString, QPointF> positions = m_layout->computeLinearChain(chain);
+    m_layout->animateNodesToPositions(positions, m_nodes, 500);
+
+    // Pulse chain nodes on arrival
+    QTimer::singleShot(550, this, [this, chain]() {
+        for (const QString& key : chain) {
+            if (m_nodes.contains(key))
+                m_nodes[key]->startPulse();
+        }
+    });
+}
+
 void CanvasTab::resizeEvent(QResizeEvent* event)
 {
     ToolTab::resizeEvent(event);

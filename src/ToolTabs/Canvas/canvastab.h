@@ -68,6 +68,7 @@ private:
     void diffGraphUpdate(const DependencyGraph& oldGraph, const DependencyGraph& newGraph);
     QPointF computePositionForNewNode(const QString& path);
     void connectNodeSignals(FileNode* node);
+    void focusOnChain(const QStringList& chain);
 
     QTimer* m_pulseTimer = nullptr;
     QString m_pulsingFilePath;
