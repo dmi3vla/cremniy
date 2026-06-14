@@ -10,9 +10,11 @@
 #include "ui/MenuBar/menubarbuilder.h"
 #include "Agent/chat_panel.h"
 #include "Agent/agent_session.h"
+#include "ToolTabs/Canvas/canvastab.h"
 
 IDEWindow::IDEWindow(QString ProjectPath, QWidget *parent)
     : QMainWindow(parent)
+    , m_projectPath(ProjectPath)
 {
 
     // - - Window Settings - -

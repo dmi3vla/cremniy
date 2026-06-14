@@ -21,6 +21,7 @@ public:
 
     bool isBusy() const;
     void cancel();
+    ToolRegistry* toolRegistry() const { return m_tools; }
 
 private slots:
     void onMessageSent(const QString& text);

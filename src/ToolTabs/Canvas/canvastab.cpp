@@ -1,6 +1,7 @@
 #include "canvastab.h"
 #include "nodes/file_node.h"
 #include "edges/dependency_edge.h"
+#include "semantic_map.h"
 #include "core/ToolTabFactory.h"
 #include <QToolButton>
 #include <QHBoxLayout>
@@ -564,4 +565,87 @@ void CanvasTab::toggleGraphMode()
             anim->start(QAbstractAnimation::DeleteWhenStopped);
         }
     });
+}
+
+void CanvasTab::showSemanticMap(const SemanticMap& map)
+{
+    m_currentSemanticMap = map;
+    m_layoutMode = LayoutMode::LinearChain;
+
+    clearCanvas();
+
+    // Collect all step keys for layout
+    QStringList allStepIds;
+    for (const auto& cluster : map.clusters) {
+        for (const auto& step : cluster.steps) {
+            allStepIds.append(step.id);
+        }
+    }
+
+    if (allStepIds.isEmpty())
+        return;
+
+    // Create nodes for each step
+    QMap<QString, QPointF> positions;
+    qreal clusterY = 0;
+
+    for (const auto& cluster : map.clusters) {
+        qreal stepX = 0;
+        for (const auto& step : cluster.steps) {
+            // Create a FileNode using the step's filePath if available
+            QString displayPath = step.filePath.isEmpty()
+                ? step.title
+                : step.filePath;
+            auto* node = new FileNode(displayPath);
+            connectNodeSignals(node);
+
+            // Use step title as tooltip
+            node->setToolTip(step.id + ": " + step.title + "\n" +
+                             step.filePath + " [" + QString::number(step.startLine) +
+                             "-" + QString::number(step.endLine) + "]");
+
+            m_canvasView->scene()->addItem(node);
+            m_nodes[step.id] = node;
+
+            positions[step.id] = QPointF(stepX, clusterY);
+            stepX += 220;
+        }
+        clusterY += 150;
+    }
+
+    // Create edges for connections
+    for (const auto& cluster : map.clusters) {
+        for (const auto& step : cluster.steps) {
+            for (int i = 0; i < step.connections.size(); ++i) {
+                const QString& targetId = step.connections[i];
+                if (m_nodes.contains(step.id) && m_nodes.contains(targetId)) {
+                    auto* edge = new DependencyEdge(m_nodes[step.id], m_nodes[targetId],
+                                                     DependencyEdge::Call);
+                    m_canvasView->scene()->addItem(edge);
+                    m_edges.append(edge);
+                }
+            }
+        }
+    }
+
+    // Animate nodes to positions
+    m_layout->animateNodesToPositions(positions, m_nodes, 500);
+
+    // Pulse all nodes on arrival
+    QTimer::singleShot(550, this, [this]() {
+        for (auto* node : m_nodes)
+            node->startPulse();
+    });
+}
+
+void CanvasTab::showStructureGraph()
+{
+    m_layoutMode = LayoutMode::Radial;
+    clearCanvas();
+
+    if (m_currentGraph.allFiles.isEmpty())
+        return;
+
+    buildGraph(m_currentGraph);
+    layoutNodesRadial(m_currentGraph);
 }

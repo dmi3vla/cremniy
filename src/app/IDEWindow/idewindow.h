@@ -13,6 +13,7 @@
 
 class ChatPanel;
 class AgentSession;
+class CanvasTab;
 
 class IDEWindow : public QMainWindow
 {
@@ -21,6 +22,11 @@ class IDEWindow : public QMainWindow
 public:
     explicit IDEWindow(QString ProjectPath, QWidget *parent = nullptr);
     ~IDEWindow() override;
+
+    QString projectPath() const { return m_projectPath; }
+    AgentSession* agentSession() const { return m_agentSession; }
+    CanvasTab* canvasTab() const;
+    CanvasTab* openOrCreateCanvasTab();
 
 private slots:
 
@@ -60,6 +66,9 @@ private:
     ChatPanel* m_chatPanel;
     QDockWidget* m_chatDock;
     AgentSession* m_agentSession;
+
+    // - - Project - -
+    QString m_projectPath;
 
 
 public slots:

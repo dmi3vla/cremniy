@@ -8,6 +8,7 @@
 #include "gource_animator.h"
 #include "layer_panel.h"
 #include "minimap.h"
+#include "semantic_map.h"
 #include <QVBoxLayout>
 #include <QToolButton>
 #include <QLabel>
@@ -27,6 +28,9 @@ public:
     QIcon toolIcon() const override { return QIcon(":/icons/canvas.png"); }
 
     DependencyGraph currentGraph() const { return m_currentGraph; }
+
+    void showSemanticMap(const SemanticMap& map);
+    void showStructureGraph();
 
 public slots:
     void setFile(QString filepath) override;
@@ -60,6 +64,8 @@ private:
     QMap<QString, FileNode*> m_nodes;
     QList<DependencyEdge*> m_edges;
     DependencyGraph m_currentGraph;
+    SemanticMap m_currentSemanticMap;
+    LayoutMode m_layoutMode = LayoutMode::Radial;
 
     bool m_structuralMode = true;
 

@@ -1,7 +1,17 @@
 #include "toolsmenu.h"
 #include "dialogs/reversecalculatordialog.h"
 #include "ui/MenuBar/menufactory.h"
+#include "app/IDEWindow/idewindow.h"
+#include "Agent/agent_session.h"
+#include "Agent/tools/tool_registry.h"
+#include "Agent/tools/agent_tool.h"
+#include "ToolTabs/Canvas/canvastab.h"
+#include "ToolTabs/Canvas/semantic_map.h"
+#include "ToolTabs/Canvas/semantic_map_store.h"
 #include <QKeySequence>
+#include <QStatusBar>
+#include <QJsonDocument>
+#include <QJsonArray>
 
 static bool registered = []() {
   MenuFactory::instance().registerMenu("5", []() { return new ToolsMenu(); });
