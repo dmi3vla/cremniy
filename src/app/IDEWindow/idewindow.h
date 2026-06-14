@@ -114,7 +114,6 @@ public slots:
 signals:
     void saveFileSignal();
     void CloseProject();
-    void generateSemanticMap();
 
 };
 #endif // IDEWINDOW_H

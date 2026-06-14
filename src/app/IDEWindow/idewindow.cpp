@@ -10,7 +10,11 @@
 #include "ui/MenuBar/menubarbuilder.h"
 #include "Agent/chat_panel.h"
 #include "Agent/agent_session.h"
+#include "Agent/tools/tool_registry.h"
+#include "Agent/tools/agent_tool.h"
 #include "ToolTabs/Canvas/canvastab.h"
+#include "ToolTabs/Canvas/semantic_map_store.h"
+#include <QJsonDocument>
 
 IDEWindow::IDEWindow(QString ProjectPath, QWidget *parent)
     : QMainWindow(parent)
@@ -273,10 +277,96 @@ void IDEWindow::on_openSettings(){
     dlg.exec();
 }
 
+CanvasTab* IDEWindow::canvasTab() const
+{
+    for (int i = 0; i < m_filesTabWidget->count(); ++i) {
+        QWidget* tab = m_filesTabWidget->widget(i);
+        if (!tab) continue;
+        CanvasTab* canvas = tab->findChild<CanvasTab*>();
+        if (canvas)
+            return canvas;
+    }
+    return nullptr;
+}
+
+CanvasTab* IDEWindow::openOrCreateCanvasTab()
+{
+    CanvasTab* existing = canvasTab();
+    if (existing)
+        return existing;
+
+    QDir srcDir(m_projectPath + "/src");
+    if (srcDir.exists()) {
+        QStringList cppFiles = srcDir.entryList({"*.cpp", "*.h"}, QDir::Files, QDir::Name);
+        if (!cppFiles.isEmpty()) {
+            QString firstFile = srcDir.absoluteFilePath(cppFiles.first());
+            m_filesTabWidget->openFile(firstFile, QFileInfo(firstFile).fileName());
+            return canvasTab();
+        }
+    }
+    return nullptr;
+}
+
 void IDEWindow::on_GenerateSemanticMap(){
-    // TODO: Implement semantic map generation logic
-    // 1. Check for saved map in .cremniy/semantic_maps/ by current project/task hash
-    // 2. If file exists - load it to canvas immediately
-    // 3. If not - call Phase 2.1 (GenerateSemanticMap)
-    qDebug() << "Generate Semantic Map triggered";
+    QString projectRoot = m_projectPath;
+    SemanticMapStore store(projectRoot);
+
+    CanvasTab* canvas = canvasTab();
+    if (!canvas) {
+        canvas = openOrCreateCanvasTab();
+        if (!canvas) return;
+    }
+
+    // Check for existing saved maps
+    QList<SemanticMapStore::MapMeta> maps = store.list();
+
+    if (!maps.isEmpty()) {
+        SemanticMapStore::MapMeta latest = maps.first();
+        for (const auto& m : maps) {
+            if (m.createdAt > latest.createdAt)
+                latest = m;
+        }
+        auto mapOpt = store.load(latest.id);
+        if (mapOpt.has_value()) {
+            canvas->showSemanticMap(mapOpt.value());
+            return;
+        }
+    }
+
+    // No maps — generate via agent tool
+    AgentSession* session = m_agentSession;
+    if (!session) return;
+
+    QStringList scope = canvas->currentGraph().allFiles;
+    statusBar()->showMessage("Generating concept map via AI...");
+
+    QJsonObject args;
+    QJsonArray scopeArr;
+    for (const QString& f : scope)
+        scopeArr.append(f);
+    args["scope"] = scopeArr;
+
+    ToolRegistry* tools = session->toolRegistry();
+    if (tools) {
+        AgentTool* tool = tools->findTool("generate_semantic_map");
+        if (tool) {
+            connect(tool, &AgentTool::finished, this,
+                [this, canvas](const QString& result, bool isError) {
+                    statusBar()->clearMessage();
+                    if (isError) {
+                        statusBar()->showMessage("Concept map generation failed: " + result, 5000);
+                        return;
+                    }
+                    QJsonDocument doc = QJsonDocument::fromJson(result.toUtf8());
+                    if (doc.isObject()) {
+                        SemanticMap map = SemanticMap::fromJson(doc.object());
+                        canvas->showSemanticMap(map);
+                    }
+                }, Qt::SingleShotConnection);
+            tool->execute(args);
+            return;
+        }
+    }
+
+    statusBar()->showMessage("AI agent not available for concept map generation", 5000);
 }
