@@ -17,6 +17,12 @@ target_sources(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/nodes/file_node.h
     ${CMAKE_CURRENT_SOURCE_DIR}/edges/dependency_edge.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/edges/dependency_edge.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/semantic_map.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/semantic_map.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/semantic_map_utils.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/semantic_map_utils.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/semantic_map_store.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/semantic_map_store.h
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE
