@@ -8,6 +8,7 @@
 #include <QObject>
 #include <QHash>
 #include <QParallelAnimationGroup>
+#include <QGraphicsObject>
 #include <Qt>
 #include "dependency_parser.h"
 
@@ -35,7 +36,7 @@ public:
         Qt::Orientation orientation = Qt::Horizontal);
     void animateNodesToPositions(
         const QMap<QString, QPointF>& targetPositions,
-        QMap<QString, class FileNode*>& nodes,
+        QMap<QString, QGraphicsObject*>& nodes,
         int durationMs = 400);
 
     bool isAnimating() const { return m_posGroup && m_posGroup->state() == QAbstractAnimation::Running; }

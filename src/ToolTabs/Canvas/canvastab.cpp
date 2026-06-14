@@ -1,7 +1,13 @@
 #include "canvastab.h"
 #include "nodes/file_node.h"
+#include "nodes/step_node.h"
+#include "nodes/cluster_group_node.h"
 #include "edges/dependency_edge.h"
+#include "edges/connection_edge.h"
+#include "cluster_layout.h"
+#include "digest_panel.h"
 #include "semantic_map.h"
+#include "semantic_map_store.h"
 #include "core/ToolTabFactory.h"
 #include <QToolButton>
 #include <QHBoxLayout>
@@ -209,7 +215,10 @@ void CanvasTab::layoutNodesRadial(const DependencyGraph& graph)
 
     QMap<QString, QPointF> targets;
     m_layout->computeTargets(graph, targets);
-    m_layout->animateNodesToPositions(targets, m_nodes, 400);
+    QMap<QString, QGraphicsObject*> nodeObjs;
+    for (auto it = m_nodes.begin(); it != m_nodes.end(); ++it)
+        nodeObjs[it.key()] = it.value();
+    m_layout->animateNodesToPositions(targets, nodeObjs, 400);
 }
 
 QPointF CanvasTab::computePositionForNewNode(const QString& path)
@@ -456,7 +465,10 @@ void CanvasTab::focusOnChain(const QStringList& chain)
 
     // Compute linear positions and animate
     QMap<QString, QPointF> positions = m_layout->computeLinearChain(chain);
-    m_layout->animateNodesToPositions(positions, m_nodes, 500);
+    QMap<QString, QGraphicsObject*> nodeObjs;
+    for (auto it = m_nodes.begin(); it != m_nodes.end(); ++it)
+        nodeObjs[it.key()] = it.value();
+    m_layout->animateNodesToPositions(positions, nodeObjs, 500);
 
     // Pulse chain nodes on arrival
     QTimer::singleShot(550, this, [this, chain]() {
@@ -501,146 +513,125 @@ void CanvasTab::stopNodePulsing()
     }
 }
 
-void CanvasTab::toggleGraphMode()
-{
-    m_structuralMode = !m_structuralMode;
-    
-    // Fade out all current items
-    QGraphicsScene* scene = m_canvasView->scene();
-    if (!scene) return;
-    
-    QList<QGraphicsItem*> items = scene->items();
-    for (QGraphicsItem* item : items) {
-        QGraphicsOpacityEffect* effect = new QGraphicsOpacityEffect();
-        item->setGraphicsEffect(effect);
-        
-        QPropertyAnimation* anim = new QPropertyAnimation(effect, "opacity");
-        anim->setDuration(200);
-        anim->setStartValue(1.0);
-        anim->setEndValue(0.0);
-        anim->setEasingCurve(QEasingCurve::InCubic);
-        
-        connect(anim, &QPropertyAnimation::finished, this, [item]() {
-            item->setVisible(false);
-            item->setGraphicsEffect(nullptr);
-        });
-        
-        anim->start(QAbstractAnimation::DeleteWhenStopped);
-    }
-    
-    // After fade out, switch modes and fade in
-    QTimer::singleShot(250, this, [this]() {
-        if (m_structuralMode) {
-            // Switch to structural graph
-            // TODO: Load structural graph items
-            qDebug() << "Switching to Structural Graph mode";
-        } else {
-            // Switch to conceptual graph
-            // TODO: Load conceptual graph items
-            qDebug() << "Switching to Conceptual Graph mode";
-        }
-        
-        // Fade in new items
-        QGraphicsScene* scene = m_canvasView->scene();
-        if (!scene) return;
-        
-        QList<QGraphicsItem*> items = scene->items();
-        for (QGraphicsItem* item : items) {
-            item->setVisible(true);
-            item->setOpacity(0.0);
-            
-            QGraphicsOpacityEffect* effect = new QGraphicsOpacityEffect();
-            item->setGraphicsEffect(effect);
-            
-            QPropertyAnimation* anim = new QPropertyAnimation(effect, "opacity");
-            anim->setDuration(300);
-            anim->setStartValue(0.0);
-            anim->setEndValue(1.0);
-            anim->setEasingCurve(QEasingCurve::OutCubic);
-            
-            connect(anim, &QPropertyAnimation::finished, this, [item]() {
-                item->setGraphicsEffect(nullptr);
-            });
-            
-            anim->start(QAbstractAnimation::DeleteWhenStopped);
-        }
-    });
-}
-
 void CanvasTab::showSemanticMap(const SemanticMap& map)
 {
     m_currentSemanticMap = map;
     m_layoutMode = LayoutMode::LinearChain;
+    m_structuralMode = false;
+    m_generatingConceptMap = false;
 
     clearCanvas();
+    clearSemanticNodes();
 
-    // Collect all step keys for layout
-    QStringList allStepIds;
-    for (const auto& cluster : map.clusters) {
-        for (const auto& step : cluster.steps) {
-            allStepIds.append(step.id);
-        }
-    }
-
-    if (allStepIds.isEmpty())
+    if (map.clusters.isEmpty())
         return;
 
-    // Create nodes for each step
-    QMap<QString, QPointF> positions;
-    qreal clusterY = 0;
+    ClusterLayout clusterLayout;
 
     for (const auto& cluster : map.clusters) {
-        qreal stepX = 0;
+        auto* clusterNode = new ClusterGroupNode(cluster.id, cluster.title, cluster.color);
+        m_canvasView->scene()->addItem(clusterNode);
+        m_clusterNodes.append(clusterNode);
+
+        // Create StepNodes inside each cluster
         for (const auto& step : cluster.steps) {
-            // Create a FileNode using the step's filePath if available
-            QString displayPath = step.filePath.isEmpty()
-                ? step.title
-                : step.filePath;
-            auto* node = new FileNode(displayPath);
-            connectNodeSignals(node);
-
-            // Use step title as tooltip
-            node->setToolTip(step.id + ": " + step.title + "\n" +
-                             step.filePath + " [" + QString::number(step.startLine) +
-                             "-" + QString::number(step.endLine) + "]");
-
-            m_canvasView->scene()->addItem(node);
-            m_nodes[step.id] = node;
-
-            positions[step.id] = QPointF(stepX, clusterY);
-            stepX += 220;
+            auto* stepNode = new StepNode(step.id, step.title, step.codeSnippet,
+                                           step.filePath, step.startLine, clusterNode);
+            clusterNode->addChild(stepNode);
+            connect(stepNode, &StepNode::stepClicked, this, &CanvasTab::onStepClicked);
         }
-        clusterY += 150;
+
+        // Arrange steps within cluster using CanvasLayout::computeLinearChain
+        QMap<QString, QPointF> chainPositions = m_layout->computeLinearChain(
+            [cluster]() {
+                QStringList ids;
+                for (const auto& s : cluster.steps) ids.append(s.id);
+                return ids;
+            }(), 120.0, 50.0, Qt::Vertical);
+
+        QMap<QString, QGraphicsObject*> stepObjs;
+        for (auto* child : clusterNode->children())
+            stepObjs[child->stepId()] = child;
+        m_layout->animateNodesToPositions(chainPositions, stepObjs, 400);
+
+        clusterNode->updateBoundsFromChildren();
     }
 
-    // Create edges for connections
+    // Create ConnectionEdges between steps
     for (const auto& cluster : map.clusters) {
         for (const auto& step : cluster.steps) {
+            StepNode* sourceNode = nullptr;
+            for (auto* cn : m_clusterNodes) {
+                for (auto* child : cn->children()) {
+                    if (child->stepId() == step.id) {
+                        sourceNode = child;
+                        break;
+                    }
+                }
+                if (sourceNode) break;
+            }
+            if (!sourceNode) continue;
+
             for (int i = 0; i < step.connections.size(); ++i) {
                 const QString& targetId = step.connections[i];
-                if (m_nodes.contains(step.id) && m_nodes.contains(targetId)) {
-                    auto* edge = new DependencyEdge(m_nodes[step.id], m_nodes[targetId],
-                                                     DependencyEdge::Call);
-                    m_canvasView->scene()->addItem(edge);
-                    m_edges.append(edge);
+                StepNode* targetNode = nullptr;
+                for (auto* cn : m_clusterNodes) {
+                    for (auto* child : cn->children()) {
+                        if (child->stepId() == targetId) {
+                            targetNode = child;
+                            break;
+                        }
+                    }
+                    if (targetNode) break;
                 }
+                if (!targetNode) continue;
+
+                QString label = (i < step.connectionLabels.size()) ? step.connectionLabels[i] : "";
+                auto* edge = new ConnectionEdge(sourceNode, targetNode, label);
+                m_canvasView->scene()->addItem(edge);
+                m_connectionEdges.append(edge);
+                edge->playAppearAnimation();
             }
         }
     }
 
-    // Animate nodes to positions
-    m_layout->animateNodesToPositions(positions, m_nodes, 500);
+    // Animate cluster positions
+    QMap<QString, QPointF> clusterPositions;
+    qreal x = 0, y = 0;
+    int col = 0;
+    for (auto* cn : m_clusterNodes) {
+        clusterPositions[cn->clusterId()] = QPointF(x, y);
+        x += 500;
+        col++;
+        if (col >= 3) {
+            col = 0;
+            x = 0;
+            y += 400;
+        }
+    }
 
-    // Pulse all nodes on arrival
+    QMap<QString, QGraphicsObject*> clusterObjs;
+    for (auto* cn : m_clusterNodes)
+        clusterObjs[cn->clusterId()] = cn;
+    m_layout->animateNodesToPositions(clusterPositions, clusterObjs, 500);
+
+    // Pulse all step nodes on arrival
     QTimer::singleShot(550, this, [this]() {
-        for (auto* node : m_nodes)
-            node->startPulse();
+        for (auto* cn : m_clusterNodes) {
+            cn->playAppearAnimation();
+            for (auto* child : cn->children())
+                child->playAppearAnimation();
+        }
     });
+
+    emit semanticMapShown(map);
 }
 
 void CanvasTab::showStructureGraph()
 {
+    m_structuralMode = true;
     m_layoutMode = LayoutMode::Radial;
+    clearSemanticNodes();
     clearCanvas();
 
     if (m_currentGraph.allFiles.isEmpty())
@@ -648,4 +639,52 @@ void CanvasTab::showStructureGraph()
 
     buildGraph(m_currentGraph);
     layoutNodesRadial(m_currentGraph);
+}
+
+void CanvasTab::clearSemanticNodes()
+{
+    qDeleteAll(m_connectionEdges);
+    m_connectionEdges.clear();
+    qDeleteAll(m_clusterNodes);
+    m_clusterNodes.clear();
+}
+
+void CanvasTab::onStepClicked(const QString& filePath, int lineNumber)
+{
+    emit stepNavigationRequested(filePath, lineNumber);
+}
+
+void CanvasTab::onSemanticMapReady(const SemanticMap& map)
+{
+    m_generatingConceptMap = false;
+    showSemanticMap(map);
+}
+
+void CanvasTab::toggleGraphMode()
+{
+    if (m_structuralMode) {
+        // Switch to concept mode
+        if (!m_currentSemanticMap.clusters.isEmpty()) {
+            showSemanticMap(m_currentSemanticMap);
+        } else {
+            // Check for saved map
+            SemanticMapStore store(m_projectPath);
+            auto maps = store.list();
+            if (!maps.isEmpty()) {
+                SemanticMapStore::MapMeta latest = maps.first();
+                for (const auto& m : maps)
+                    if (m.createdAt > latest.createdAt) latest = m;
+                auto mapOpt = store.load(latest.id);
+                if (mapOpt.has_value()) {
+                    showSemanticMap(mapOpt.value());
+                    return;
+                }
+            }
+            // No map — request generation
+            m_generatingConceptMap = true;
+            emit needsSemanticMapGeneration();
+        }
+    } else {
+        showStructureGraph();
+    }
 }

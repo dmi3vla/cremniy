@@ -138,7 +138,7 @@ void CanvasLayout::layoutTree(LayoutNode& node, qreal startAngle, qreal endAngle
 
 void CanvasLayout::animateNodesToPositions(
     const QMap<QString, QPointF>& targetPositions,
-    QMap<QString, FileNode*>& nodes,
+    QMap<QString, QGraphicsObject*>& nodes,
     int durationMs)
 {
     if (m_posGroup) {
@@ -150,7 +150,7 @@ void CanvasLayout::animateNodesToPositions(
 
     for (auto it = targetPositions.begin(); it != targetPositions.end(); ++it) {
         if (!nodes.contains(it.key())) continue;
-        FileNode* node = nodes[it.key()];
+        QGraphicsObject* node = nodes[it.key()];
 
         auto* anim = new QPropertyAnimation(node, "pos");
         anim->setDuration(durationMs);

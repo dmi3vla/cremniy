@@ -16,6 +16,10 @@
 
 class FileNode;
 class DependencyEdge;
+class StepNode;
+class ClusterGroupNode;
+class ConnectionEdge;
+class DigestPanel;
 
 class CanvasTab : public ToolTab
 {
@@ -43,6 +47,12 @@ public slots:
     void stopNodePulsing();
 
     void toggleGraphMode();
+    void onSemanticMapReady(const SemanticMap& map);
+
+signals:
+    void semanticMapShown(const SemanticMap& map);
+    void needsSemanticMapGeneration();
+    void stepNavigationRequested(const QString& filePath, int lineNumber);
 
 protected:
     void resizeEvent(QResizeEvent* event) override;
@@ -51,6 +61,7 @@ private slots:
     void onGraphReady(DependencyGraph graph);
     void onNodeClicked(const QString& filePath);
     void onNodeDoubleClicked(const QString& filePath);
+    void onStepClicked(const QString& filePath, int lineNumber);
 
 private:
     CanvasView* m_canvasView;
@@ -59,6 +70,7 @@ private:
     GourceAnimator* m_animator;
     LayerPanel* m_layerPanel;
     Minimap* m_minimap;
+    DigestPanel* m_digestPanel = nullptr;
     QString m_projectPath;
 
     QMap<QString, FileNode*> m_nodes;
@@ -68,10 +80,16 @@ private:
     LayoutMode m_layoutMode = LayoutMode::Radial;
 
     bool m_structuralMode = true;
+    bool m_generatingConceptMap = false;
+
+    // Semantic map nodes (separate from structural graph nodes)
+    QList<ClusterGroupNode*> m_clusterNodes;
+    QList<ConnectionEdge*> m_connectionEdges;
 
     void buildGraph(const DependencyGraph& graph);
     void layoutNodesRadial(const DependencyGraph& graph);
     void clearCanvas();
+    void clearSemanticNodes();
     QToolButton* createToolButton(const QString& text, const QString& tooltip);
     void applyLayerFilters();
     void onGourceCommit(const GitCommit& commit);

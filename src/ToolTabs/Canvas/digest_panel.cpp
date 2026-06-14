@@ -3,6 +3,7 @@
 #include <QHBoxLayout>
 #include <QFrame>
 #include <QGraphicsOpacityEffect>
+#include <QScrollArea>
 
 DigestPanel::DigestPanel(QWidget* parent)
     : QWidget(parent)
@@ -53,6 +54,95 @@ DigestPanel::DigestPanel(QWidget* parent)
             background-color: #3a6a90;
         }
     )");
+}
+
+void DigestPanel::showMap(const SemanticMap& map)
+{
+    setMotivation(map.motivation);
+    setDetails(map.details);
+
+    // Clear old cluster sections
+    for (QWidget* w : m_clusterSections) {
+        w->setVisible(false);
+        w->deleteLater();
+    }
+    m_clusterSections.clear();
+
+    // Create collapsible sections for each cluster
+    for (int ci = 0; ci < map.clusters.size(); ++ci) {
+        const SemanticCluster& cluster = map.clusters[ci];
+
+        auto* section = new QWidget(this);
+        auto* sectionLayout = new QVBoxLayout(section);
+        sectionLayout->setContentsMargins(0, 0, 0, 0);
+        sectionLayout->setSpacing(4);
+
+        // Header (collapsible toggle)
+        auto* header = new QToolButton(section);
+        header->setText((ci == 0 ? "▼ " : "▶ ") + cluster.title);
+        header->setCheckable(true);
+        header->setChecked(ci == 0);
+        header->setStyleSheet("text-align: left; font-weight: bold; color: #7ab0ff;");
+
+        // Body with step cards
+        auto* body = new QWidget(section);
+        auto* bodyLayout = new QVBoxLayout(body);
+        bodyLayout->setContentsMargins(8, 0, 0, 0);
+        bodyLayout->setSpacing(6);
+
+        for (const SemanticStep& step : cluster.steps) {
+            auto* card = new QWidget(body);
+            auto* cardLayout = new QVBoxLayout(card);
+            cardLayout->setContentsMargins(8, 4, 8, 4);
+            cardLayout->setSpacing(2);
+
+            // Step title
+            auto* titleLabel = new QLabel(step.id + ": " + step.title, card);
+            titleLabel->setStyleSheet("font-weight: bold; color: #ddd;");
+            cardLayout->addWidget(titleLabel);
+
+            // Code snippet
+            if (!step.codeSnippet.isEmpty()) {
+                auto* snippetEdit = new QTextEdit(card);
+                snippetEdit->setPlainText(step.codeSnippet);
+                snippetEdit->setReadOnly(true);
+                snippetEdit->setMaximumHeight(80);
+                snippetEdit->setStyleSheet(
+                    "background: #1e1e28; color: #c0c0d0; border: 1px solid #3a3a45; "
+                    "font-family: monospace; font-size: 9px;");
+                cardLayout->addWidget(snippetEdit);
+            }
+
+            // Navigation button
+            auto* goBtn = new QPushButton("Перейти →", card);
+            connect(goBtn, &QPushButton::clicked, this, [this, step]() {
+                emit stepNavigationRequested(step.filePath, step.startLine);
+            });
+            cardLayout->addWidget(goBtn, 0, Qt::AlignRight);
+
+            // Tint card background from cluster color
+            QColor tint(cluster.color);
+            if (tint.isValid()) {
+                tint.setAlphaF(0.15);
+                card->setStyleSheet(QString("background: %1; border-radius: 4px;").arg(tint.name()));
+            }
+
+            bodyLayout->addWidget(card);
+        }
+
+        body->setVisible(ci == 0);
+
+        connect(header, &QToolButton::toggled, body, &QWidget::setVisible);
+        connect(header, &QToolButton::toggled, header, [header](bool checked) {
+            header->setText((checked ? "▼ " : "▶ ") + header->text().mid(2));
+        });
+
+        sectionLayout->addWidget(header);
+        sectionLayout->addWidget(body);
+
+        m_layout->insertWidget(m_layout->count() - 1, section); // Before stretch
+        m_clusterSections.append(section);
+    }
 }
 
 void DigestPanel::setupUI()

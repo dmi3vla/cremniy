@@ -28,6 +28,7 @@ void ClusterGroupNode::paint(QPainter* painter, const QStyleOptionGraphicsItem* 
 
     painter->save();
     painter->setRenderHint(QPainter::Antialiasing);
+    painter->setOpacity(m_appearOpacity);
 
     // Parse color
     QColor frameColor(m_color);
@@ -113,4 +114,32 @@ void ClusterGroupNode::updateBoundsFromChildren()
 
     m_bounds = QRectF(0, 0, width, height);
     update();
+}
+
+void ClusterGroupNode::playAppearAnimation(int durationMs)
+{
+    if (m_appearGroup) {
+        m_appearGroup->stop();
+        m_appearGroup->deleteLater();
+    }
+
+    m_appearOpacity = 0.0;
+
+    m_appearGroup = new QParallelAnimationGroup(this);
+
+    auto* opacityAnim = new QPropertyAnimation(this, "appearOpacity");
+    opacityAnim->setDuration(durationMs);
+    opacityAnim->setStartValue(0.0);
+    opacityAnim->setEndValue(1.0);
+    opacityAnim->setEasingCurve(QEasingCurve::OutCubic);
+
+    m_appearGroup->addAnimation(opacityAnim);
+    m_appearGroup->start(QAbstractAnimation::DeleteWhenStopped);
+}
+
+QVariant ClusterGroupNode::itemChange(GraphicsItemChange change, const QVariant& value)
+{
+    if (change == ItemPositionHasChanged && scene())
+        emit positionChanged();
+    return QGraphicsObject::itemChange(change, value);
 }
