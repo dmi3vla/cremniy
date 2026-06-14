@@ -11,6 +11,8 @@
 #include <QResizeEvent>
 #include <QTimer>
 #include <QSet>
+#include <QGraphicsOpacityEffect>
+#include <QPropertyAnimation>
 
 static bool registered = [](){
     ToolTabFactory::instance().registerTab("4", [](FileDataBuffer* buffer){
@@ -41,6 +43,7 @@ CanvasTab::CanvasTab(FileDataBuffer* buffer, QWidget* parent)
     auto* zoomOutBtn = createToolButton("-", "Zoom Out");
     auto* resetBtn = createToolButton("Reset", "Reset Zoom");
     auto* refreshBtn = createToolButton("Refresh", "Refresh Graph");
+    auto* toggleModeBtn = createToolButton("Mode", "Toggle Graph Mode");
 
     // Gource controls
     auto* playBtn = createToolButton("Play", "Play git history");
@@ -60,10 +63,12 @@ CanvasTab::CanvasTab(FileDataBuffer* buffer, QWidget* parent)
             m_parser->startParsing();
         }
     });
+    connect(toggleModeBtn, &QToolButton::clicked, this, &CanvasTab::toggleGraphMode);
 
     toolbarLayout->addWidget(zoomInBtn);
     toolbarLayout->addWidget(zoomOutBtn);
     toolbarLayout->addWidget(resetBtn);
+    toolbarLayout->addWidget(toggleModeBtn);
     toolbarLayout->addStretch();
     toolbarLayout->addWidget(playBtn);
     toolbarLayout->addWidget(pauseBtn);
@@ -493,5 +498,70 @@ void CanvasTab::stopNodePulsing()
     if (m_pulseTimer) {
         m_pulseTimer->stop();
     }
-    m_pulsingFilePath.clear();
+}
+
+void CanvasTab::toggleGraphMode()
+{
+    m_structuralMode = !m_structuralMode;
+    
+    // Fade out all current items
+    QGraphicsScene* scene = m_canvasView->scene();
+    if (!scene) return;
+    
+    QList<QGraphicsItem*> items = scene->items();
+    for (QGraphicsItem* item : items) {
+        QGraphicsOpacityEffect* effect = new QGraphicsOpacityEffect();
+        item->setGraphicsEffect(effect);
+        
+        QPropertyAnimation* anim = new QPropertyAnimation(effect, "opacity");
+        anim->setDuration(200);
+        anim->setStartValue(1.0);
+        anim->setEndValue(0.0);
+        anim->setEasingCurve(QEasingCurve::InCubic);
+        
+        connect(anim, &QPropertyAnimation::finished, this, [item]() {
+            item->setVisible(false);
+            item->setGraphicsEffect(nullptr);
+        });
+        
+        anim->start(QAbstractAnimation::DeleteWhenStopped);
+    }
+    
+    // After fade out, switch modes and fade in
+    QTimer::singleShot(250, this, [this]() {
+        if (m_structuralMode) {
+            // Switch to structural graph
+            // TODO: Load structural graph items
+            qDebug() << "Switching to Structural Graph mode";
+        } else {
+            // Switch to conceptual graph
+            // TODO: Load conceptual graph items
+            qDebug() << "Switching to Conceptual Graph mode";
+        }
+        
+        // Fade in new items
+        QGraphicsScene* scene = m_canvasView->scene();
+        if (!scene) return;
+        
+        QList<QGraphicsItem*> items = scene->items();
+        for (QGraphicsItem* item : items) {
+            item->setVisible(true);
+            item->setOpacity(0.0);
+            
+            QGraphicsOpacityEffect* effect = new QGraphicsOpacityEffect();
+            item->setGraphicsEffect(effect);
+            
+            QPropertyAnimation* anim = new QPropertyAnimation(effect, "opacity");
+            anim->setDuration(300);
+            anim->setStartValue(0.0);
+            anim->setEndValue(1.0);
+            anim->setEasingCurve(QEasingCurve::OutCubic);
+            
+            connect(anim, &QPropertyAnimation::finished, this, [item]() {
+                item->setGraphicsEffect(nullptr);
+            });
+            
+            anim->start(QAbstractAnimation::DeleteWhenStopped);
+        }
+    });
 }

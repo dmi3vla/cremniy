@@ -38,6 +38,8 @@ public slots:
     void startNodePulsing(const QString& filePath);
     void stopNodePulsing();
 
+    void toggleGraphMode();
+
 protected:
     void resizeEvent(QResizeEvent* event) override;
 
@@ -58,6 +60,8 @@ private:
     QMap<QString, FileNode*> m_nodes;
     QList<DependencyEdge*> m_edges;
     DependencyGraph m_currentGraph;
+
+    bool m_structuralMode = true;
 
     void buildGraph(const DependencyGraph& graph);
     void layoutNodesRadial(const DependencyGraph& graph);

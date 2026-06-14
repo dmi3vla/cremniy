@@ -5,8 +5,12 @@ target_sources(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/canvas_view.h
     ${CMAKE_CURRENT_SOURCE_DIR}/canvas_layout.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/canvas_layout.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/cluster_layout.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/cluster_layout.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dependency_parser.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dependency_parser.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/digest_panel.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/digest_panel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/gource_animator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/gource_animator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/layer_panel.cpp
