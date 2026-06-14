@@ -50,3 +50,24 @@
 - Сборка проекта пользователя
 - Отладчик запущенной программы
 - Просмотр памяти запущенной программы
+
+## Infinite Canvas (в процессе)
+
+Визуализация графа зависимостей с анимацией в стиле gource:
+
+- [x] Фаза 1 — Базовый канвас (QGraphicsView, pan/zoom/grid)
+- [x] Фаза 2 — Ядро канваса (FileNode, DependencyEdge, CanvasTab)
+- [x] Фаза 3 — Парсер зависимостей (async #include, радиальный layout, live-обновления)
+- [x] Фаза 4 — Интеграция с редактором (клик→редактор, hover preview, context menu)
+- [x] Фаза 5 — Gource-визуализация (git history, фильтры слоёв, миникарта)
+- [x] Фаза 6 — Тесты и документация
+
+## Concept Map / Семантический слой (в процессе)
+
+AI-генерируемая концептуальная карта кодовой базы, дополняющая структурный граф зависимостей семантическими кластерами (в стиле windsurf/codemap):
+
+- [x] Модель данных — SemanticMap/SemanticCluster/SemanticStep с JSON-сериализацией, SemanticMapStore (.cremniy/semantic_maps/)
+- [x] GenerateSemanticMapTool — инструмент агента с валидацией и retry (проверка filePath/lineNumber по реальным файлам)
+- [x] Визуализация на канвасе — ClusterGroupNode, StepNode, ConnectionEdge с подписями связей
+- [x] Пункт меню «Концептуальная карта»; переключатель «Структура/Концепт» в toolbar; DigestPanel со сворачиваемыми секциями
+- [x] Тесты и документация

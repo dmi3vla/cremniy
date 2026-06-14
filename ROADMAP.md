@@ -61,3 +61,13 @@ Dependency graph visualization with gource-style animation:
 - [x] Phase 4 — Editor integration (click→editor, hover preview, context menu)
 - [x] Phase 5 — Gource visualization (git history playback, filter layers, minimap)
 - [x] Phase 6 — Tests & documentation
+
+## Concept Map / Semantic Layer (in progress)
+
+AI-generated conceptual overview of the codebase, complementing the structural dependency graph with semantic clusters (windsurf/codemap-style):
+
+- [x] Data model — SemanticMap/SemanticCluster/SemanticStep with JSON serialization, SemanticMapStore (.cremniy/semantic_maps/)
+- [x] GenerateSemanticMapTool — agent tool with validation and retry (filePath/lineNumber verification against real files)
+- [x] Canvas visualization — ClusterGroupNode, StepNode, ConnectionEdge with labeled connections
+- [x] Tools → Concept Map menu entry; Structure/Concept toggle in Canvas toolbar; DigestPanel with collapsible Motivation/Details
+- [x] Tests & documentation

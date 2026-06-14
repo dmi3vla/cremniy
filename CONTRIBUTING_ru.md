@@ -69,3 +69,69 @@
 
 Все контрибьюторы будут добавлены в [ACKNOWLEDGEMENTS.md](ACKNOWLEDGEMENTS.md)  
 и упомянуты в конце каждого видео на [YouTube-канале](https://www.youtube.com/@igmunv)
+
+## Архитектура модуля Canvas
+
+Модуль бесконечного канваса находится в `src/ToolTabs/Canvas/` и следует паттерну ToolTab:
+
+```
+Canvas/
+  canvastab.h/cpp       — главная вкладка, построение графа, подключение сигналов
+  canvas_view.h/cpp     — QGraphicsView с pan/zoom/grid
+  canvas_layout.h/cpp   — радиальный дерево- layout по директориям
+  dependency_parser.h/cpp — async #include парсер (QThread worker)
+  gource_animator.h/cpp — чтение git log, управление воспроизведением
+  layer_panel.h/cpp     — переключатели типов рёбер (QSettings)
+  minimap.h/cpp         — оверлей миникарты 160x120
+  nodes/
+    file_node.h/cpp     — QGraphicsObject: hover, pulse, context menu
+    step_node.h/cpp      — узел шага семантической карты
+    cluster_group_node.h/cpp — контейнер кластера
+  edges/
+    dependency_edge.h/cpp — анимированные рёбра Безье
+    connection_edge.h/cpp — рёбра семантических связей
+  semantic_map.h/cpp    — модель данных SemanticMap/SemanticCluster/SemanticStep
+  semantic_map_store.h/cpp — хранилище карт в .cremniy/semantic_maps/
+  semantic_map_utils.h/cpp — утилиты (extractCodeSnippet)
+  cluster_layout.h/cpp  — layout кластеров
+  digest_panel.h/cpp    — панель digest с кластерами
+```
+
+### Запуск тестов канваса
+
+```bash
+cd tests && mkdir build && cd build
+cmake .. -DCMAKE_PREFIX_PATH=../../third_party/qt-install
+cmake --build . && ./test_dependency_parser
+```
+
+## Concept Map / Семантический слой
+
+Семантический слой добавляет AI-генерируемую концептуальную карту поверх структурного графа зависимостей.
+
+### Поток данных
+
+1. Пользователь вызывает через «Концептуальная карта» (Ctrl+Shift+M) или переключатель «Структура/Концепт» в toolbar канваса
+2. `CanvasTab` проверяет `SemanticMapStore::list()` на наличие кэшированной карты в `.cremniy/semantic_maps/`
+3. Если нет — эмитит `needsSemanticMapGeneration()`, который обрабатывает `IDEWindow::on_GenerateSemanticMap()`, вызывая `GenerateSemanticMapTool` через `AgentSession::toolRegistry()`
+4. `GenerateSemanticMapTool` отправляет файлы проекта LLM со структурированным системным промтом, валидирует ответ (реальные пути файлов, корректные номера строк), повторяет до 2 раз при ошибке валидации
+5. Валидный результат сохраняется через `SemanticMapStore::save()` и отображается через `CanvasTab::showSemanticMap()`
+
+### Добавление нового поля в SemanticStep/SemanticCluster
+
+1. Добавьте поле в `semantic_map.h`
+2. Обновите `toJson()`/`fromJson()` — новые поля должны быть опциональными в `fromJson` для обратной совместимости с кэшированными `.cremniy/semantic_maps/*.json`
+3. Обновите системный промт в `GenerateSemanticMapTool::buildSystemPrompt()` с описанием формата нового поля
+4. Обновите `validateSemanticMapJson()`, если поле требует валидации
+5. Обновите визуализацию (`StepNode`/`ClusterGroupNode`/`DigestPanel`) для отображения нового поля
+
+### Тестирование
+
+- `tests/test_semantic_map.cpp` — сериализация round-trip, `SemanticMapStore` save/load/list/remove/sanitize
+- `tests/test_generate_semantic_map_tool.cpp` — логика валидации (без сетевых вызовов — паттерн friend-класса через `CREMNIY_TESTING`)
+
+```bash
+cd tests && mkdir build && cd build
+cmake .. -DCMAKE_PREFIX_PATH=../../third_party/qt-install
+cmake --build . && ctest --output-on-failure
+```

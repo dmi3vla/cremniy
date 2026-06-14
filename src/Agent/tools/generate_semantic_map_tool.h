@@ -17,6 +17,9 @@ struct ValidationResult {
 class GenerateSemanticMapTool : public AgentTool
 {
     Q_OBJECT
+#ifdef CREMNIY_TESTING
+    friend class TestGenerateSemanticMapTool;
+#endif
 public:
     explicit GenerateSemanticMapTool(const QString& projectRoot,
                                      EndpointManager* endpointManager,
