@@ -6,6 +6,9 @@
 #include <QTextBrowser>
 #include <QVBoxLayout>
 
+class QEvent;
+class QMouseEvent;
+
 class ChatMessage : public QWidget
 {
     Q_OBJECT
@@ -27,6 +30,10 @@ public:
 signals:
     void sizeChanged();
 
+protected:
+    void mousePressEvent(QMouseEvent* event) override;
+    bool eventFilter(QObject* watched, QEvent* event) override;
+
 private:
     QString m_text;
     Role m_role;
@@ -36,6 +43,8 @@ private:
     QWidget* m_container = nullptr;
 
     void updateStyle();
+    void updateExpansionUi();
+    bool isCollapsible() const;
     QString roleColor() const;
     QString roleName() const;
 };

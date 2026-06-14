@@ -16,6 +16,7 @@ compile_commands.json
 secrets.ini
 **/secrets.ini
 keyssh
+keyssh.pub
 *.pem
 *.key
 .cremniy/chat_history.json
