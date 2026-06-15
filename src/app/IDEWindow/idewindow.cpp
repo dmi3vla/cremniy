@@ -286,8 +286,11 @@ CanvasTab* IDEWindow::canvasTab() const
         QWidget* tab = m_filesTabWidget->widget(i);
         if (!tab) continue;
         CanvasTab* canvas = tab->findChild<CanvasTab*>();
-        if (canvas)
+        if (canvas) {
+            // Ensure signals are connected (const_cast for one-time setup)
+            const_cast<IDEWindow*>(this)->ensureCanvasSignalsConnected(canvas);
             return canvas;
+        }
     }
     return nullptr;
 }
@@ -304,15 +307,24 @@ CanvasTab* IDEWindow::openOrCreateCanvasTab()
         if (!cppFiles.isEmpty()) {
             QString firstFile = srcDir.absoluteFilePath(cppFiles.first());
             m_filesTabWidget->openFile(firstFile, QFileInfo(firstFile).fileName());
-            CanvasTab* canvas = canvasTab();
-            if (canvas) {
-                connect(canvas, &CanvasTab::needsSemanticMapGeneration, this,
-                    [this]() { openOrGenerateConceptMap(); });
-            }
-            return canvas;
+            return canvasTab(); // canvasTab() calls ensureCanvasSignalsConnected internally
         }
     }
     return nullptr;
+}
+
+void IDEWindow::ensureCanvasSignalsConnected(CanvasTab* canvas)
+{
+    if (!canvas) return;
+    // Qt::UniqueConnection prevents duplicate connections even if called multiple times
+    connect(canvas, &CanvasTab::needsSemanticMapGeneration,
+            this, &IDEWindow::onConceptMapNeeded,
+            Qt::UniqueConnection);
+}
+
+void IDEWindow::onConceptMapNeeded()
+{
+    openOrGenerateConceptMap();
 }
 
 void IDEWindow::on_GenerateSemanticMap(){

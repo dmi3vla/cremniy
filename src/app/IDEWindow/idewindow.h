@@ -111,6 +111,10 @@ public slots:
      * @brief Generate Semantic Map
     */
     void on_GenerateSemanticMap();
+    void onConceptMapNeeded();
+
+private:
+    void ensureCanvasSignalsConnected(CanvasTab* canvas);
 
 
 signals:
