@@ -318,7 +318,7 @@ void IDEWindow::ensureCanvasSignalsConnected(CanvasTab* canvas)
 {
     if (!canvas) return;
     // Qt::UniqueConnection prevents duplicate connections even if called multiple times
-    connect(canvas, &CanvasTab::needsSemanticMapGeneration,
+    connect(canvas, &CanvasTab::needsCodemapGeneration,
             this, &IDEWindow::onConceptMapNeeded,
             Qt::UniqueConnection);
 }
@@ -343,8 +343,8 @@ void IDEWindow::openOrGenerateConceptMap(const QStringList& scope)
     CodemapStore store(projectPath());
 
     // If scope is empty, check for cached codemap
-    if (scope.isEmpty() && store.exists()) {
-        auto mapOpt = store.load();
+    if (scope.isEmpty()) {
+        auto mapOpt = store.loadLatest();
         if (mapOpt.has_value()) {
             canvas->showCodemap(mapOpt.value());
             return;
@@ -371,8 +371,6 @@ void IDEWindow::openOrGenerateConceptMap(const QStringList& scope)
     ToolRegistry* tools = session->toolRegistry();
     if (tools) {
         AgentTool* tool = tools->findTool("generate_codemap");
-        if (!tool)
-            tool = tools->findTool("generate_semantic_map"); // fallback
         if (tool) {
             connect(tool, &AgentTool::finished, this,
                 [this, canvas](const QString& result, bool isError) {

@@ -58,7 +58,7 @@ public slots:
 
 signals:
     void codemapShown(const Codemap& map);
-    void needsSemanticMapGeneration();
+    void needsCodemapGeneration();
     void stepNavigationRequested(const QString& filePath, int lineNumber);
 
 protected:

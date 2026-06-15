@@ -114,6 +114,17 @@ CanvasTab::CanvasTab(FileDataBuffer* buffer, QWidget* parent)
     m_animator = nullptr;
     m_parser = nullptr;
 
+    // DigestPanel (overlay right side, hidden by default)
+    m_digestPanel = new DigestPanel(this);
+    m_digestPanel->setFixedWidth(320);
+    m_digestPanel->move(width() - 330, 40);
+    m_digestPanel->raise();
+    m_digestPanel->setVisible(false);
+
+    connect(m_digestPanel, &DigestPanel::stepNavigationRequested, this,
+            &CanvasTab::stepNavigationRequested);
+    connect(this, &CanvasTab::codemapShown, m_digestPanel, &DigestPanel::showMap);
+
     connect(m_playBtn, &QToolButton::clicked, this, [this]() {
         if (m_animator) m_animator->play();
     });
@@ -507,6 +518,8 @@ void CanvasTab::resizeEvent(QResizeEvent* event)
         m_layerPanel->move(width() - 130, 40);
     if (m_minimap)
         m_minimap->move(width() - 170, height() - 130);
+    if (m_digestPanel)
+        m_digestPanel->move(width() - 330, 40);
 }
 
 void CanvasTab::startNodePulsing(const QString& filePath)
@@ -688,7 +701,7 @@ void CanvasTab::enterSemanticMode()
         }
         m_semanticBtn->setChecked(true);
         m_graphBtn->setChecked(false);
-        emit needsSemanticMapGeneration();
+        emit needsCodemapGeneration();
     }
 }
 
