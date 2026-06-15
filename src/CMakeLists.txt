@@ -97,8 +97,8 @@ qt_add_executable(${PROJECT_NAME}
     Agent/tools/tool_registry.h
     Agent/tools/agent_tools.cpp
     Agent/tools/agent_tools.h
-    Agent/tools/generate_semantic_map_tool.cpp
-    Agent/tools/generate_semantic_map_tool.h)
+    Agent/tools/generate_codemap_tool.cpp
+    Agent/tools/generate_codemap_tool.h)
 target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets

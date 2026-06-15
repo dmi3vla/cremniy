@@ -9,7 +9,7 @@
 #include <QVBoxLayout>
 #include <QPropertyAnimation>
 #include <QParallelAnimationGroup>
-#include "semantic_map.h"
+#include "codemap.h"
 
 class DigestPanel : public QWidget
 {
@@ -19,7 +19,7 @@ class DigestPanel : public QWidget
 public:
     explicit DigestPanel(QWidget* parent = nullptr);
 
-    void showMap(const SemanticMap& map);
+    void showMap(const Codemap& map);
     void setMotivation(const QString& motivation);
     void setDetails(const QString& details);
     void setCodeSnippet(const QString& snippet, const QString& filePath, int lineNumber);

@@ -8,7 +8,7 @@
 #include "gource_animator.h"
 #include "layer_panel.h"
 #include "minimap.h"
-#include "semantic_map.h"
+#include "codemap.h"
 #include <QVBoxLayout>
 #include <QToolButton>
 #include <QLabel>
@@ -33,7 +33,7 @@ public:
 
     DependencyGraph currentGraph() const { return m_currentGraph; }
 
-    void showSemanticMap(const SemanticMap& map);
+    void showCodemap(const Codemap& map);
     void showStructureGraph();
 
 public slots:
@@ -47,10 +47,10 @@ public slots:
     void stopNodePulsing();
 
     void toggleGraphMode();
-    void onSemanticMapReady(const SemanticMap& map);
+    void onCodemapReady(const Codemap& map);
 
 signals:
-    void semanticMapShown(const SemanticMap& map);
+    void codemapShown(const Codemap& map);
     void needsSemanticMapGeneration();
     void stepNavigationRequested(const QString& filePath, int lineNumber);
 
@@ -76,7 +76,7 @@ private:
     QMap<QString, FileNode*> m_nodes;
     QList<DependencyEdge*> m_edges;
     DependencyGraph m_currentGraph;
-    SemanticMap m_currentSemanticMap;
+    Codemap m_currentCodemap;
     LayoutMode m_layoutMode = LayoutMode::Radial;
 
     bool m_structuralMode = true;

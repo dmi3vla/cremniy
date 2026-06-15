@@ -113,31 +113,40 @@ cmake --build . && ./test_dependency_parser
 
 ## Concept Map / Semantic Layer
 
-The semantic layer adds an AI-generated conceptual overview on top of the structural dependency graph.
+The semantic layer adds an AI-generated conceptual overview on top of the structural dependency graph, using the Windsurf-compatible `.codemap` format.
 
 ### Data flow
 
-1. User triggers via Tools → Concept Map (Ctrl+Shift+M), or the Structure/Concept toggle in CanvasTab toolbar
-2. CanvasTab checks `SemanticMapStore::list()` for a cached map in `.cremniy/semantic_maps/`
-3. If absent, emits `needsSemanticMapGeneration()` — handled by `IDEWindow::on_GenerateSemanticMap()`, which invokes `GenerateSemanticMapTool` via `AgentSession::toolRegistry()`
-4. `GenerateSemanticMapTool` sends project files to the LLM with a structured system prompt, validates the response (real file paths, in-bounds line numbers), retries up to 2 times on validation failure
-5. Valid result is saved via `SemanticMapStore::save()` and rendered via `CanvasTab::showSemanticMap()`
+1. User triggers via Tools → Generate Codemap (Ctrl+Shift+M), the Structure/Concept toggle in CanvasTab toolbar, or the "Codemap" button in AI Assistant header
+2. `IDEWindow::openOrGenerateConceptMap()` checks `CodemapStore::exists()` for a cached `<project>.codemap` in the project root
+3. If absent, generates via `GenerateCodemapTool` through `AgentSession::toolRegistry()`
+4. `GenerateCodemapTool` sends project files to the LLM with a structured system prompt, validates the response (real file paths, in-bounds line numbers, lineContent match), retries up to 2 times
+5. Valid result is saved via `CodemapStore::save()` as `<project>.codemap` and rendered via `CanvasTab::showCodemap()`
 
-### Adding a new field to SemanticStep/SemanticCluster
+### .codemap format
 
-1. Add the field in `semantic_map.h`
-2. Update `toJson()`/`fromJson()` — make new fields optional in `fromJson` for backward compatibility with cached `.cremniy/semantic_maps/*.json`
-3. Update the system prompt in `GenerateSemanticMapTool::buildSystemPrompt()` to describe the new field's expected format
-4. Update `validateSemanticMapJson()` if the field requires validation
+Files are stored in Windsurf-compatible format with relative paths:
+- `codemap.h/cpp` — Codemap, CodemapTrace, CodemapLocation, CodemapMetadata
+- `codemap_store.h/cpp` — save/load to `<project>.codemap` in project root
+- `codemap_utils.h/cpp` — extractCodeSnippet, checkLocationStale
+
+Connections are stored in `mermaidDiagram` field (Mermaid flowchart syntax) rather than per-location arrays.
+
+### Adding a new field to CodemapTrace/CodemapLocation
+
+1. Add the field in `codemap.h`
+2. Update `toJson()`/`fromJson()` — make new fields optional in `fromJson` for backward compatibility
+3. Update the system prompt in `GenerateCodemapTool::buildSystemPrompt()`
+4. Update `validateCodemapJson()` if the field requires validation
 5. Update visualization (`StepNode`/`ClusterGroupNode`/`DigestPanel`) to display the new field
 
 ### Testing
 
-- `tests/test_semantic_map.cpp` — serialization round-trip, `SemanticMapStore` save/load/list/remove/sanitize
-- `tests/test_generate_semantic_map_tool.cpp` — validation logic (no network calls — uses `CREMNIY_TESTING` friend class pattern)
+- `tests/test_codemap.cpp` — serialization round-trip, path conversion, staleness check, `CodemapStore`
+- `tests/test_generate_codemap_tool.cpp` — validation logic (no network calls, `CREMNIY_TESTING` friend class)
 
 ```bash
 cd tests && mkdir build && cd build
 cmake .. -DCMAKE_PREFIX_PATH=../../third_party/qt-install
-cmake --build . && ctest --output-on-failure
+cmake --build . && ./test_dependency_parser && ./test_codemap && ./test_generate_codemap_tool
 ```

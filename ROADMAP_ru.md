@@ -66,8 +66,9 @@
 
 AI-генерируемая концептуальная карта кодовой базы, дополняющая структурный граф зависимостей семантическими кластерами (в стиле windsurf/codemap):
 
-- [x] Модель данных — SemanticMap/SemanticCluster/SemanticStep с JSON-сериализацией, SemanticMapStore (.cremniy/semantic_maps/)
-- [x] GenerateSemanticMapTool — инструмент агента с валидацией и retry (проверка filePath/lineNumber по реальным файлам)
-- [x] Визуализация на канвасе — ClusterGroupNode, StepNode, ConnectionEdge с подписями связей
-- [x] Пункт меню «Концептуальная карта»; переключатель «Структура/Концепт» в toolbar; DigestPanel со сворачиваемыми секциями
+- [x] Модель данных — Codemap/CodemapTrace/CodemapLocation в формате .codemap (совместимо с Windsurf)
+- [x] GenerateCodemapTool — инструмент агента с валидацией, retry, проверкой lineContent
+- [x] Визуализация на канвасе — ClusterGroupNode, StepNode, ConnectionEdge (связи из mermaidDiagram)
+- [x] Пункт меню «Codemap»; переключатель «Структура/Концепт» в toolbar; DigestPanel с per-trace Motivation/Details
+- [x] CodemapStore — <project>.codemap в корне проекта (переносимые относительные пути)
 - [x] Тесты и документация

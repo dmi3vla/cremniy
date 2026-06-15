@@ -6,8 +6,8 @@
 #include "edges/connection_edge.h"
 #include "cluster_layout.h"
 #include "digest_panel.h"
-#include "semantic_map.h"
-#include "semantic_map_store.h"
+#include "codemap.h"
+#include "codemap_store.h"
 #include "core/ToolTabFactory.h"
 #include <QToolButton>
 #include <QHBoxLayout>
@@ -513,9 +513,9 @@ void CanvasTab::stopNodePulsing()
     }
 }
 
-void CanvasTab::showSemanticMap(const SemanticMap& map)
+void CanvasTab::showCodemap(const Codemap& map)
 {
-    m_currentSemanticMap = map;
+    m_currentCodemap = map;
     m_layoutMode = LayoutMode::LinearChain;
     m_structuralMode = false;
     m_generatingConceptMap = false;
@@ -523,31 +523,37 @@ void CanvasTab::showSemanticMap(const SemanticMap& map)
     clearCanvas();
     clearSemanticNodes();
 
-    if (map.clusters.isEmpty())
+    if (map.traces.isEmpty())
         return;
 
-    ClusterLayout clusterLayout;
+    // Build a lookup from location id to StepNode for connections
+    QMap<QString, StepNode*> stepNodeMap;
 
-    for (const auto& cluster : map.clusters) {
-        auto* clusterNode = new ClusterGroupNode(cluster.id, cluster.title, cluster.color);
+    for (const auto& trace : map.traces) {
+        QColor traceColor(trace.color);
+        if (!traceColor.isValid())
+            traceColor = QColor(100, 150, 200);
+
+        auto* clusterNode = new ClusterGroupNode(trace.id, trace.title, trace.color);
         m_canvasView->scene()->addItem(clusterNode);
         m_clusterNodes.append(clusterNode);
 
         // Create StepNodes inside each cluster
-        for (const auto& step : cluster.steps) {
-            auto* stepNode = new StepNode(step.id, step.title, step.codeSnippet,
-                                           step.filePath, step.startLine, clusterNode);
+        for (const auto& loc : trace.locations) {
+            auto* stepNode = new StepNode(loc.id, loc.title, loc.codeSnippet,
+                                           loc.path, loc.lineNumber, clusterNode);
             clusterNode->addChild(stepNode);
             connect(stepNode, &StepNode::stepClicked, this, &CanvasTab::onStepClicked);
+            stepNodeMap[loc.id] = stepNode;
         }
 
-        // Arrange steps within cluster using CanvasLayout::computeLinearChain
+        // Arrange steps within cluster
+        QStringList locIds;
+        for (const auto& loc : trace.locations)
+            locIds.append(loc.id);
+
         QMap<QString, QPointF> chainPositions = m_layout->computeLinearChain(
-            [cluster]() {
-                QStringList ids;
-                for (const auto& s : cluster.steps) ids.append(s.id);
-                return ids;
-            }(), 120.0, 50.0, Qt::Vertical);
+            locIds, 120.0, 50.0, Qt::Vertical);
 
         QMap<QString, QGraphicsObject*> stepObjs;
         for (auto* child : clusterNode->children())
@@ -557,42 +563,17 @@ void CanvasTab::showSemanticMap(const SemanticMap& map)
         clusterNode->updateBoundsFromChildren();
     }
 
-    // Create ConnectionEdges between steps
-    for (const auto& cluster : map.clusters) {
-        for (const auto& step : cluster.steps) {
-            StepNode* sourceNode = nullptr;
-            for (auto* cn : m_clusterNodes) {
-                for (auto* child : cn->children()) {
-                    if (child->stepId() == step.id) {
-                        sourceNode = child;
-                        break;
-                    }
-                }
-                if (sourceNode) break;
-            }
-            if (!sourceNode) continue;
+    // Create ConnectionEdges from mermaidDiagram
+    QList<Codemap::MermaidEdge> connections = map.parsedConnections();
+    for (const auto& edge : connections) {
+        StepNode* source = stepNodeMap.value(edge.from, nullptr);
+        StepNode* target = stepNodeMap.value(edge.to, nullptr);
+        if (!source || !target) continue;
 
-            for (int i = 0; i < step.connections.size(); ++i) {
-                const QString& targetId = step.connections[i];
-                StepNode* targetNode = nullptr;
-                for (auto* cn : m_clusterNodes) {
-                    for (auto* child : cn->children()) {
-                        if (child->stepId() == targetId) {
-                            targetNode = child;
-                            break;
-                        }
-                    }
-                    if (targetNode) break;
-                }
-                if (!targetNode) continue;
-
-                QString label = (i < step.connectionLabels.size()) ? step.connectionLabels[i] : "";
-                auto* edge = new ConnectionEdge(sourceNode, targetNode, label);
-                m_canvasView->scene()->addItem(edge);
-                m_connectionEdges.append(edge);
-                edge->playAppearAnimation();
-            }
-        }
+        auto* connEdge = new ConnectionEdge(source, target, edge.label);
+        m_canvasView->scene()->addItem(connEdge);
+        m_connectionEdges.append(connEdge);
+        connEdge->playAppearAnimation();
     }
 
     // Animate cluster positions
@@ -624,7 +605,7 @@ void CanvasTab::showSemanticMap(const SemanticMap& map)
         }
     });
 
-    emit semanticMapShown(map);
+    emit codemapShown(map);
 }
 
 void CanvasTab::showStructureGraph()
@@ -654,29 +635,25 @@ void CanvasTab::onStepClicked(const QString& filePath, int lineNumber)
     emit stepNavigationRequested(filePath, lineNumber);
 }
 
-void CanvasTab::onSemanticMapReady(const SemanticMap& map)
+void CanvasTab::onCodemapReady(const Codemap& map)
 {
     m_generatingConceptMap = false;
-    showSemanticMap(map);
+    showCodemap(map);
 }
 
 void CanvasTab::toggleGraphMode()
 {
     if (m_structuralMode) {
         // Switch to concept mode
-        if (!m_currentSemanticMap.clusters.isEmpty()) {
-            showSemanticMap(m_currentSemanticMap);
+        if (!m_currentCodemap.traces.isEmpty()) {
+            showCodemap(m_currentCodemap);
         } else {
-            // Check for saved map
-            SemanticMapStore store(m_projectPath);
-            auto maps = store.list();
-            if (!maps.isEmpty()) {
-                SemanticMapStore::MapMeta latest = maps.first();
-                for (const auto& m : maps)
-                    if (m.createdAt > latest.createdAt) latest = m;
-                auto mapOpt = store.load(latest.id);
+            // Check for saved codemap
+            CodemapStore store(m_projectPath);
+            if (store.exists()) {
+                auto mapOpt = store.load();
                 if (mapOpt.has_value()) {
-                    showSemanticMap(mapOpt.value());
+                    showCodemap(mapOpt.value());
                     return;
                 }
             }

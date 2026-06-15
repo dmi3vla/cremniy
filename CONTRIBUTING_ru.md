@@ -107,31 +107,40 @@ cmake --build . && ./test_dependency_parser
 
 ## Concept Map / Семантический слой
 
-Семантический слой добавляет AI-генерируемую концептуальную карту поверх структурного графа зависимостей.
+Семантический слой добавляет AI-генерируемую концептуальную карту поверх структурного графа зависимостей в формате `.codemap` (совместимо с Windsurf).
 
 ### Поток данных
 
-1. Пользователь вызывает через «Концептуальная карта» (Ctrl+Shift+M) или переключатель «Структура/Концепт» в toolbar канваса
-2. `CanvasTab` проверяет `SemanticMapStore::list()` на наличие кэшированной карты в `.cremniy/semantic_maps/`
-3. Если нет — эмитит `needsSemanticMapGeneration()`, который обрабатывает `IDEWindow::on_GenerateSemanticMap()`, вызывая `GenerateSemanticMapTool` через `AgentSession::toolRegistry()`
-4. `GenerateSemanticMapTool` отправляет файлы проекта LLM со структурированным системным промтом, валидирует ответ (реальные пути файлов, корректные номера строк), повторяет до 2 раз при ошибке валидации
-5. Валидный результат сохраняется через `SemanticMapStore::save()` и отображается через `CanvasTab::showSemanticMap()`
+1. Пользователь вызывает через «Generate Codemap» (Ctrl+Shift+M), переключатель «Структура/Концепт» в toolbar канваса или кнопку «Codemap» в header AI Assistant
+2. `IDEWindow::openOrGenerateConceptMap()` проверяет `CodemapStore::exists()` на наличие кэшированного `<project>.codemap` в корне проекта
+3. Если нет — генерирует через `GenerateCodemapTool` через `AgentSession::toolRegistry()`
+4. `GenerateCodemapTool` отправляет файлы проекта LLM со структурированным системным промтом, валидирует ответ (реальные пути, корректные номера строк, совпадение lineContent), повторяет до 2 раз
+5. Валидный результат сохраняется через `CodemapStore::save()` как `<project>.codemap` и отображается через `CanvasTab::showCodemap()`
 
-### Добавление нового поля в SemanticStep/SemanticCluster
+### Формат .codemap
 
-1. Добавьте поле в `semantic_map.h`
-2. Обновите `toJson()`/`fromJson()` — новые поля должны быть опциональными в `fromJson` для обратной совместимости с кэшированными `.cremniy/semantic_maps/*.json`
-3. Обновите системный промт в `GenerateSemanticMapTool::buildSystemPrompt()` с описанием формата нового поля
-4. Обновите `validateSemanticMapJson()`, если поле требует валидации
-5. Обновите визуализацию (`StepNode`/`ClusterGroupNode`/`DigestPanel`) для отображения нового поля
+Файлы хранятся в формате, совместимом с Windsurf, с относительными путями:
+- `codemap.h/cpp` — Codemap, CodemapTrace, CodemapLocation, CodemapMetadata
+- `codemap_store.h/cpp` — сохранение/загрузка в `<project>.codemap` в корне проекта
+- `codemap_utils.h/cpp` — extractCodeSnippet, checkLocationStale
+
+Связи хранятся в поле `mermaidDiagram` (синтаксис Mermaid flowchart), а не в массивах на каждый location.
+
+### Добавление нового поля в CodemapTrace/CodemapLocation
+
+1. Добавьте поле в `codemap.h`
+2. Обновите `toJson()`/`fromJson()` — новые поля должны быть опциональными в `fromJson`
+3. Обновите системный промт в `GenerateCodemapTool::buildSystemPrompt()`
+4. Обновите `validateCodemapJson()`, если поле требует валидации
+5. Обновите визуализацию (`StepNode`/`ClusterGroupNode`/`DigestPanel`)
 
 ### Тестирование
 
-- `tests/test_semantic_map.cpp` — сериализация round-trip, `SemanticMapStore` save/load/list/remove/sanitize
-- `tests/test_generate_semantic_map_tool.cpp` — логика валидации (без сетевых вызовов — паттерн friend-класса через `CREMNIY_TESTING`)
+- `tests/test_codemap.cpp` — сериализация round-trip, конвертация путей, проверка staleness, `CodemapStore`
+- `tests/test_generate_codemap_tool.cpp` — логика валидации (без сетевых вызовов, friend-класс через `CREMNIY_TESTING`)
 
 ```bash
 cd tests && mkdir build && cd build
 cmake .. -DCMAKE_PREFIX_PATH=../../third_party/qt-install
-cmake --build . && ctest --output-on-failure
+cmake --build . && ./test_dependency_parser && ./test_codemap && ./test_generate_codemap_tool
 ```

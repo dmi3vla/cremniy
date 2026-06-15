@@ -56,10 +56,10 @@ DigestPanel::DigestPanel(QWidget* parent)
     )");
 }
 
-void DigestPanel::showMap(const SemanticMap& map)
+void DigestPanel::showMap(const Codemap& map)
 {
-    setMotivation(map.motivation);
-    setDetails(map.details);
+    setMotivation(map.title);
+    setDetails(QString("%1 traces").arg(map.traces.size()));
 
     // Clear old cluster sections
     for (QWidget* w : m_clusterSections) {
@@ -68,9 +68,9 @@ void DigestPanel::showMap(const SemanticMap& map)
     }
     m_clusterSections.clear();
 
-    // Create collapsible sections for each cluster
-    for (int ci = 0; ci < map.clusters.size(); ++ci) {
-        const SemanticCluster& cluster = map.clusters[ci];
+    // Create collapsible sections for each trace
+    for (int ci = 0; ci < map.traces.size(); ++ci) {
+        const CodemapTrace& trace = map.traces[ci];
 
         auto* section = new QWidget(this);
         auto* sectionLayout = new QVBoxLayout(section);
@@ -79,32 +79,54 @@ void DigestPanel::showMap(const SemanticMap& map)
 
         // Header (collapsible toggle)
         auto* header = new QToolButton(section);
-        header->setText((ci == 0 ? "▼ " : "▶ ") + cluster.title);
+        header->setText((ci == 0 ? "▼ " : "▶ ") + trace.title);
         header->setCheckable(true);
         header->setChecked(ci == 0);
         header->setStyleSheet("text-align: left; font-weight: bold; color: #7ab0ff;");
 
-        // Body with step cards
+        // Body with location cards
         auto* body = new QWidget(section);
         auto* bodyLayout = new QVBoxLayout(body);
         bodyLayout->setContentsMargins(8, 0, 0, 0);
         bodyLayout->setSpacing(6);
 
-        for (const SemanticStep& step : cluster.steps) {
+        // Per-trace motivation/details from traceGuide
+        QString motivation = trace.motivationText();
+        QString details = trace.detailsText();
+        if (!motivation.isEmpty() || !details.isEmpty()) {
+            auto* guideLabel = new QLabel(body);
+            QString guideText;
+            if (!motivation.isEmpty())
+                guideText += "<b>Motivation:</b> " + motivation;
+            if (!details.isEmpty()) {
+                if (!guideText.isEmpty()) guideText += "<br>";
+                guideText += "<b>Details:</b> " + details;
+            }
+            guideLabel->setText(guideText);
+            guideLabel->setWordWrap(true);
+            guideLabel->setStyleSheet("color: #aaa; font-size: 10px; padding: 4px;");
+            bodyLayout->addWidget(guideLabel);
+        }
+
+        for (const CodemapLocation& loc : trace.locations) {
             auto* card = new QWidget(body);
             auto* cardLayout = new QVBoxLayout(card);
             cardLayout->setContentsMargins(8, 4, 8, 4);
             cardLayout->setSpacing(2);
 
-            // Step title
-            auto* titleLabel = new QLabel(step.id + ": " + step.title, card);
-            titleLabel->setStyleSheet("font-weight: bold; color: #ddd;");
+            // Location title
+            QString titleText = loc.id + ": " + loc.title;
+            if (loc.isStale)
+                titleText += " ⚠ stale";
+            auto* titleLabel = new QLabel(titleText, card);
+            titleLabel->setStyleSheet(QString("font-weight: bold; color: %1;")
+                .arg(loc.isStale ? "#ffaa44" : "#ddd"));
             cardLayout->addWidget(titleLabel);
 
             // Code snippet
-            if (!step.codeSnippet.isEmpty()) {
+            if (!loc.codeSnippet.isEmpty()) {
                 auto* snippetEdit = new QTextEdit(card);
-                snippetEdit->setPlainText(step.codeSnippet);
+                snippetEdit->setPlainText(loc.codeSnippet);
                 snippetEdit->setReadOnly(true);
                 snippetEdit->setMaximumHeight(80);
                 snippetEdit->setStyleSheet(
@@ -115,13 +137,13 @@ void DigestPanel::showMap(const SemanticMap& map)
 
             // Navigation button
             auto* goBtn = new QPushButton("Перейти →", card);
-            connect(goBtn, &QPushButton::clicked, this, [this, step]() {
-                emit stepNavigationRequested(step.filePath, step.startLine);
+            connect(goBtn, &QPushButton::clicked, this, [this, loc]() {
+                emit stepNavigationRequested(loc.path, loc.lineNumber);
             });
             cardLayout->addWidget(goBtn, 0, Qt::AlignRight);
 
-            // Tint card background from cluster color
-            QColor tint(cluster.color);
+            // Tint card background from trace color
+            QColor tint(trace.color);
             if (tint.isValid()) {
                 tint.setAlphaF(0.15);
                 card->setStyleSheet(QString("background: %1; border-radius: 4px;").arg(tint.name()));

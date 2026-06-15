@@ -66,8 +66,9 @@ Dependency graph visualization with gource-style animation:
 
 AI-generated conceptual overview of the codebase, complementing the structural dependency graph with semantic clusters (windsurf/codemap-style):
 
-- [x] Data model — SemanticMap/SemanticCluster/SemanticStep with JSON serialization, SemanticMapStore (.cremniy/semantic_maps/)
-- [x] GenerateSemanticMapTool — agent tool with validation and retry (filePath/lineNumber verification against real files)
-- [x] Canvas visualization — ClusterGroupNode, StepNode, ConnectionEdge with labeled connections
-- [x] Tools → Concept Map menu entry; Structure/Concept toggle in Canvas toolbar; DigestPanel with collapsible Motivation/Details
+- [x] Data model — Codemap/CodemapTrace/CodemapLocation with Windsurf-compatible .codemap format
+- [x] GenerateCodemapTool — agent tool with validation, retry, lineContent staleness check
+- [x] Canvas visualization — ClusterGroupNode, StepNode, ConnectionEdge (connections from mermaidDiagram)
+- [x] Tools → Codemap menu entry; Structure/Concept toggle in Canvas toolbar; DigestPanel with per-trace Motivation/Details
+- [x] CodemapStore — <project>.codemap in project root (portable, relative paths)
 - [x] Tests & documentation

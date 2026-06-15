@@ -6,7 +6,7 @@
 #include "tools/agent_tool.h"
 #include "tools/tool_registry.h"
 #include "tools/agent_tools.h"
-#include "tools/generate_semantic_map_tool.h"
+#include "tools/generate_codemap_tool.h"
 #include "endpoint_manager.h"
 
 #include <QJsonDocument>
@@ -40,7 +40,7 @@ AgentSession::AgentSession(const QString& projectRoot, ChatPanel* chatPanel, QOb
     m_tools->registerTool(new GetDependenciesTool(this));
     m_tools->registerTool(new OpenFileTool(this));
     m_tools->registerTool(new HighlightDependenciesTool(this));
-    m_tools->registerTool(new GenerateSemanticMapTool(m_projectRoot, &EndpointManager::instance(), this));
+    m_tools->registerTool(new GenerateCodemapTool(m_projectRoot, &EndpointManager::instance(), this));
 
     // Initialize conversation history
     m_history->setProjectRoot(m_projectRoot);

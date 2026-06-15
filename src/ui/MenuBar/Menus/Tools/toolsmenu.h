@@ -10,7 +10,7 @@ class ToolsMenu : public BaseMenu
     Q_OBJECT
 private:
     QAction* m_reverseCalculator;
-    QAction* m_generateSemanticMap;
+    QAction* m_generateCodemap;
     IDEWindow* m_ideWindow = nullptr;
 public:
     ToolsMenu();

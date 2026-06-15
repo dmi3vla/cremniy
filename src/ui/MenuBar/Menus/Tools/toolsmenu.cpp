@@ -6,8 +6,8 @@
 #include "Agent/tools/tool_registry.h"
 #include "Agent/tools/agent_tool.h"
 #include "ToolTabs/Canvas/canvastab.h"
-#include "ToolTabs/Canvas/semantic_map.h"
-#include "ToolTabs/Canvas/semantic_map_store.h"
+#include "ToolTabs/Canvas/codemap.h"
+#include "ToolTabs/Canvas/codemap_store.h"
 #include <QKeySequence>
 #include <QStatusBar>
 #include <QJsonDocument>
@@ -25,15 +25,15 @@ ToolsMenu::ToolsMenu() : BaseMenu("Tools") {
 
   this->addSeparator();
 
-  m_generateSemanticMap = new QAction("Generate Semantic Map", this);
-  this->addAction(m_generateSemanticMap);
+  m_generateCodemap = new QAction("Generate Codemap", this);
+  this->addAction(m_generateCodemap);
 }
 
 void ToolsMenu::setupConnections(IDEWindow *ideWind) {
   m_ideWindow = ideWind;
   connect(m_reverseCalculator, &QAction::triggered, this,
           &ToolsMenu::on_Open_ReverseCalculator);
-  connect(m_generateSemanticMap, &QAction::triggered, this,
+  connect(m_generateCodemap, &QAction::triggered, this,
           &ToolsMenu::on_GenerateSemanticMap);
 }
 

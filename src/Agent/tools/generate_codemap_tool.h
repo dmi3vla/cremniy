@@ -1,31 +1,31 @@
-#ifndef GENERATE_SEMANTIC_MAP_TOOL_H
-#define GENERATE_SEMANTIC_MAP_TOOL_H
+#ifndef GENERATE_CODEMAP_TOOL_H
+#define GENERATE_CODEMAP_TOOL_H
 
 #include "agent_tool.h"
-#include "../ToolTabs/Canvas/semantic_map.h"
+#include "../ToolTabs/Canvas/codemap.h"
 #include <QStringList>
 
 class LLMClient;
 class EndpointManager;
 
-struct ValidationResult {
+struct CodemapValidationResult {
     bool ok = false;
-    SemanticMap map;
+    Codemap map;
     QString errorReason;
 };
 
-class GenerateSemanticMapTool : public AgentTool
+class GenerateCodemapTool : public AgentTool
 {
     Q_OBJECT
 #ifdef CREMNIY_TESTING
-    friend class TestGenerateSemanticMapTool;
+    friend class TestGenerateCodemapTool;
 #endif
 public:
-    explicit GenerateSemanticMapTool(const QString& projectRoot,
-                                     EndpointManager* endpointManager,
-                                     QObject* parent = nullptr);
+    explicit GenerateCodemapTool(const QString& projectRoot,
+                                  EndpointManager* endpointManager,
+                                  QObject* parent = nullptr);
 
-    QString name() const override { return "generate_semantic_map"; }
+    QString name() const override { return "generate_codemap"; }
     QString description() const override;
     QJsonObject parameters() const override;
     void execute(const QJsonObject& args) override;
@@ -51,8 +51,9 @@ private:
     QString buildUserPrompt(const QJsonObject& args) const;
     void sendGenerationRequest(const QString& systemPrompt, const QString& userPrompt);
     QString gatherFileContents(const QStringList& scope) const;
-    ValidationResult validateSemanticMapJson(const QString& rawJson) const;
+    CodemapValidationResult validateCodemapJson(const QString& rawJson) const;
     int countFileLines(const QString& fullPath) const;
+    QString readLineContent(const QString& fullPath, int lineNumber) const;
 };
 
-#endif // GENERATE_SEMANTIC_MAP_TOOL_H
+#endif // GENERATE_CODEMAP_TOOL_H

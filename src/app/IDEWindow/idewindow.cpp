@@ -13,7 +13,8 @@
 #include "Agent/tools/tool_registry.h"
 #include "Agent/tools/agent_tool.h"
 #include "ToolTabs/Canvas/canvastab.h"
-#include "ToolTabs/Canvas/semantic_map_store.h"
+#include "ToolTabs/Canvas/codemap.h"
+#include "ToolTabs/Canvas/codemap_store.h"
 #include <QJsonDocument>
 
 IDEWindow::IDEWindow(QString ProjectPath, QWidget *parent)
@@ -339,22 +340,14 @@ void IDEWindow::openOrGenerateConceptMap(const QStringList& scope)
         if (!canvas) return;
     }
 
-    SemanticMapStore store(projectPath());
+    CodemapStore store(projectPath());
 
-    // If scope is empty, check for cached map
-    if (scope.isEmpty()) {
-        QList<SemanticMapStore::MapMeta> maps = store.list();
-        if (!maps.isEmpty()) {
-            SemanticMapStore::MapMeta latest = maps.first();
-            for (const auto& m : maps) {
-                if (m.createdAt > latest.createdAt)
-                    latest = m;
-            }
-            auto mapOpt = store.load(latest.id);
-            if (mapOpt.has_value()) {
-                canvas->showSemanticMap(mapOpt.value());
-                return;
-            }
+    // If scope is empty, check for cached codemap
+    if (scope.isEmpty() && store.exists()) {
+        auto mapOpt = store.load();
+        if (mapOpt.has_value()) {
+            canvas->showCodemap(mapOpt.value());
+            return;
         }
     }
 
@@ -366,7 +359,7 @@ void IDEWindow::openOrGenerateConceptMap(const QStringList& scope)
     if (effectiveScope.isEmpty())
         effectiveScope = canvas->currentGraph().allFiles;
 
-    statusBar()->showMessage("Generating concept map via AI...");
+    statusBar()->showMessage("Generating codemap via AI...");
     m_chatPanel->setCodemapButtonState(true);
 
     QJsonObject args;
@@ -377,20 +370,26 @@ void IDEWindow::openOrGenerateConceptMap(const QStringList& scope)
 
     ToolRegistry* tools = session->toolRegistry();
     if (tools) {
-        AgentTool* tool = tools->findTool("generate_semantic_map");
+        AgentTool* tool = tools->findTool("generate_codemap");
+        if (!tool)
+            tool = tools->findTool("generate_semantic_map"); // fallback
         if (tool) {
             connect(tool, &AgentTool::finished, this,
                 [this, canvas](const QString& result, bool isError) {
                     statusBar()->clearMessage();
                     m_chatPanel->setCodemapButtonState(false);
                     if (isError) {
-                        statusBar()->showMessage("Concept map generation failed: " + result, 5000);
+                        statusBar()->showMessage("Codemap generation failed: " + result, 5000);
                         return;
                     }
                     QJsonDocument doc = QJsonDocument::fromJson(result.toUtf8());
                     if (doc.isObject()) {
-                        SemanticMap map = SemanticMap::fromJson(doc.object());
-                        canvas->onSemanticMapReady(map);
+                        Codemap map = Codemap::fromJson(doc.object());
+                        map.normalizeAbsolutePaths(projectPath());
+                        map.populateRuntimeFields(projectPath());
+                        CodemapStore store(projectPath());
+                        store.save(map);
+                        canvas->onCodemapReady(map);
                     }
                 }, Qt::SingleShotConnection);
             tool->execute(args);
@@ -398,6 +397,6 @@ void IDEWindow::openOrGenerateConceptMap(const QStringList& scope)
         }
     }
 
-    statusBar()->showMessage("AI agent not available for concept map generation", 5000);
+    statusBar()->showMessage("AI agent not available for codemap generation", 5000);
     m_chatPanel->setCodemapButtonState(false);
 }
