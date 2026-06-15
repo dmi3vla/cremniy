@@ -1,0 +1,628 @@
+  Cursor Agent
+  v2026.06.15-03-48-54-da23e37
+  Use /plan to plan execution and reach the right outcome faster.
+
+                                                                                                                                                     
+  нужно ревью проекта по сессии session-ses_1447.md                                                                                                  
+                                                                                                                                                     
+
+  Читаю сессию и структуру проекта для ревью.
+
+    Read, globbed 1 file, 1 glob
+    Read session-ses_1447.md
+    Globbed "**/*" in .
+
+  Файл сессии большой — читаю ключевые разделы и ищу в нём структуру изменений.
+
+    Read, grepped 4 files, 2 greps
+    … 3 earlier items hidden
+    Read CONTRIBUTING_ru.md
+    Read session-ses_1447.md lines 1-300
+    Grepped "...|TODO|T\d+|заверш|готов|ошибк|проблем" in session-ses_1447.md
+
+  $ cd /home/resu/Documents/dev/cremniy && git log --oneline -20 && echo "---" && git diff --stat HEAD~5..HEAD 2>/dev/null | tail -20 10.0s
+    … truncated (39 more lines) · ctrl+o to expand
+     tests/test_generate_codemap_tool.cpp               |  194 +
+     36 files changed, 6067 insertions(+), 4478 deletions(-)
+
+  Проверяю реализацию в коде и запускаю тесты.
+
+    Grepped, read 1 grep, 2 files
+    Grepped "...ignalsConnected|generate_semantic_map" in src
+    Read src/app/IDEWindow/idewindow.cpp lines 280-429
+    Read src/ToolTabs/Canvas/codemap.h
+
+  $ cd /home/resu/Documents/dev/cremniy/tests/build && ./test_codemap 2>&1 | tail -5 && ./test_generate_codemap_tool 2>&1 | tail -5 &&
+    ./test_dependency_parser 2>&1 | tail -5 5.1s
+    … truncated (13 more lines) · ctrl+o to expand
+    Totals: 8 passed, 0 failed, 0 skipped, 0 blacklisted, 8ms
+    ********* Finished testing of TestDependencyParser *********
+
+    Read, grepped 5 files, 3 greps
+    … 5 earlier items hidden
+    Read src/ToolTabs/Canvas/canvastab.cpp lines 630-709
+    Read src/app/IDEWindow/idewindow.cpp lines 95-224
+    Grepped "setCodemapButtonState|codemapRequested" in src
+
+  $ cd /home/resu/Documents/dev/cremniy && cmake --build build --parallel 2 2>&1 | tail -15 11s
+    … truncated (8 more lines) · ctrl+o to expand
+    [ 33%] Built target cremniy_autogen
+    [100%] Built target cremniy
+
+    Read 2 files
+    Read src/ToolTabs/Canvas/codemap.cpp
+    Read src/ToolTabs/Canvas/canvastab.cpp lines 500-579
+
+  $ cd /home/resu/Documents/dev/cremniy && git show a6fb93b --stat && echo "---" && git show eb31fc9 --stat && echo "---" && wc -l
+    session-ses_1447.md && git diff --stat session-ses_1447.md 2>/dev/null | tail -3 4.0s
+    … truncated (25 more lines) · ctrl+o to expand
+     session-ses_1447.md | 6864 ++++++++++++++++++++-------------------------------
+     1 file changed, 2657 insertions(+), 4207 deletions(-)
+
+    Grepped, read 4 greps, 10 files
+    … 11 earlier items hidden
+    Grepped "session-ses" in .
+    Grepped "RPATH|INSTALL_RPATH|BUILD_RPATH" in src
+    Read src/Agent/chat_panel.cpp lines 130-159
+
+  Ревью проекта по сессии session-ses_1447.md
+
+  Сессия «Зависание в --continue» (12–15 июня 2026) охватывает два крупных блока работы: T12 (единый контроллер codemap + кнопка в ChatPanel) и
+  T13 (миграция с SemanticMap на формат Windsurf .codemap). Ниже — оценка результата по коду в репозитории, а не только по логу сессии.
+
+  ────────────────────────────────────────
+
+  Что сделано
+
+  ┌──────────────────┬──────────────────────┬──────────────────────────────────────────────────────────────────────────────────────┐
+  │ Задача           │ Коммит               │ Суть                                                                                 │
+  ├──────────────────┼──────────────────────┼──────────────────────────────────────────────────────────────────────────────────────┤
+  │ T12 — UX codemap │ eb31fc9 (Codemaps 1) │ openOrGenerateConceptMap(), кнопка «Codemap» в AI Assistant, setCodemapButtonState() │
+  ├──────────────────┼──────────────────────┼──────────────────────────────────────────────────────────────────────────────────────┤
+  │ Фикс connect     │ a6fb93b              │ ensureCanvasSignalsConnected() + Qt::UniqueConnection                                │
+  ├──────────────────┼──────────────────────┼──────────────────────────────────────────────────────────────────────────────────────┤
+  │ T13 — миграция   │ 579ff04              │ Полный переход на .codemap, 34 файла, 41 тест                                        │
+  └──────────────────┴──────────────────────┴──────────────────────────────────────────────────────────────────────────────────────┘
+
+  Проверено сейчас:
+  • Сборка приложения: OK
+  • Тесты: 41/41 PASS (test_dependency_parser 8 + test_codemap 23 + test_generate_codemap_tool 10)
+
+  ────────────────────────────────────────
+
+  Архитектура: что получилось хорошо
+
+  1. Единая точка входа
+
+  IDEWindow::openOrGenerateConceptMap() — правильное решение. Все три пути сходятся в одном месте:
+
+  • Tools → Generate Codemap
+  • кнопка «Codemap» в ChatPanel (codemapRequested)
+  • переключатель «Структура/Концепт» в Canvas (needsSemanticMapGeneration → onConceptMapNeeded)
+
+   src/app/IDEWindow/idewindow.cpp lines 335-352
+
+  void IDEWindow::openOrGenerateConceptMap(const QStringList& scope)
+  {
+      CanvasTab* canvas = canvasTab();
+      if (!canvas) {
+          canvas = openOrCreateCanvasTab();
+          if (!canvas) return;
+      }
+      CodemapStore store(projectPath());
+      // If scope is empty, check for cached codemap
+      if (scope.isEmpty() && store.exists()) {
+          auto mapOpt = store.load();
+          if (mapOpt.has_value()) {
+              canvas->showCodemap(mapOpt.value());
+              return;
+          }
+      }
+
+  2. Миграция на .codemap
+
+  Модель данных чистая и расширяемая:
+
+  • Codemap / CodemapTrace / CodemapLocation / CodemapMetadata
+  • связи через mermaidDiagram + parsedConnections()
+  • переносимые пути через normalizeAbsolutePaths()
+  • runtime-поля (codeSnippet, isStale) через populateRuntimeFields()
+
+  Хранилище простое и предсказуемое: <имя_проекта>.codemap в корне проекта.
+
+  3. Валидация генерации
+
+  GenerateCodemapTool с проверкой lineContent, retry до 2 раз и тестами без сети — сильная сторона. Это снижает риск «галлюцинированных» ссылок на
+   код.
+
+  4. Фикс бага с connect
+
+  Баг из сессии (connect только при первом openOrCreateCanvasTab()) исправлен корректно:
+
+   src/app/IDEWindow/idewindow.cpp lines 317-324
+
+  void IDEWindow::ensureCanvasSignalsConnected(CanvasTab* canvas)
+  {
+      if (!canvas) return;
+      // Qt::UniqueConnection prevents duplicate connections even if called multiple times
+      connect(canvas, &CanvasTab::needsSemanticMapGeneration,
+              this, &IDEWindow::onConceptMapNeeded,
+              Qt::UniqueConnection);
+  }
+
+  Вызов из canvasTab() покрывает любой путь появления Canvas-вкладки.
+
+  ────────────────────────────────────────
+
+  Проблемы и технический долг
+
+  Критичность: низкая / средняя
+
+  1. Документация расходится с кодом
+
+  В CONTRIBUTING_ru.md секция «Архитектура модуля Canvas» всё ещё описывает удалённые файлы:
+
+   CONTRIBUTING_ru.md lines 93-95
+
+    semantic_map.h/cpp    — модель данных SemanticMap/SemanticCluster/SemanticStep
+    semantic_map_store.h/cpp — хранилище карт в .cremniy/semantic_maps/
+    semantic_map_utils.h/cpp — утилиты (extractCodeSnippet)
+
+  При этом ниже по файлу уже есть актуальный раздел про .codemap. Это вводит в заблуждение.
+
+  В ROADMAP.md / ROADMAP_ru.md секция помечена «(в процессе)», хотя все пункты [x] — логичнее переименовать в «завершено».
+
+  2. Наследие имён SemanticMap
+
+  В коде остались старые имена, хотя типы уже Codemap:
+
+  ┌─────────────────┬────────────────────────────────────────────────────┐
+  │ Место           │ Старое имя                                         │
+  ├─────────────────┼────────────────────────────────────────────────────┤
+  │ canvastab.h     │ needsSemanticMapGeneration                         │
+  ├─────────────────┼────────────────────────────────────────────────────┤
+  │ toolsmenu.h/cpp │ on_GenerateSemanticMap                             │
+  ├─────────────────┼────────────────────────────────────────────────────┤
+  │ idewindow.cpp   │ fallback generate_semantic_map (инструмент удалён) │
+  ├─────────────────┼────────────────────────────────────────────────────┤
+  │ canvastab.cpp   │ clearSemanticNodes()                               │
+  └─────────────────┴────────────────────────────────────────────────────┘
+
+  Fallback на generate_semantic_map в idewindow.cpp:375 — мёртвый код: инструмент зарегистрирован только как generate_codemap.
+
+  3. const_cast в canvasTab()
+
+   src/app/IDEWindow/idewindow.cpp lines 284-287
+
+  CanvasTab* IDEWindow::canvasTab() const
+  {
+      ...
+              const_cast<IDEWindow*>(this)->ensureCanvasSignalsConnected(canvas);
+
+  Работает, но это запах. Лучше:
+  • сделать canvasTab() неконстантным, или
+  • подписаться на tabAdded у FilesTabWidget один раз при старте.
+
+  4. Двойное сохранение codemap
+
+  Карта сохраняется дважды при успешной генерации:
+  1. в GenerateCodemapTool::onMapStreamFinished() → store.save()
+  2. в callback IDEWindow после finished → снова store.save()
+
+  Не ломает поведение, но избыточно. Стоит оставить сохранение в одном месте (предпочтительно в tool или в IDEWindow, но не в обоих).
+
+  5. Связка IDEWindow → ChatPanel::setCodemapButtonState
+
+  Прямое управление конкретной кнопкой из IDEWindow. На текущем масштабе терпимо, но при появлении других async-операций понадобится более общий
+  механизм (как отмечено в самой сессии).
+
+  6. Qt runtime без RPATH
+
+  В сессии была ошибка:
+
+  libQt6Core.so.6: version `Qt_6.8' not found
+
+  В CMakeLists.txt нет RPATH/INSTALL_RPATH. Бинарник линкуется на third_party/qt-install, но при запуске подхватывает системный Qt 6.4. Для
+  dev-сборки стоит добавить RPATH или wrapper-скрипт запуска.
+
+  7. Нет миграции старых данных
+
+  Старые .cremniy/semantic_maps/*.json не конвертируются в .codemap. Пользователи с кэшем потеряют карты без явного предупреждения.
+
+  8. Шум от session-ses_1447.md
+
+  • 4464 строки, файл не в .gitignore
+  • Коммит eb31fc9 добавил +4410/-3866 строк в историю
+  • Сейчас файл снова изменён (незакоммиченный diff ~2657+/4207-)
+
+  Это главный источник шума в git-истории. Рекомендация из сессии актуальна: добавить в .gitignore или вынести в отдельный архив вне репозитория.
+
+  ────────────────────────────────────────
+
+  Риски поведения
+
+  ┌─────────────────────────────────────────────┬───────────────────────────────────────────────────────┬────────────────────────────────────────┐
+  │ Сценарий                                    │ Поведение                                             │ Оценка                                 │
+  ├─────────────────────────────────────────────┼───────────────────────────────────────────────────────┼────────────────────────────────────────┤
+  │ Canvas открыт не через                      │ connect ставится через canvasTab()                    │ Исправлено                             │
+  │ openOrCreateCanvasTab                       │                                                       │                                        │
+  ├─────────────────────────────────────────────┼───────────────────────────────────────────────────────┼────────────────────────────────────────┤
+  │ Повторный клик «Codemap» при генерации      │ кнопка disabled через setCodemapButtonState           │ OK                                     │
+  ├─────────────────────────────────────────────┼───────────────────────────────────────────────────────┼────────────────────────────────────────┤
+  │ scope непустой                              │ кэш игнорируется, всегда генерация                    │ Задумано, но не задокументировано      │
+  ├─────────────────────────────────────────────┼───────────────────────────────────────────────────────┼────────────────────────────────────────┤
+  │ Генерация только по task без scope          │ m_availableFiles пуст → валидация путей пропускается  │ Слабее, чем при scope                  │
+  ├─────────────────────────────────────────────┼───────────────────────────────────────────────────────┼────────────────────────────────────────┤
+  │ Пустые traces                               │ валидация проходит                                    │ Карта пустая, UI молча ничего не       │
+  │                                             │                                                       │ рисует                                 │
+  ├─────────────────────────────────────────────┼───────────────────────────────────────────────────────┼────────────────────────────────────────┤
+  │ toRelativePath                              │ не нормализует trailing slash / symlinks              │ Edge case на нестандартных путях       │
+  └─────────────────────────────────────────────┴───────────────────────────────────────────────────────┴────────────────────────────────────────┘
+
+  ────────────────────────────────────────
+
+  Оценка качества по блокам
+
+  ┌──────────────────────┬────────┬─────────────────────────────────────────────────────────────────────────┐
+  │ Блок                 │ Оценка │ Комментарий                                                             │
+  ├──────────────────────┼────────┼─────────────────────────────────────────────────────────────────────────┤
+  │ Модель .codemap      │ 8/10   │ Чистая, совместима с Windsurf, хорошие тесты                            │
+  ├──────────────────────┼────────┼─────────────────────────────────────────────────────────────────────────┤
+  │ Генерация (tool)     │ 8/10   │ Валидация + retry; двойной save — минус                                 │
+  ├──────────────────────┼────────┼─────────────────────────────────────────────────────────────────────────┤
+  │ Визуализация Canvas  │ 7/10   │ Работает; старые имена методов                                          │
+  ├──────────────────────┼────────┼─────────────────────────────────────────────────────────────────────────┤
+  │ Интеграция IDEWindow │ 7/10   │ Единый контроллер хорош; const_cast и coupling с ChatPanel              │
+  ├──────────────────────┼────────┼─────────────────────────────────────────────────────────────────────────┤
+  │ Документация         │ 6/10   │ ROADMAP/CONTRIBUTING обновлены частично; русская секция Canvas устарела │
+  ├──────────────────────┼────────┼─────────────────────────────────────────────────────────────────────────┤
+  │ Git hygiene          │ 4/10   │ session-файл засоряет историю                                           │
+  └──────────────────────┴────────┴─────────────────────────────────────────────────────────────────────────┘
+
+  Общая оценка сессии: 7.5/10 — функционально задачи закрыты, тесты зелёные, но остались долги по именованию, документации и git-практикам.
+
+  ────────────────────────────────────────
+
+  Рекомендуемый план доработок (по приоритету)
+
+  1. Быстрые правки (1 PR)
+    • Обновить секцию Canvas в CONTRIBUTING_ru.md (codemap*.h/cpp вместо semantic_map*)
+    • Пометить Concept Map как завершённый в ROADMAP
+    • Убрать fallback generate_semantic_map
+    • Убрать двойной store.save()
+
+  2. Средний приоритет
+    • Переименовать needsSemanticMapGeneration → needsCodemapGeneration (и связанные слоты)
+    • Убрать const_cast: сделать canvasTab() неконстантным или подписка на tabAdded
+    • Добавить RPATH в CMake для third_party/qt-install
+
+  3. Долгосрочно
+    • Мигратор .cremniy/semantic_maps/*.json → .codemap (хотя бы one-time import)
+    • session-ses_*.md → .gitignore
+    • Обобщить UI busy-state в ChatPanel (setBusy(label) вместо setCodemapButtonState)
+
+  ────────────────────────────────────────
+
+  Итог
+
+  Сессия успешно довела Concept Map / Codemap до рабочего состояния: единый контроллер, кнопка в чате, исправлен критичный баг с connect,
+  выполнена полноценная миграция на Windsurf .codemap с тестами и сборкой.
+
+  Главные точки роста — консистентность (имена, документация, git) и мелкие архитектурные шероховатости (двойное сохранение, RPATH, миграция
+  старых кэшей). Критических блокеров в текущем коде не видно.
+
+  Если нужно, могу сразу сделать PR с пунктами из блока «быстрые правки».
+
+                                                                                                                                                     
+  суть задачи такая:на плашке с агентом делаем кнопку "Codemap" , при нажатии генерится по алгоритму windsurf/codemaps(пример:                       
+  Qt_Application_Entry_Point_and_Welcome_Window_System_20260614_123113.codemap.txt), сейчас открывается "функциональный канвас" а нужен              
+  автономный концептуально-семантическийв(windsurf/codemaps) корне, дальше запускается канвас с двумя кнопками семантический расклад и               
+  граф(как в windsurf). по этому нужен промт-план с учетом сделанного.                                                                               
+                                                                                                                                                     
+
+  Изучаю текущую реализацию и формат Windsurf codemap, чтобы составить промт-план.
+
+    Grepped, globbed, read 6 greps, 3 globs, 17 files
+    … 23 earlier items hidden
+    Read src/ui/toolstabwidget.cpp
+    Grepped "DigestPanel|m_digestPanel" in src/ToolTabs/Canvas
+    Read ...lcome_Window_System_20260614_123113.codemap.txt lines 250-309
+
+  Промт-план: автономный Codemap-канвас (Windsurf-style)
+
+  Целевое поведение
+
+  [AI Assistant] → кнопка "Codemap"
+         ↓
+  Генерация/загрузка <Title>_YYYYMMDD_HHMMSS.codemap.txt в корне проекта
+         ↓
+  Открывается Canvas в режиме «Семантический» (traces, clusters, mermaid)
+         ↓
+  Toolbar: [Семантический] | [Граф]  ← как в Windsurf
+         ↓
+  «Граф» — лениво подгружает #include dependency graph (текущий функциональный канвас)
+
+  ────────────────────────────────────────
+
+  Что уже сделано (не трогать без необходимости)
+
+  ┌──────────────────────────────────────────────────────────┬────────┐
+  │ Компонент                                                │ Статус │
+  ├──────────────────────────────────────────────────────────┼────────┤
+  │ Кнопка Codemap в ChatPanel                               │ ✅     │
+  ├──────────────────────────────────────────────────────────┼────────┤
+  │ openOrGenerateConceptMap() — единый контроллер           │ ✅     │
+  ├──────────────────────────────────────────────────────────┼────────┤
+  │ GenerateCodemapTool + валидация lineContent              │ ✅     │
+  ├──────────────────────────────────────────────────────────┼────────┤
+  │ Модель Codemap / CodemapTrace / CodemapLocation          │ ✅     │
+  ├──────────────────────────────────────────────────────────┼────────┤
+  │ showCodemap() / showStructureGraph() / toggleGraphMode() │ ✅     │
+  ├──────────────────────────────────────────────────────────┼────────┤
+  │ ClusterGroupNode, StepNode, ConnectionEdge               │ ✅     │
+  ├──────────────────────────────────────────────────────────┼────────┤
+  │ ensureCanvasSignalsConnected()                           │ ✅     │
+  ├──────────────────────────────────────────────────────────┼────────┤
+  │ Тесты 41/41                                              │ ✅     │
+  └──────────────────────────────────────────────────────────┴────────┘
+
+  Разрыв с целью (что ломает UX сейчас)
+
+  1. openOrCreateCanvasTab() открывает первый .cpp → DependencyParser сразу строит структурный граф (m_structuralMode = true).
+  2. Один криптичный toggle Mode вместо двух явных кнопок.
+  3. CodemapStore пишет <projectName>.codemap, а не Windsurf-имя <Title>_YYYYMMDD_HHMMSS.codemap.txt.
+  4. DigestPanel объявлен, но не создаётся (m_digestPanel = nullptr).
+  5. Canvas живёт внутри FileTab → привязан к файлу, а codemap — уровень проекта.
+
+  ────────────────────────────────────────
+
+  Фазы и промты
+
+  Фаза 1 — Правильный entry flow (кнопка → семантика, не граф)
+
+  Цель: по клику «Codemap» пользователь сразу видит семантический канвас, без dependency graph.
+
+  Промт 1.1 — openOrCreateCodemapCanvas()
+
+  В Cremniy (src/app/IDEWindow/idewindow.cpp):
+  1. Добавь IDEWindow::openOrCreateCodemapCanvas() — отдельно от openOrCreateCanvasTab():
+     - Находит существующий CanvasTab через canvasTab()
+     - Если нет — открывает Canvas БЕЗ привязки к конкретному .cpp:
+       вариант A (минимальный): открыть любой файл проекта, но сразу переключить
+       Canvas на semantic mode ДО setTabData()/startParsing
+       вариант B (предпочтительный): добавить FilesTabWidget::openProjectCanvasTab()
+       — вкладка "Codemap" на уровне проекта, не привязанная к файлу
+  2. openOrGenerateConceptMap() должен вызывать openOrCreateCodemapCanvas(),
+     а не openOrCreateCanvasTab()
+  3. После открытия Canvas:
+     - переключить на вкладку Canvas в ToolsTabWidget (findChild, setCurrentIndex)
+     - вызвать canvas->enterSemanticMode() (создать в Фазе 2)
+     - НЕ запускать buildGraph до явного переключения на «Граф»
+  Проверка:
+  - Клик Codemap → Canvas открывается в semantic view, FileNode'ов нет
+  - Gource/dependency parser не стартуют до клика «Граф»
+
+  Промт 1.2 — ленивый structural parser
+
+  В CanvasTab (canvastab.cpp/h):
+  1. Добавь enum ViewMode { Semantic, Structural }
+     заменить bool m_structuralMode
+  2. setTabData() — НЕ вызывать m_parser->startParsing() если текущий режим Semantic
+  3. showStructureGraph() / enterStructuralMode():
+     - если m_parser ещё не запускался — запустить startParsing() лениво
+     - затем buildGraph + layoutNodesRadial
+  4. showCodemap() / enterSemanticMode():
+     - clearCanvas() + clearSemanticNodes() как сейчас
+     - скрыть LayerPanel, Gource controls (Play/Pause/Speed), Refresh
+     - показать DigestPanel (см. Фазу 3)
+  5. onGraphReady(): если режим Semantic — сохранить m_currentGraph, но НЕ рисовать
+  Проверка: Codemap → semantic view без FileNode. Переключение на Граф → граф появляется.
+
+  ────────────────────────────────────────
+
+  Фаза 2 — Хранение в формате Windsurf (корень проекта)
+
+  Цель: файлы как Qt_Application_Entry_Point_and_Welcome_Window_System_20260614_123113.codemap.txt.
+
+  Промт 2.1 — CodemapStore с Windsurf-именованием
+
+  В src/ToolTabs/Canvas/codemap_store.h/cpp:
+  1. Добавь статические методы:
+     QString slugifyTitle(const QString& title)
+       // "Qt Application Entry Point" → "Qt_Application_Entry_Point"
+     QString buildFileName(const Codemap& map)
+       // "<slugified_title>_<YYYYMMDD_HHMMSS>.codemap.txt"
+       // timestamp из map.metadata.generationTimestamp или QDateTime::currentDateTime()
+  2. save(const Codemap& map) → пишет в projectRoot/buildFileName(map)
+     normalizeAbsolutePaths перед записью
+  3. load(const QString& filePath) — загрузка конкретного файла
+     loadLatest() — самый свежий *.codemap.txt в корне проекта
+     list() → QList<{path, title, timestamp}>
+     exists() → есть ли хотя бы один *.codemap.txt
+  4. Обратная совместимость: если есть старый <project>.codemap — loadLatest() подхватывает его
+  5. Обнови openOrGenerateConceptMap():
+     - exists() / loadLatest() вместо единого defaultFilePath()
+     - после генерации сохранять с Windsurf-именем
+  Проверка:
+  - Сгенерированный файл: <Title>_20260615_143022.codemap.txt в корне
+  - Повторный клик Codemap → открывает latest без регенерации
+  - test_codemap.cpp: тесты buildFileName, loadLatest, list
+
+  Промт 2.2 — id в JSON как в примере
+
+  В GenerateCodemapTool::buildSystemPrompt() и validateCodemapJson():
+  1. id в JSON = slug title + timestamp (как в примере
+     Qt_Application_Entry_Point_and_Welcome_Window_System_20260614_123113)
+  2. metadata.generationTimestamp — ISO8601 с timezone (+05:00)
+  3. metadata.originalPrompt — текст из scope/task чата (если кнопка без scope —
+     "Full project overview" или список allFiles)
+  4. Убери двойной save: оставить ТОЛЬКО в IDEWindow callback
+     (убрать store.save из GenerateCodemapTool::onMapStreamFinished)
+  Проверка: JSON совместим с Qt_Application_Entry_Point_...codemap.txt из репо
+
+  ────────────────────────────────────────
+
+  Фаза 3 — Toolbar: две кнопки как в Windsurf
+
+  Цель: явный переключатель «Семантический» / «Граф», не один Mode.
+
+  Промт 3.1 — Segmented control в toolbar
+
+  В CanvasTab::CanvasTab() (canvastab.cpp):
+  1. Убери toggleModeBtn ("Mode")
+  2. Добавь QButtonGroup + два QToolButton:
+     - "Семантический" (tooltip: "Concept map / codemap layout")
+     - "Граф" (tooltip: "Dependency graph (#include)")
+     Стиль: segmented control — активная кнопка подсвечена (#3a5a7a),
+     неактивная (#252530). Как tab-bar в Windsurf.
+  3. По умолчанию при открытии через Codemap: "Семантический" active
+     При открытии Canvas из файла (обычный путь): "Граф" active
+  4. Сигналы:
+     semanticBtn → enterSemanticMode()
+     graphBtn → enterStructuralMode()
+  5. Управление видимостью toolbar-элементов:
+     Semantic mode: скрыть Play/Pause/Speed/Refresh/LayerPanel
+     Structural mode: показать их, скрыть DigestPanel
+  Проверка: две кнопки, переключение без потери m_currentCodemap/m_currentGraph
+
+  Промт 3.2 — DigestPanel в semantic mode
+
+  В CanvasTab:
+  1. Создай m_digestPanel = new DigestPanel(this) в конструкторе
+     Позиция: overlay справа (как LayerPanel), width ~300px
+  2. connect(codemapShown) → m_digestPanel->showMap(map)
+     connect(stepNavigationRequested) → IDEWindow открывает файл на строке
+  3. При enterSemanticMode() — m_digestPanel->show(), playAppearAnimation()
+     При enterStructuralMode() — playDisappearAnimation(), hide()
+  4. Клик на location в DigestPanel → highlight StepNode + pulse
+  Проверка: semantic mode показывает Motivation/Details per-trace из traceGuide
+
+  ────────────────────────────────────────
+
+  Фаза 4 — Автономный project-level Canvas
+
+  Цель: codemap не зависит от «какой файл открыт первым».
+
+  Промт 4.1 — Project Canvas Tab (рекомендуемый путь)
+
+  Архитектурное изменение:
+  1. IDEWindow: добавь m_projectCanvasDock или вкладку верхнего уровня
+     "Concept Map" рядом с FilesTabWidget (QSplitter или QStackedWidget)
+     Альтернатива (меньше diff): FilesTabWidget::openCodemapTab()
+     — специальная вкладка с tabTitle="Codemap", filePath=projectRoot,
+     ToolsTabWidget создаётся с флагом semanticFirst=true
+  2. CanvasTab получает projectRoot напрямую:
+     void setProjectRoot(const QString& root) — вместо QFileInfo(filepath).absolutePath()
+     setFile() остаётся для file-attached canvas, setProjectRoot() для codemap canvas
+  3. canvasTab() ищет CanvasTab:
+     - сначала в project codemap tab
+     - fallback: findChild в любом FileTab
+  4. openOrCreateCodemapCanvas() открывает project-level tab,
+     переключает FilesTabWidget на неё, выбирает Canvas tool
+  Проверка:
+  - Codemap работает без открытого .cpp в редакторе
+  - Закрытие codemap tab не закрывает файловые вкладки
+  - structural graph в режиме «Граф» использует projectRoot, не filepath вкладки
+
+  ────────────────────────────────────────
+
+  Фаза 5 — Визуализация и layout (дотянуть до Windsurf)
+
+  Промт 5.1 — ClusterLayout + mermaid subgraphs
+
+  1. showCodemap(): заменить inline grid (x+=500) на ClusterLayout::arrangeMap()
+  2. parsedConnections(): поддержать mermaid subgraph syntax из примера:
+     "graph TB\n  subgraph startup[...]\n    1a[...]\n  end"
+     Regex расширить или парсить построчно
+  3. StepNode: показать ⚠ если loc.isStale (уже есть поле — проверить UI)
+  4. traceTextDiagram: отобразить в DigestPanel как <pre> monospace блок
+  5. Цвета traces: использовать trace.color для ClusterGroupNode border
+  Проверка: визуально близко к Windsurf — кластеры в grid, связи из mermaidDiagram,
+  subgraph-группировка в diagram (хотя бы labels на рёбрах)
+
+  Промт 5.2 — Scope из чата
+
+  Расширь openOrGenerateConceptMap():
+  1. Если в ChatPanel есть последнее сообщение пользователя — передать как task
+     в GenerateCodemapTool args["task"]
+  2. Если пусто — scope = все файлы из m_currentGraph.allFiles
+     (или рекурсивный обход src/)
+  3. Кнопка Codemap при генерации показывает в statusBar:
+     "Generating codemap for: <task или N files>..."
+  Проверка: codemap про конкретный модуль, если пользователь спросил в чате
+
+  ────────────────────────────────────────
+
+  Фаза 6 — Cleanup + тесты + docs
+
+  Промт 6.1 — Переименование legacy
+
+  Переименуй (одним PR):
+  - needsSemanticMapGeneration → needsCodemapGeneration
+  - on_GenerateSemanticMap → on_GenerateCodemap (toolsmenu)
+  - убери fallback findTool("generate_semantic_map")
+  - CONTRIBUTING_ru.md секция Canvas: semantic_map* → codemap*
+  - ROADMAP: "Concept Map (in progress)" → "Concept Map (done)" после Фаз 1-4
+
+  Промт 6.2 — Интеграционный тест flow
+
+  tests/test_codemap_canvas_flow.cpp (или расширить test_codemap):
+  1. Создать temp project + положить Qt_Application_Entry_Point_...codemap.txt
+  2. CodemapStore::loadLatest() → traces не пустые
+  3. Codemap::parsedConnections() → >= N edges из mermaidDiagram
+  4. normalizeAbsolutePaths → relative paths
+  Без GUI (unit). GUI smoke — в CONTRIBUTING manual checklist.
+
+  ────────────────────────────────────────
+
+  Порядок выполнения
+
+  mermaid flowchart
+
+  flowchart LR
+      F1[Фаза 1: Entry flow] --> F2[Фаза 2: Windsurf storage]
+      F1 --> F3[Фаза 3: Две кнопки + DigestPanel]
+      F2 --> F4[Фаза 4: Project Canvas]
+      F3 --> F5[Фаза 5: Layout polish]
+      F4 --> F5
+      F5 --> F6[Фаза 6: Cleanup]
+
+  ┌───────────┬───────────┬────────────────────────────────┬───────────┐
+  │ Приоритет │ Фаза      │ Эффект                         │ Сложность │
+  ├───────────┼───────────┼────────────────────────────────┼───────────┤
+  │ 🔴 P0     │ 1 + 3.1   │ Codemap → semantic, две кнопки │ Средняя   │
+  ├───────────┼───────────┼────────────────────────────────┼───────────┤
+  │ 🔴 P0     │ 2         │ Windsurf-файлы в корне         │ Низкая    │
+  ├───────────┼───────────┼────────────────────────────────┼───────────┤
+  │ 🟡 P1     │ 3.2 + 5.1 │ DigestPanel + layout           │ Средняя   │
+  ├───────────┼───────────┼────────────────────────────────┼───────────┤
+  │ 🟡 P1     │ 4         │ Автономный project canvas      │ Высокая   │
+  ├───────────┼───────────┼────────────────────────────────┼───────────┤
+  │ 🟢 P2     │ 5.2 + 6   │ Scope из чата, cleanup         │ Низкая    │
+  └───────────┴───────────┴────────────────────────────────┴───────────┘
+
+  ────────────────────────────────────────
+
+  Чеклист готовности (Definition of Done)
+
+  ◻ Кнопка Codemap → Canvas в семантическом режиме, без FileNode
+  ◻ Файл <Title>_YYYYMMDD_HHMMSS.codemap.txt в корне проекта
+  ◻ Toolbar: «Семантический» | «Граф» (две кнопки, не toggle)
+  ◻ «Граф» лениво грузит dependency parser
+  ◻ DigestPanel с Motivation/Details per-trace
+  ◻ Повторный клик → loadLatest(), без регенерации
+  ◻ Импорт примера Qt_Application_Entry_Point_...codemap.txt работает
+  ◻ Тесты зелёные, docs обновлены
+
+  ────────────────────────────────────────
+
+  Быстрый старт (минимальный MVP за 2 промта)
+
+  Если нужен результат быстро — только Промт 1.2 + Промт 3.1 + Промт 2.1:
+
+  1. Ленивый parser + semantic-first при Codemap
+  2. Две кнопки вместо Mode
+  3. Windsurf-имена файлов
+
+  Это закроет главную боль: «открывается функциональный канвас вместо семантического».
+
