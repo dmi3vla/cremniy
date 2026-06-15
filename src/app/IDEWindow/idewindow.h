@@ -28,6 +28,8 @@ public:
     CanvasTab* canvasTab() const;
     CanvasTab* openOrCreateCanvasTab();
 
+    void openOrGenerateConceptMap(const QStringList& scope = {});
+
 private slots:
 
     /**

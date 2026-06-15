@@ -19,6 +19,17 @@ ChatPanel::ChatPanel(QWidget* parent)
     auto* titleLabel = new QLabel("AI Assistant", header);
     titleLabel->setStyleSheet("color: #aaa; font-weight: bold; font-size: 12px; background: transparent;");
     headerLayout->addWidget(titleLabel);
+    headerLayout->addStretch();
+
+    m_codemapBtn = new QPushButton("Codemap", header);
+    m_codemapBtn->setStyleSheet(
+        "QPushButton { background: #3a5a4a; color: #ddd; border: none; "
+        "padding: 4px 10px; border-radius: 4px; font-size: 11px; } "
+        "QPushButton:hover { background: #4a6a5a; }"
+    );
+    headerLayout->addWidget(m_codemapBtn);
+    connect(m_codemapBtn, &QPushButton::clicked, this, &ChatPanel::onCodemapClicked);
+
     mainLayout->addWidget(header);
 
     // Messages area
@@ -126,4 +137,16 @@ void ChatPanel::scrollToBottom()
 {
     QScrollBar* sb = m_scrollArea->verticalScrollBar();
     sb->setValue(sb->maximum());
+}
+
+void ChatPanel::onCodemapClicked()
+{
+    emit codemapRequested();
+}
+
+void ChatPanel::setCodemapButtonState(bool generating)
+{
+    if (!m_codemapBtn) return;
+    m_codemapBtn->setEnabled(!generating);
+    m_codemapBtn->setText(generating ? "Generating..." : "Codemap");
 }

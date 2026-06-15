@@ -108,6 +108,9 @@ IDEWindow::IDEWindow(QString ProjectPath, QWidget *parent)
 
     m_agentSession = new AgentSession(ProjectPath, m_chatPanel, this);
 
+    connect(m_chatPanel, &ChatPanel::codemapRequested, this,
+            [this]() { openOrGenerateConceptMap(); });
+
     while (m_filesTabWidget->count() > 0) {
         m_filesTabWidget->removeTab(0);
     }
@@ -301,48 +304,62 @@ CanvasTab* IDEWindow::openOrCreateCanvasTab()
         if (!cppFiles.isEmpty()) {
             QString firstFile = srcDir.absoluteFilePath(cppFiles.first());
             m_filesTabWidget->openFile(firstFile, QFileInfo(firstFile).fileName());
-            return canvasTab();
+            CanvasTab* canvas = canvasTab();
+            if (canvas) {
+                connect(canvas, &CanvasTab::needsSemanticMapGeneration, this,
+                    [this]() { openOrGenerateConceptMap(); });
+            }
+            return canvas;
         }
     }
     return nullptr;
 }
 
 void IDEWindow::on_GenerateSemanticMap(){
-    QString projectRoot = m_projectPath;
-    SemanticMapStore store(projectRoot);
+    openOrGenerateConceptMap();
+}
 
+void IDEWindow::openOrGenerateConceptMap(const QStringList& scope)
+{
     CanvasTab* canvas = canvasTab();
     if (!canvas) {
         canvas = openOrCreateCanvasTab();
         if (!canvas) return;
     }
 
-    // Check for existing saved maps
-    QList<SemanticMapStore::MapMeta> maps = store.list();
+    SemanticMapStore store(projectPath());
 
-    if (!maps.isEmpty()) {
-        SemanticMapStore::MapMeta latest = maps.first();
-        for (const auto& m : maps) {
-            if (m.createdAt > latest.createdAt)
-                latest = m;
-        }
-        auto mapOpt = store.load(latest.id);
-        if (mapOpt.has_value()) {
-            canvas->showSemanticMap(mapOpt.value());
-            return;
+    // If scope is empty, check for cached map
+    if (scope.isEmpty()) {
+        QList<SemanticMapStore::MapMeta> maps = store.list();
+        if (!maps.isEmpty()) {
+            SemanticMapStore::MapMeta latest = maps.first();
+            for (const auto& m : maps) {
+                if (m.createdAt > latest.createdAt)
+                    latest = m;
+            }
+            auto mapOpt = store.load(latest.id);
+            if (mapOpt.has_value()) {
+                canvas->showSemanticMap(mapOpt.value());
+                return;
+            }
         }
     }
 
-    // No maps — generate via agent tool
+    // No cached map (or scope given) — generate
     AgentSession* session = m_agentSession;
     if (!session) return;
 
-    QStringList scope = canvas->currentGraph().allFiles;
+    QStringList effectiveScope = scope;
+    if (effectiveScope.isEmpty())
+        effectiveScope = canvas->currentGraph().allFiles;
+
     statusBar()->showMessage("Generating concept map via AI...");
+    m_chatPanel->setCodemapButtonState(true);
 
     QJsonObject args;
     QJsonArray scopeArr;
-    for (const QString& f : scope)
+    for (const QString& f : effectiveScope)
         scopeArr.append(f);
     args["scope"] = scopeArr;
 
@@ -353,6 +370,7 @@ void IDEWindow::on_GenerateSemanticMap(){
             connect(tool, &AgentTool::finished, this,
                 [this, canvas](const QString& result, bool isError) {
                     statusBar()->clearMessage();
+                    m_chatPanel->setCodemapButtonState(false);
                     if (isError) {
                         statusBar()->showMessage("Concept map generation failed: " + result, 5000);
                         return;
@@ -360,7 +378,7 @@ void IDEWindow::on_GenerateSemanticMap(){
                     QJsonDocument doc = QJsonDocument::fromJson(result.toUtf8());
                     if (doc.isObject()) {
                         SemanticMap map = SemanticMap::fromJson(doc.object());
-                        canvas->showSemanticMap(map);
+                        canvas->onSemanticMapReady(map);
                     }
                 }, Qt::SingleShotConnection);
             tool->execute(args);
@@ -369,4 +387,5 @@ void IDEWindow::on_GenerateSemanticMap(){
     }
 
     statusBar()->showMessage("AI agent not available for concept map generation", 5000);
+    m_chatPanel->setCodemapButtonState(false);
 }

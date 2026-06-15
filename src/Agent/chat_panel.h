@@ -25,9 +25,11 @@ public:
 signals:
     void messageSent(const QString& text);
     void sizeChanged();
+    void codemapRequested();
 
 public slots:
     void onSendMessage();
+    void setCodemapButtonState(bool generating);
 
 protected:
     bool eventFilter(QObject* obj, QEvent* event) override;
@@ -38,9 +40,11 @@ private:
     QVBoxLayout* m_messagesLayout;
     QLineEdit* m_input;
     QPushButton* m_sendBtn;
+    QPushButton* m_codemapBtn = nullptr;
     QList<ChatMessage*> m_messages;
 
     void scrollToBottom();
+    void onCodemapClicked();
 };
 
 #endif // CHAT_PANEL_H

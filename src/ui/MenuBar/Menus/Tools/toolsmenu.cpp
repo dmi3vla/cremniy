@@ -51,7 +51,6 @@ void ToolsMenu::on_Open_ReverseCalculator() {
 
 void ToolsMenu::on_GenerateSemanticMap() {
   if (m_ideWindow) {
-    // Call the slot directly on IDEWindow
-    m_ideWindow->on_GenerateSemanticMap();
+    m_ideWindow->openOrGenerateConceptMap();
   }
 }
