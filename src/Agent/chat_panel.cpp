@@ -109,6 +109,15 @@ ChatMessage* ChatPanel::lastMessage() const
     return m_messages.isEmpty() ? nullptr : m_messages.last();
 }
 
+QString ChatPanel::lastUserMessage() const
+{
+    for (int i = m_messages.size() - 1; i >= 0; --i) {
+        if (m_messages[i]->role() == ChatMessage::User)
+            return m_messages[i]->text();
+    }
+    return QString();
+}
+
 void ChatPanel::onSendMessage()
 {
     QString text = m_input->text().trimmed();

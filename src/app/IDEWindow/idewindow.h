@@ -27,6 +27,7 @@ public:
     AgentSession* agentSession() const { return m_agentSession; }
     CanvasTab* canvasTab() const;
     CanvasTab* openOrCreateCanvasTab();
+    CanvasTab* openOrCreateCodemapCanvas();
 
     void openOrGenerateConceptMap(const QStringList& scope = {});
 

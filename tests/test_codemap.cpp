@@ -438,6 +438,129 @@ private slots:
         QCOMPARE(loaded->traces.size(), 1);
         QCOMPARE(loaded->traces[0].locations[0].path, loc.path);
     }
+
+    void testLoadLatestWithWindsurfNaming()
+    {
+        QTemporaryDir dir;
+        QVERIFY(dir.isValid());
+
+        CodemapStore store(dir.path());
+
+        // Save first codemap
+        Codemap map1;
+        map1.id = "first";
+        map1.title = "First Map";
+        map1.metadata.generationTimestamp = "2026-06-14T10:00:00Z";
+        CodemapTrace t1;
+        t1.id = "1";
+        t1.title = "T1";
+        map1.traces = {t1};
+        store.save(map1);
+
+        // Save second codemap (newer)
+        Codemap map2;
+        map2.id = "second";
+        map2.title = "Second Map";
+        map2.metadata.generationTimestamp = "2026-06-14T12:00:00Z";
+        CodemapTrace t2;
+        t2.id = "2";
+        t2.title = "T2";
+        map2.traces = {t2};
+        store.save(map2);
+
+        auto list = store.list();
+        QCOMPARE(list.size(), 2);
+
+        auto latest = store.loadLatest();
+        QVERIFY(latest.has_value());
+        QCOMPARE(latest->id, QString("second"));
+    }
+
+    void testImportRealCodemapFormat()
+    {
+        QTemporaryDir dir;
+        QVERIFY(dir.isValid());
+
+        // Simulate a real Windsurf .codemap.txt file
+        QString codemapJson =
+            "{\"schemaVersion\": 1,"
+            "\"id\": \"Qt_Application_Entry_Point_and_Welcome_Window_System_20260614_123113\","
+            "\"stableId\": \"550e8400-e29b-41d4-a716-446655440000\","
+            "\"metadata\": {"
+            "\"cascadeId\": \"\","
+            "\"generationSource\": \"cascade\","
+            "\"generationTimestamp\": \"2026-06-14T12:31:13+05:00\","
+            "\"mode\": \"FAST\","
+            "\"originalPrompt\": \"Analyze Qt application entry point\""
+            "},"
+            "\"title\": \"Qt Application Entry Point and Welcome Window System\","
+            "\"traces\": [{"
+            "\"id\": \"1\","
+            "\"title\": \"Application Bootstrap\","
+            "\"description\": \"App initialization\","
+            "\"locations\": [{"
+            "\"id\": \"1a\","
+            "\"path\": \"src/main.cpp\","
+            "\"lineNumber\": 6,"
+            "\"lineContent\": \"int main(int argc, char *argv[])\","
+            "\"title\": \"Main entry\","
+            "\"description\": \"Application entry point\""
+            "}],"
+            "\"traceTextDiagram\": \"main()\\n  QApplication\\n  WelcomeForm\","
+            "\"traceGuide\": \"# Motivation\\nApp needs entry.\\n\\n# Details\\nQt bootstrap.\","
+            "\"color\": \"#2d3a4f\""
+            "}],"
+            "\"mermaidDiagram\": \"graph TD\\n  1a -->|creates| 1b\""
+            "}";
+
+        // Write to file
+        QString filePath = dir.path() + "/Qt_Application_Entry_Point_20260614_123113.codemap.txt";
+        QFile file(filePath);
+        QVERIFY(file.open(QIODevice::WriteOnly));
+        file.write(codemapJson.toUtf8());
+        file.close();
+
+        // Load via CodemapStore
+        CodemapStore store(dir.path());
+        auto loaded = store.load(filePath);
+        QVERIFY(loaded.has_value());
+        QCOMPARE(loaded->title, QString("Qt Application Entry Point and Welcome Window System"));
+        QCOMPARE(loaded->traces.size(), 1);
+        QCOMPARE(loaded->traces[0].locations[0].id, QString("1a"));
+        QCOMPARE(loaded->traces[0].locations[0].lineNumber, 6);
+        QCOMPARE(loaded->traces[0].locations[0].lineContent, QString("int main(int argc, char *argv[])"));
+        QVERIFY(!loaded->stableId.isEmpty());
+
+        // Verify mermaid parsing
+        auto edges = loaded->parsedConnections();
+        QCOMPARE(edges.size(), 1);
+        QCOMPARE(edges[0].from, QString("1a"));
+        QCOMPARE(edges[0].label, QString("creates"));
+    }
+
+    void testParsedConnectionsWithSubgraph()
+    {
+        Codemap map;
+        map.mermaidDiagram =
+            "graph TB\n"
+            "  subgraph startup[Startup]\n"
+            "    1a[main]\n"
+            "    1b[init]\n"
+            "  end\n"
+            "  subgraph ui[UI]\n"
+            "    2a[window]\n"
+            "  end\n"
+            "  1a -->|creates| 2a\n"
+            "  1b -->|initializes| 2a";
+
+        auto edges = map.parsedConnections();
+        QCOMPARE(edges.size(), 2);
+        QCOMPARE(edges[0].from, QString("1a"));
+        QCOMPARE(edges[0].to, QString("2a"));
+        QCOMPARE(edges[0].label, QString("creates"));
+        QCOMPARE(edges[1].from, QString("1b"));
+        QCOMPARE(edges[1].label, QString("initializes"));
+    }
 };
 
 QTEST_MAIN(TestCodemap)

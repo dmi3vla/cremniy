@@ -2,6 +2,7 @@
 #define CLUSTER_LAYOUT_H
 
 #include <QList>
+#include <QMap>
 #include <QPointF>
 
 class ClusterGroupNode;
@@ -12,6 +13,7 @@ class ClusterLayout
 public:
     ClusterLayout();
 
+    QMap<QString, QPointF> computeClusterPositions(QList<ClusterGroupNode*> clusters);
     void arrangeMap(QList<ClusterGroupNode*> clusters);
     void computeLinearChain(ClusterGroupNode* cluster);
 

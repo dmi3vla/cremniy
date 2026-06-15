@@ -62,13 +62,15 @@ Dependency graph visualization with gource-style animation:
 - [x] Phase 5 — Gource visualization (git history playback, filter layers, minimap)
 - [x] Phase 6 — Tests & documentation
 
-## Concept Map / Semantic Layer (in progress)
+## Concept Map / Semantic Layer (done)
 
 AI-generated conceptual overview of the codebase, complementing the structural dependency graph with semantic clusters (windsurf/codemap-style):
 
 - [x] Data model — Codemap/CodemapTrace/CodemapLocation with Windsurf-compatible .codemap format
 - [x] GenerateCodemapTool — agent tool with validation, retry, lineContent staleness check
 - [x] Canvas visualization — ClusterGroupNode, StepNode, ConnectionEdge (connections from mermaidDiagram)
-- [x] Tools → Codemap menu entry; Structure/Concept toggle in Canvas toolbar; DigestPanel with per-trace Motivation/Details
-- [x] CodemapStore — <project>.codemap in project root (portable, relative paths)
-- [x] Tests & documentation
+- [x] Tools → Codemap menu entry; Semantic/Graph toggle in Canvas toolbar; DigestPanel with per-trace Motivation/Details
+- [x] CodemapStore — <Title>_YYYYMMDD_HHMMSS.codemap.txt in project root
+- [x] Autonomous project-level Canvas (not file-bound)
+- [x] Scope from chat, stale indicator on StepNode
+- [x] Tests & documentation (47/47 PASS)

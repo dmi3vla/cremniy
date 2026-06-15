@@ -11,6 +11,7 @@ public:
 
   void tabSelect(int index);
   void openFile(QString fullPath, QString fileName);
+  void openCodemapTab(const QString& projectPath);
 
 protected:
   bool eventFilter(QObject *obj, QEvent *event) override;

@@ -139,6 +139,18 @@ CanvasTab::CanvasTab(FileDataBuffer* buffer, QWidget* parent)
 
 void CanvasTab::setFile(QString filepath)
 {
+    // If path is a directory (codemap tab), use as-is
+    if (QFileInfo(filepath).isDir()) {
+        m_projectPath = filepath;
+        m_parser = new DependencyParser(m_projectPath, this);
+        connect(m_parser, &DependencyParser::graphReady, this, &CanvasTab::onGraphReady);
+        connect(m_parser, &DependencyParser::graphUpdated, this, [this](DependencyGraph graph) {
+            diffGraphUpdate(m_currentGraph, graph);
+        });
+        return;
+    }
+
+    // Normal file — use parent directory as project path
     m_projectPath = QFileInfo(filepath).absolutePath();
     m_parser = new DependencyParser(m_projectPath, this);
     connect(m_parser, &DependencyParser::graphReady, this, &CanvasTab::onGraphReady);
@@ -147,7 +159,7 @@ void CanvasTab::setFile(QString filepath)
     });
     m_parser->watchForChanges();
 
-    // Gource animator
+    // Gource animator (only for file-bound canvas)
     m_animator = new GourceAnimator(m_projectPath, this);
     connect(m_animator, &GourceAnimator::commitReady, this, &CanvasTab::onGourceCommit);
     m_animator->loadHistory();
@@ -579,6 +591,7 @@ void CanvasTab::showCodemap(const Codemap& map)
         for (const auto& loc : trace.locations) {
             auto* stepNode = new StepNode(loc.id, loc.title, loc.codeSnippet,
                                            loc.path, loc.lineNumber, clusterNode);
+            stepNode->setStale(loc.isStale);
             clusterNode->addChild(stepNode);
             connect(stepNode, &StepNode::stepClicked, this, &CanvasTab::onStepClicked);
             stepNodeMap[loc.id] = stepNode;
@@ -613,20 +626,9 @@ void CanvasTab::showCodemap(const Codemap& map)
         connEdge->playAppearAnimation();
     }
 
-    // Animate cluster positions
-    QMap<QString, QPointF> clusterPositions;
-    qreal x = 0, y = 0;
-    int col = 0;
-    for (auto* cn : m_clusterNodes) {
-        clusterPositions[cn->clusterId()] = QPointF(x, y);
-        x += 500;
-        col++;
-        if (col >= 3) {
-            col = 0;
-            x = 0;
-            y += 400;
-        }
-    }
+    // Animate cluster positions using ClusterLayout
+    ClusterLayout clusterLayout;
+    QMap<QString, QPointF> clusterPositions = clusterLayout.computeClusterPositions(m_clusterNodes);
 
     QMap<QString, QGraphicsObject*> clusterObjs;
     for (auto* cn : m_clusterNodes)

@@ -45,8 +45,22 @@ void StepNode::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, 
         bgColor = QColor(38, 38, 48);
 
     painter->setBrush(bgColor);
-    painter->setPen(QPen(m_hovered ? QColor(100, 150, 200) : QColor(70, 70, 85), m_hovered ? 2.0 : 1.5));
+    QPen borderPen(m_hovered ? QColor(100, 150, 200) : QColor(70, 70, 85), m_hovered ? 2.0 : 1.5);
+    if (m_stale)
+        borderPen = QPen(QColor(255, 170, 68), 2.0);
+    painter->setPen(borderPen);
     painter->drawRoundedRect(rect, RADIUS, RADIUS);
+
+    // Stale indicator
+    if (m_stale) {
+        painter->setPen(QColor(255, 170, 68));
+        QFont staleFont = painter->font();
+        staleFont.setPointSize(8);
+        staleFont.setBold(true);
+        painter->setFont(staleFont);
+        QRectF staleRect(rect.right() - 24, rect.top() + 2, 22, 16);
+        painter->drawText(staleRect, Qt::AlignCenter, "\u26A0");
+    }
 
     // Step ID (small, top left)
     painter->setPen(QColor(140, 140, 160));

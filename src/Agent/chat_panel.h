@@ -21,6 +21,7 @@ public:
     void clearMessages();
 
     ChatMessage* lastMessage() const;
+    QString lastUserMessage() const;
 
 signals:
     void messageSent(const QString& text);

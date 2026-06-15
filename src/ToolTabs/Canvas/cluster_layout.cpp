@@ -7,6 +7,31 @@ ClusterLayout::ClusterLayout()
 {
 }
 
+QMap<QString, QPointF> ClusterLayout::computeClusterPositions(QList<ClusterGroupNode*> clusters)
+{
+    QMap<QString, QPointF> positions;
+    if (clusters.isEmpty())
+        return positions;
+
+    qreal startX = -500.0;
+    qreal startY = -400.0;
+    qreal currentX = startX;
+    qreal currentY = startY;
+
+    for (int i = 0; i < clusters.size(); ++i) {
+        ClusterGroupNode* cluster = clusters[i];
+        positions[cluster->clusterId()] = QPointF(currentX, currentY);
+
+        currentX += GRID_SPACING + cluster->boundingRect().width();
+        if ((i + 1) % COLUMNS == 0) {
+            currentX = startX;
+            currentY += GRID_SPACING + 300.0;
+        }
+    }
+
+    return positions;
+}
+
 void ClusterLayout::arrangeMap(QList<ClusterGroupNode*> clusters)
 {
     if (clusters.isEmpty())

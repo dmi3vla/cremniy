@@ -26,6 +26,8 @@ public:
     QString codeSnippet() const { return m_codeSnippet; }
     QString filePath() const { return m_filePath; }
     int lineNumber() const { return m_lineNumber; }
+    bool isStale() const { return m_stale; }
+    void setStale(bool stale) { m_stale = stale; update(); }
 
     void playAppearAnimation(int durationMs = 300);
     qreal appearOpacity() const { return m_appearOpacity; }
@@ -50,6 +52,7 @@ private:
     QString m_filePath;
     int m_lineNumber;
     bool m_hovered = false;
+    bool m_stale = false;
     qreal m_appearOpacity = 1.0;
     qreal m_appearScale = 1.0;
     QParallelAnimationGroup* m_appearGroup = nullptr;

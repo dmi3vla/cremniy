@@ -45,6 +45,27 @@ void FilesTabWidget::openFile(QString filePath, QString tabTitle) {
     });
 }
 
+void FilesTabWidget::openCodemapTab(const QString& projectPath) {
+    // Check if codemap tab already exists
+    for (int i = 0; i < this->count(); ++i) {
+        FileTab *t = qobject_cast<FileTab *>(this->widget(i));
+        if (t && t->filePath == projectPath) {
+            this->setCurrentIndex(i);
+            return;
+        }
+    }
+
+    FileTab *filetab = new FileTab(this, projectPath);
+    int new_tab_index = this->addTab(filetab, "Codemap");
+    this->setCurrentIndex(new_tab_index);
+
+    connect(filetab, &FileTab::removeStarSignal, this, &FilesTabWidget::removeStar);
+    connect(filetab, &FileTab::setupStarSignal, this, &FilesTabWidget::setupStar);
+    connect(filetab, &FileTab::fileOpenRequested, this, [this](const QString& path) {
+        openFile(path, QFileInfo(path).fileName());
+    });
+}
+
 void FilesTabWidget::removeStar(FileTab *tab) {
     int index = indexOf(tab);
     if (index != -1) {

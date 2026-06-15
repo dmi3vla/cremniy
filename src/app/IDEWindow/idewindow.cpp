@@ -314,6 +314,38 @@ CanvasTab* IDEWindow::openOrCreateCanvasTab()
     return nullptr;
 }
 
+CanvasTab* IDEWindow::openOrCreateCodemapCanvas()
+{
+    CanvasTab* existing = canvasTab();
+    if (existing) {
+        existing->setProjectRoot(m_projectPath);
+        existing->enterSemanticMode();
+        return existing;
+    }
+
+    // Open a dedicated codemap tab (not bound to a specific file)
+    m_filesTabWidget->openCodemapTab(m_projectPath);
+
+    CanvasTab* canvas = canvasTab();
+    if (canvas) {
+        canvas->setProjectRoot(m_projectPath);
+        // Switch to Canvas tool tab
+        QWidget* tab = canvas->parentWidget();
+        while (tab && !qobject_cast<QTabWidget*>(tab->parentWidget()))
+            tab = tab->parentWidget();
+        if (tab) {
+            QTabWidget* toolsTab = qobject_cast<QTabWidget*>(tab->parentWidget());
+            if (toolsTab) {
+                int canvasIdx = toolsTab->indexOf(tab);
+                if (canvasIdx >= 0)
+                    toolsTab->setCurrentIndex(canvasIdx);
+            }
+        }
+        canvas->enterSemanticMode();
+    }
+    return canvas;
+}
+
 void IDEWindow::ensureCanvasSignalsConnected(CanvasTab* canvas)
 {
     if (!canvas) return;
@@ -336,7 +368,7 @@ void IDEWindow::openOrGenerateConceptMap(const QStringList& scope)
 {
     CanvasTab* canvas = canvasTab();
     if (!canvas) {
-        canvas = openOrCreateCanvasTab();
+        canvas = openOrCreateCodemapCanvas();
         if (!canvas) return;
     }
 
@@ -359,14 +391,23 @@ void IDEWindow::openOrGenerateConceptMap(const QStringList& scope)
     if (effectiveScope.isEmpty())
         effectiveScope = canvas->currentGraph().allFiles;
 
+    // Check if there's a user message in chat to use as task
+    QString task;
+    if (scope.isEmpty())
+        task = m_chatPanel->lastUserMessage();
+
     statusBar()->showMessage("Generating codemap via AI...");
     m_chatPanel->setCodemapButtonState(true);
 
     QJsonObject args;
-    QJsonArray scopeArr;
-    for (const QString& f : effectiveScope)
-        scopeArr.append(f);
-    args["scope"] = scopeArr;
+    if (!task.isEmpty()) {
+        args["task"] = task;
+    } else {
+        QJsonArray scopeArr;
+        for (const QString& f : effectiveScope)
+            scopeArr.append(f);
+        args["scope"] = scopeArr;
+    }
 
     ToolRegistry* tools = session->toolRegistry();
     if (tools) {
