@@ -7,6 +7,18 @@
 
 DigestPanel::DigestPanel(QWidget* parent)
     : QWidget(parent)
+    , m_layout(nullptr)
+    , m_motivationLabel(nullptr)
+    , m_motivationContent(nullptr)
+    , m_motivationToggle(nullptr)
+    , m_motivationContainer(nullptr)
+    , m_detailsLabel(nullptr)
+    , m_detailsContent(nullptr)
+    , m_detailsToggle(nullptr)
+    , m_detailsContainer(nullptr)
+    , m_codeSnippetLabel(nullptr)
+    , m_codeSnippetContent(nullptr)
+    , m_goToButton(nullptr)
     , m_currentLineNumber(0)
 {
     setupUI();
@@ -169,9 +181,9 @@ void DigestPanel::showMap(const Codemap& map)
 
 void DigestPanel::setupUI()
 {
-    QVBoxLayout* mainLayout = new QVBoxLayout(this);
-    mainLayout->setContentsMargins(12, 12, 12, 12);
-    mainLayout->setSpacing(8);
+    m_layout = new QVBoxLayout(this);
+    m_layout->setContentsMargins(12, 12, 12, 12);
+    m_layout->setSpacing(8);
 
     // Motivation section
     m_motivationLabel = new QLabel("Motivation");
@@ -182,11 +194,12 @@ void DigestPanel::setupUI()
     m_motivationContent->setReadOnly(true);
     
     m_motivationToggle = new QToolButton();
-    m_motivationToggle->setText("▼");
+    m_motivationToggle->setText("\u25BC");
     m_motivationToggle->setMaximumWidth(30);
-    
+
+    m_motivationContainer = new QWidget(this);
     createCollapsibleSection("Motivation", m_motivationContent, m_motivationToggle, m_motivationContainer);
-    mainLayout->addWidget(m_motivationContainer);
+    m_layout->addWidget(m_motivationContainer);
 
     // Details section
     m_detailsLabel = new QLabel("Details");
@@ -197,11 +210,12 @@ void DigestPanel::setupUI()
     m_detailsContent->setReadOnly(true);
     
     m_detailsToggle = new QToolButton();
-    m_detailsToggle->setText("▼");
+    m_detailsToggle->setText("\u25BC");
     m_detailsToggle->setMaximumWidth(30);
-    
+
+    m_detailsContainer = new QWidget(this);
     createCollapsibleSection("Details", m_detailsContent, m_detailsToggle, m_detailsContainer);
-    mainLayout->addWidget(m_detailsContainer);
+    m_layout->addWidget(m_detailsContainer);
 
     // Code snippet section
     m_codeSnippetLabel = new QLabel("Code Snippet");
@@ -212,8 +226,8 @@ void DigestPanel::setupUI()
     m_codeSnippetContent->setReadOnly(true);
     m_codeSnippetContent->setStyleSheet("font-family: 'Consolas', 'Monaco', monospace; font-size: 9px;");
     
-    mainLayout->addWidget(m_codeSnippetLabel);
-    mainLayout->addWidget(m_codeSnippetContent);
+    m_layout->addWidget(m_codeSnippetLabel);
+    m_layout->addWidget(m_codeSnippetContent);
 
     // Go to button
     QHBoxLayout* buttonLayout = new QHBoxLayout();
@@ -222,7 +236,7 @@ void DigestPanel::setupUI()
     m_goToButton->setMaximumWidth(80);
     buttonLayout->addWidget(m_goToButton);
     buttonLayout->addStretch();
-    mainLayout->addLayout(buttonLayout);
+    m_layout->addLayout(buttonLayout);
 
     // Connect signals
     connect(m_motivationToggle, &QToolButton::clicked, this, &DigestPanel::onMotivationToggle);
