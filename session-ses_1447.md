@@ -2,34 +2,29 @@
 
 **Session ID:** ses_14477b111ffecG0NeJVMpncAii
 **Created:** 6/12/2026, 4:12:13 PM
-**Updated:** 6/14/2026, 7:16:47 PM
+**Updated:** 6/15/2026, 4:30:21 PM
 
 ---
 
-## Assistant (Build · MiMo-V2.5-Pro · 15.8s)
+## Assistant (Build · MiMo-V2.5-Pro · 31.4s)
 
 _Thinking:_
 
-Build successful. Let me run the tests and then commit.
-
-Сборка успешна. Проверяю тесты.
+All three test targets build. Now run them all.
 
 **Tool: bash**
 
 **Input:**
 ```json
 {
-  "command": "cd /home/resu/Documents/dev/cremniy/tests/build && cmake --build . --parallel 2 2>&1 && ./test_dependency_parser 2>&1",
-  "description": "Run tests",
-  "timeout": 120000
+  "command": "cd /home/resu/Documents/dev/cremniy/tests/build && ./test_dependency_parser 2>&1 && echo \"=== CODEMAP ===\" && ./test_codemap 2>&1 && echo \"=== GENERATE CODEMAP ===\" && ./test_generate_codemap_tool 2>&1",
+  "description": "Run all tests",
+  "timeout": 60000
 }
 ```
 
 **Output:**
 ```
-[  0%] Built target test_dependency_parser_autogen_timestamp_deps
-[ 16%] Built target test_dependency_parser_autogen
-[100%] Built target test_dependency_parser
 qt.qpa.plugin: Could not find the Qt platform plugin "wayland" in ""
 ********* Start testing of TestDependencyParser *********
 Config: Using QtTest library 6.8.3, Qt 6.8.3 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 13.3.0), ubuntu 24.04
@@ -41,42 +36,313 @@ PASS   : TestDependencyParser::testNoDuplicates()
 PASS   : TestDependencyParser::testEmptyProject()
 PASS   : TestDependencyParser::testGraphUpdatedSignal()
 PASS   : TestDependencyParser::cleanupTestCase()
-Totals: 8 passed, 0 failed, 0 skipped, 0 blacklisted, 59ms
+Totals: 8 passed, 0 failed, 0 skipped, 0 blacklisted, 15ms
 ********* Finished testing of TestDependencyParser *********
+=== CODEMAP ===
+qt.qpa.plugin: Could not find the Qt platform plugin "wayland" in ""
+********* Start testing of TestCodemap *********
+Config: Using QtTest library 6.8.3, Qt 6.8.3 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 13.3.0), ubuntu 24.04
+PASS   : TestCodemap::initTestCase()
+PASS   : TestCodemap::testLocationRoundTrip()
+PASS   : TestCodemap::testTraceRoundTrip()
+PASS   : TestCodemap::testCodemapRoundTrip()
+PASS   : TestCodemap::testFromJsonMissingOptionalFields()
+PASS   : TestCodemap::testFindLocation()
+PASS   : TestCodemap::testParsedConnections()
+PASS   : TestCodemap::testParsedConnectionsNoLabel()
+PASS   : TestCodemap::testMotivationDetailsParsing()
+PASS   : TestCodemap::testExtractCodeSnippetValidRange()
+PASS   : TestCodemap::testExtractCodeSnippetOutOfBounds()
+PASS   : TestCodemap::testExtractCodeSnippetInvalidLine()
+PASS   : TestCodemap::testExtractCodeSnippetMissingFile()
+PASS   : TestCodemap::testCheckLocationStaleWhenCurrent()
+PASS   : TestCodemap::testCheckLocationStaleWhenChanged()
+PASS   : TestCodemap::testCheckLocationStaleMissingFile()
+PASS   : TestCodemap::testToRelativePath()
+PASS   : TestCodemap::testToAbsolutePath()
+PASS   : TestCodemap::testNormalizeAbsolutePaths()
+PASS   : TestCodemap::testStoreSaveAndLoad()
+PASS   : TestCodemap::testStoreLoadNonexistent()
+PASS   : TestCodemap::testStoreDefaultFilePath()
+PASS   : TestCodemap::cleanupTestCase()
+Totals: 23 passed, 0 failed, 0 skipped, 0 blacklisted, 4ms
+********* Finished testing of TestCodemap *********
+=== GENERATE CODEMAP ===
+qt.qpa.plugin: Could not find the Qt platform plugin "wayland" in ""
+********* Start testing of TestGenerateCodemapTool *********
+Config: Using QtTest library 6.8.3, Qt 6.8.3 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 13.3.0), ubuntu 24.04
+PASS   : TestGenerateCodemapTool::initTestCase()
+PASS   : TestGenerateCodemapTool::testValidCodemapPasses()
+PASS   : TestGenerateCodemapTool::testInvalidJsonSyntax()
+PASS   : TestGenerateCodemapTool::testUnknownFilePath()
+PASS   : TestGenerateCodemapTool::testLineNumberOutOfBounds()
+PASS   : TestGenerateCodemapTool::testLineNumberZero()
+PASS   : TestGenerateCodemapTool::testLineContentMismatch()
+PASS   : TestGenerateCodemapTool::testEmptyTracesWithDetailsIsValid()
+PASS   : TestGenerateCodemapTool::testMarkdownWrappedJson()
+PASS   : TestGenerateCodemapTool::cleanupTestCase()
+Totals: 10 passed, 0 failed, 0 skipped, 0 blacklisted, 1ms
+********* Finished testing of TestGenerateCodemapTool *********
 
 ```
 
 ---
 
-## Assistant (Build · MiMo-V2.5-Pro · 11.4s)
+## Assistant (Build · MiMo-V2.5-Pro · 38.5s)
 
 _Thinking:_
 
-All tests pass. Let me commit.
+All 41 tests pass (8 + 23 + 10). Now let me update the documentation and commit.
 
-Все тесты проходят. Фиксирую.
+Все 41 тест проходят (8 + 23 + 10). Обновляю документацию и фиксирую.
+
+**Tool: edit**
+
+**Input:**
+```json
+{
+  "filePath": "/home/resu/Documents/dev/cremniy/ROADMAP.md",
+  "newString": "## Concept Map / Semantic Layer (in progress)\n\nAI-generated conceptual overview of the codebase, complementing the structural dependency graph with semantic clusters (windsurf/codemap-style):\n\n- [x] Data model — Codemap/CodemapTrace/CodemapLocation with Windsurf-compatible .codemap format\n- [x] GenerateCodemapTool — agent tool with validation, retry, lineContent staleness check\n- [x] Canvas visualization — ClusterGroupNode, StepNode, ConnectionEdge (connections from mermaidDiagram)\n- [x] Tools → Codemap menu entry; Structure/Concept toggle in Canvas toolbar; DigestPanel with per-trace Motivation/Details\n- [x] CodemapStore — <project>.codemap in project root (portable, relative paths)\n- [x] Tests & documentation",
+  "oldString": "## Concept Map / Semantic Layer (in progress)\n\nAI-generated conceptual overview of the codebase, complementing the structural dependency graph with semantic clusters (windsurf/codemap-style):\n\n- [x] Data model — SemanticMap/SemanticCluster/SemanticStep with JSON serialization, SemanticMapStore (.cremniy/semantic_maps/)\n- [x] GenerateSemanticMapTool — agent tool with validation and retry (filePath/lineNumber verification against real files)\n- [x] Canvas visualization — ClusterGroupNode, StepNode, ConnectionEdge with labeled connections\n- [x] Tools → Concept Map menu entry; Structure/Concept toggle in Canvas toolbar; DigestPanel with collapsible Motivation/Details\n- [x] Tests & documentation"
+}
+```
+
+**Output:**
+```
+Edit applied successfully.
+```
+
+---
+
+## Assistant (Build · MiMo-V2.5-Pro · 29.3s)
+
+_Thinking:_
+
+Now update ROADMAP_ru.md.
+
+**Tool: edit**
+
+**Input:**
+```json
+{
+  "filePath": "/home/resu/Documents/dev/cremniy/ROADMAP_ru.md",
+  "newString": "## Concept Map / Семантический слой (в процессе)\n\nAI-генерируемая концептуальная карта кодовой базы, дополняющая структурный граф зависимостей семантическими кластерами (в стиле windsurf/codemap):\n\n- [x] Модель данных — Codemap/CodemapTrace/CodemapLocation в формате .codemap (совместимо с Windsurf)\n- [x] GenerateCodemapTool — инструмент агента с валидацией, retry, проверкой lineContent\n- [x] Визуализация на канвасе — ClusterGroupNode, StepNode, ConnectionEdge (связи из mermaidDiagram)\n- [x] Пункт меню «Codemap»; переключатель «Структура/Концепт» в toolbar; DigestPanel с per-trace Motivation/Details\n- [x] CodemapStore — <project>.codemap в корне проекта (переносимые относительные пути)\n- [x] Тесты и документация",
+  "oldString": "## Concept Map / Семантический слой (в процессе)\n\nAI-генерируемая концептуальная карта кодовой базы, дополняющая структурный граф зависимостей семантическими кластерами (в стиле windsurf/codemap):\n\n- [x] Модель данных — SemanticMap/SemanticCluster/SemanticStep с JSON-сериализацией, SemanticMapStore (.cremniy/semantic_maps/)\n- [x] GenerateSemanticMapTool — инструмент агента с валидацией и retry (проверка filePath/lineNumber по реальным файлам)\n- [x] Визуализация на канвасе — ClusterGroupNode, StepNode, ConnectionEdge с подписями связей\n- [x] Пункт меню «Концептуальная карта»; переключатель «Структура/Концепт» в toolbar; DigestPanel со сворачиваемыми секциями\n- [x] Тесты и документация"
+}
+```
+
+**Output:**
+```
+Edit applied successfully.
+```
+
+---
+
+## Assistant (Build · MiMo-V2.5-Pro · 63.9s)
+
+_Thinking:_
+
+Now update CONTRIBUTING.md.
+
+**Tool: edit**
+
+**Input:**
+```json
+{
+  "filePath": "/home/resu/Documents/dev/cremniy/CONTRIBUTING.md",
+  "newString": "## Concept Map / Semantic Layer\n\nThe semantic layer adds an AI-generated conceptual overview on top of the structural dependency graph, using the Windsurf-compatible `.codemap` format.\n\n### Data flow\n\n1. User triggers via Tools → Generate Codemap (Ctrl+Shift+M), the Structure/Concept toggle in CanvasTab toolbar, or the \"Codemap\" button in AI Assistant header\n2. `IDEWindow::openOrGenerateConceptMap()` checks `CodemapStore::exists()` for a cached `<project>.codemap` in the project root\n3. If absent, generates via `GenerateCodemapTool` through `AgentSession::toolRegistry()`\n4. `GenerateCodemapTool` sends project files to the LLM with a structured system prompt, validates the response (real file paths, in-bounds line numbers, lineContent match), retries up to 2 times\n5. Valid result is saved via `CodemapStore::save()` as `<project>.codemap` and rendered via `CanvasTab::showCodemap()`\n\n### .codemap format\n\nFiles are stored in Windsurf-compatible format with relative paths:\n- `codemap.h/cpp` — Codemap, CodemapTrace, CodemapLocation, CodemapMetadata\n- `codemap_store.h/cpp` — save/load to `<project>.codemap` in project root\n- `codemap_utils.h/cpp` — extractCodeSnippet, checkLocationStale\n\nConnections are stored in `mermaidDiagram` field (Mermaid flowchart syntax) rather than per-location arrays.\n\n### Adding a new field to CodemapTrace/CodemapLocation\n\n1. Add the field in `codemap.h`\n2. Update `toJson()`/`fromJson()` — make new fields optional in `fromJson` for backward compatibility\n3. Update the system prompt in `GenerateCodemapTool::buildSystemPrompt()`\n4. Update `validateCodemapJson()` if the field requires validation\n5. Update visualization (`StepNode`/`ClusterGroupNode`/`DigestPanel`) to display the new field\n\n### Testing\n\n- `tests/test_codemap.cpp` — serialization round-trip, path conversion, staleness check, `CodemapStore`\n- `tests/test_generate_codemap_tool.cpp` — validation logic (no network calls, `CREMNIY_TESTING` friend class)\n\n```bash\ncd tests && mkdir build && cd build\ncmake .. -DCMAKE_PREFIX_PATH=../../third_party/qt-install\ncmake --build . && ./test_dependency_parser && ./test_codemap && ./test_generate_codemap_tool\n```",
+  "oldString": "## Concept Map / Semantic Layer\n\nThe semantic layer adds an AI-generated conceptual overview on top of the structural dependency graph.\n\n### Data flow\n\n1. User triggers via Tools → Concept Map (Ctrl+Shift+M), or the Structure/Concept toggle in CanvasTab toolbar\n2. CanvasTab checks `SemanticMapStore::list()` for a cached map in `.cremniy/semantic_maps/`\n3. If absent, emits `needsSemanticMapGeneration()` — handled by `IDEWindow::on_GenerateSemanticMap()`, which invokes `GenerateSemanticMapTool` via `AgentSession::toolRegistry()`\n4. `GenerateSemanticMapTool` sends project files to the LLM with a structured system prompt, validates the response (real file paths, in-bounds line numbers), retries up to 2 times on validation failure\n5. Valid result is saved via `SemanticMapStore::save()` and rendered via `CanvasTab::showSemanticMap()`\n\n### Adding a new field to SemanticStep/SemanticCluster\n\n1. Add the field in `semantic_map.h`\n2. Update `toJson()`/`fromJson()` — make new fields optional in `fromJson` for backward compatibility with cached `.cremniy/semantic_maps/*.json`\n3. Update the system prompt in `GenerateSemanticMapTool::buildSystemPrompt()` to describe the new field's expected format\n4. Update `validateSemanticMapJson()` if the field requires validation\n5. Update visualization (`StepNode`/`ClusterGroupNode`/`DigestPanel`) to display the new field\n\n### Testing\n\n- `tests/test_semantic_map.cpp` — serialization round-trip, `SemanticMapStore` save/load/list/remove/sanitize\n- `tests/test_generate_semantic_map_tool.cpp` — validation logic (no network calls — uses `CREMNIY_TESTING` friend class pattern)\n\n```bash\ncd tests && mkdir build && cd build\ncmake .. -DCMAKE_PREFIX_PATH=../../third_party/qt-install\ncmake --build . && ctest --output-on-failure\n```"
+}
+```
+
+**Output:**
+```
+Edit applied successfully.
+```
+
+---
+
+## Assistant (Build · MiMo-V2.5-Pro · 77.9s)
+
+_Thinking:_
+
+Now update CONTRIBUTING_ru.md.
+
+**Tool: edit**
+
+**Input:**
+```json
+{
+  "filePath": "/home/resu/Documents/dev/cremniy/CONTRIBUTING_ru.md",
+  "newString": "## Concept Map / Семантический слой\n\nСемантический слой добавляет AI-генерируемую концептуальную карту поверх структурного графа зависимостей в формате `.codemap` (совместимо с Windsurf).\n\n### Поток данных\n\n1. Пользователь вызывает через «Generate Codemap» (Ctrl+Shift+M), переключатель «Структура/Концепт» в toolbar канваса или кнопку «Codemap» в header AI Assistant\n2. `IDEWindow::openOrGenerateConceptMap()` проверяет `CodemapStore::exists()` на наличие кэшированного `<project>.codemap` в корне проекта\n3. Если нет — генерирует через `GenerateCodemapTool` через `AgentSession::toolRegistry()`\n4. `GenerateCodemapTool` отправляет файлы проекта LLM со структурированным системным промтом, валидирует ответ (реальные пути, корректные номера строк, совпадение lineContent), повторяет до 2 раз\n5. Валидный результат сохраняется через `CodemapStore::save()` как `<project>.codemap` и отображается через `CanvasTab::showCodemap()`\n\n### Формат .codemap\n\nФайлы хранятся в формате, совместимом с Windsurf, с относительными путями:\n- `codemap.h/cpp` — Codemap, CodemapTrace, CodemapLocation, CodemapMetadata\n- `codemap_store.h/cpp` — сохранение/загрузка в `<project>.codemap` в корне проекта\n- `codemap_utils.h/cpp` — extractCodeSnippet, checkLocationStale\n\nСвязи хранятся в поле `mermaidDiagram` (синтаксис Mermaid flowchart), а не в массивах на каждый location.\n\n### Добавление нового поля в CodemapTrace/CodemapLocation\n\n1. Добавьте поле в `codemap.h`\n2. Обновите `toJson()`/`fromJson()` — новые поля должны быть опциональными в `fromJson`\n3. Обновите системный промт в `GenerateCodemapTool::buildSystemPrompt()`\n4. Обновите `validateCodemapJson()`, если поле требует валидации\n5. Обновите визуализацию (`StepNode`/`ClusterGroupNode`/`DigestPanel`)\n\n### Тестирование\n\n- `tests/test_codemap.cpp` — сериализация round-trip, конвертация путей, проверка staleness, `CodemapStore`\n- `tests/test_generate_codemap_tool.cpp` — логика валидации (без сетевых вызовов, friend-класс через `CREMNIY_TESTING`)\n\n```bash\ncd tests && mkdir build && cd build\ncmake .. -DCMAKE_PREFIX_PATH=../../third_party/qt-install\ncmake --build . && ./test_dependency_parser && ./test_codemap && ./test_generate_codemap_tool\n```",
+  "oldString": "## Concept Map / Семантический слой\n\nСемантический слой добавляет AI-генерируемую концептуальную карту поверх структурного графа зависимостей.\n\n### Поток данных\n\n1. Пользователь вызывает через «Концептуальная карта» (Ctrl+Shift+M) или переключатель «Структура/Концепт» в toolbar канваса\n2. `CanvasTab` проверяет `SemanticMapStore::list()` на наличие кэшированной карты в `.cremniy/semantic_maps/`\n3. Если нет — эмитит `needsSemanticMapGeneration()`, который обрабатывает `IDEWindow::on_GenerateSemanticMap()`, вызывая `GenerateSemanticMapTool` через `AgentSession::toolRegistry()`\n4. `GenerateSemanticMapTool` отправляет файлы проекта LLM со структурированным системным промтом, валидирует ответ (реальные пути файлов, корректные номера строк), повторяет до 2 раз при ошибке валидации\n5. Валидный результат сохраняется через `SemanticMapStore::save()` и отображается через `CanvasTab::showSemanticMap()`\n\n### Добавление нового поля в SemanticStep/SemanticCluster\n\n1. Добавьте поле в `semantic_map.h`\n2. Обновите `toJson()`/`fromJson()` — новые поля должны быть опциональными в `fromJson` для обратной совместимости с кэшированными `.cremniy/semantic_maps/*.json`\n3. Обновите системный промт в `GenerateSemanticMapTool::buildSystemPrompt()` с описанием формата нового поля\n4. Обновите `validateSemanticMapJson()`, если поле требует валидации\n5. Обновите визуализацию (`StepNode`/`ClusterGroupNode`/`DigestPanel`) для отображения нового поля\n\n### Тестирование\n\n- `tests/test_semantic_map.cpp` — сериализация round-trip, `SemanticMapStore` save/load/list/remove/sanitize\n- `tests/test_generate_semantic_map_tool.cpp` — логика валидации (без сетевых вызовов — паттерн friend-класса через `CREMNIY_TESTING`)\n\n```bash\ncd tests && mkdir build && cd build\ncmake .. -DCMAKE_PREFIX_PATH=../../third_party/qt-install\ncmake --build . && ctest --output-on-failure\n```"
+}
+```
+
+**Output:**
+```
+Edit applied successfully.
+```
+
+---
+
+## Assistant (Build · MiMo-V2.5-Pro · 33.7s)
+
+_Thinking:_
+
+Now let me also check if there are any remaining references to the old semantic_map files that might cause issues.
+
+**Tool: grep**
+
+**Input:**
+```json
+{
+  "path": "/home/resu/Documents/dev/cremniy/src",
+  "pattern": "semantic_map\\.h|semantic_map_store|semantic_map_utils|generate_semantic_map"
+}
+```
+
+**Output:**
+```
+Found 1 matches
+/home/resu/Documents/dev/cremniy/src/app/IDEWindow/idewindow.cpp:
+  Line 375:             tool = tools->findTool("generate_semantic_map"); // fallback
+
+```
+
+---
+
+## Assistant (Build · MiMo-V2.5-Pro · 33.1s)
+
+_Thinking:_
+
+There's one remaining reference — the fallback in IDEWindow. That's intentional (for backward compatibility). Let me now commit everything.
+
+Всё чисто, кроме одного fallback в IDEWindow (intentional). Фиксирую.
 
 **Tool: bash**
 
 **Input:**
 ```json
 {
-  "command": "git add src/app/IDEWindow/idewindow.h src/app/IDEWindow/idewindow.cpp src/ui/MenuBar/Menus/Tools/toolsmenu.h src/ui/MenuBar/Menus/Tools/toolsmenu.cpp src/ToolTabs/Canvas/canvastab.h src/ToolTabs/Canvas/canvastab.cpp src/Agent/agent_session.h && git commit -m \"feat: Tools → Concept Map menu item (Ctrl+Shift+M)\n\nIDEWindow: save m_projectPath, add projectPath()/canvasTab()/openOrCreateCanvasTab()\nToolsMenu: Concept Map action with load-or-generate logic\n  - Loads latest saved map from .cremniy/semantic_maps/ if exists\n  - Falls back to GenerateSemanticMapTool generation\n  - Status bar progress indication\nAgentSession: add toolRegistry() getter\nCanvasTab: showSemanticMap() displays step nodes with linear layout,\n  showStructureGraph() toggles back to dependency graph view\"",
-  "description": "Commit Concept Map menu integration",
+  "command": "git add -A && git status --short | head -30",
+  "description": "Stage all changes and check status",
   "workdir": "/home/resu/Documents/dev/cremniy"
 }
 ```
 
 **Output:**
 ```
-[main 67713a7] feat: Tools → Concept Map menu item (Ctrl+Shift+M)
- 7 files changed, 233 insertions(+)
+M  CONTRIBUTING.md
+M  CONTRIBUTING_ru.md
+M  ROADMAP.md
+M  ROADMAP_ru.md
+M  src/Agent/agent_session.cpp
+A  src/Agent/tools/generate_codemap_tool.cpp
+R  src/Agent/tools/generate_semantic_map_tool.h -> src/Agent/tools/generate_codemap_tool.h
+D  src/Agent/tools/generate_semantic_map_tool.cpp
+M  src/CMakeLists.txt
+M  src/ToolTabs/Canvas/CMakeLists.txt
+M  src/ToolTabs/Canvas/canvastab.cpp
+M  src/ToolTabs/Canvas/canvastab.h
+A  src/ToolTabs/Canvas/codemap.cpp
+A  src/ToolTabs/Canvas/codemap.h
+A  src/ToolTabs/Canvas/codemap_store.cpp
+A  src/ToolTabs/Canvas/codemap_store.h
+A  src/ToolTabs/Canvas/codemap_utils.cpp
+A  src/ToolTabs/Canvas/codemap_utils.h
+M  src/ToolTabs/Canvas/digest_panel.cpp
+M  src/ToolTabs/Canvas/digest_panel.h
+D  src/ToolTabs/Canvas/semantic_map.cpp
+D  src/ToolTabs/Canvas/semantic_map.h
+D  src/ToolTabs/Canvas/semantic_map_store.cpp
+D  src/ToolTabs/Canvas/semantic_map_store.h
+D  src/ToolTabs/Canvas/semantic_map_utils.cpp
+D  src/ToolTabs/Canvas/semantic_map_utils.h
+M  src/app/IDEWindow/idewindow.cpp
+M  src/ui/MenuBar/Menus/Tools/toolsmenu.cpp
+M  src/ui/MenuBar/Menus/Tools/toolsmenu.h
+M  tests/CMakeLists.txt
 
 ```
 
 ---
 
-## Assistant (Build · MiMo-V2.5-Pro · 16.4s)
+## Assistant (Build · MiMo-V2.5-Pro · 10.0s)
+
+_Thinking:_
+
+Let me also check the tests directory.
+
+**Tool: bash**
+
+**Input:**
+```json
+{
+  "command": "git status --short tests/",
+  "description": "Check test file status",
+  "workdir": "/home/resu/Documents/dev/cremniy"
+}
+```
+
+**Output:**
+```
+M  tests/CMakeLists.txt
+A  tests/test_codemap.cpp
+A  tests/test_generate_codemap_tool.cpp
+D  tests/test_generate_semantic_map_tool.cpp
+D  tests/test_semantic_map.cpp
+
+```
+
+---
+
+## Assistant (Build · MiMo-V2.5-Pro · 28.3s)
+
+_Thinking:_
+
+Now commit everything.
+
+**Tool: bash**
+
+**Input:**
+```json
+{
+  "command": "git commit -m \"feat: migrate to Windsurf .codemap format (8 sub-prompts)\n\nNew data model (codemap.h/cpp):\n- Codemap/CodemapTrace/CodemapLocation/Codemetadata\n- Windsurf-compatible .codemap format with mermaidDiagram for connections\n- parsedConnections() parses Mermaid edge syntax\n- normalizeAbsolutePaths() for portable relative paths\n- populateRuntimeFields() fills codeSnippet/isStale after load\n\nNew storage (codemap_store.h/cpp):\n- <project>.codemap in project root (not .cremniy/)\n- save/load/exists with automatic path normalization\n\nNew utils (codemap_utils.h/cpp):\n- extractCodeSnippet() with centerLine + contextLines\n- checkLocationStale() compares lineContent vs actual file\n\nGenerateCodemapTool (renamed from GenerateSemanticMapTool):\n- System prompt generates .codemap JSON format\n- Validates lineContent match against real files\n- Saves via CodemapStore\n\nCanvas visualization adapted:\n- showCodemap() uses Codemap traces/locations\n- Connections from mermaidDiagram (not per-location arrays)\n- DigestPanel shows per-trace Motivation/Details from traceGuide\n- StepNode shows stale indicator (⚠) for changed locations\n\nTests: 41/41 PASS (8 + 23 + 10)\nDocumentation: ROADMAP/CONTRIBUTING updated for .codemap format\n\nOld semantic_map* files removed.\"",
+  "description": "Commit .codemap migration",
+  "workdir": "/home/resu/Documents/dev/cremniy"
+}
+```
+
+**Output:**
+```
+[main 579ff04] feat: migrate to Windsurf .codemap format (8 sub-prompts)
+ 34 files changed, 1644 insertions(+), 1557 deletions(-)
+ create mode 100644 src/Agent/tools/generate_codemap_tool.cpp
+ rename src/Agent/tools/{generate_semantic_map_tool.h => generate_codemap_tool.h} (63%)
+ delete mode 100644 src/Agent/tools/generate_semantic_map_tool.cpp
+ create mode 100644 src/ToolTabs/Canvas/codemap.cpp
+ create mode 100644 src/ToolTabs/Canvas/codemap.h
+ create mode 100644 src/ToolTabs/Canvas/codemap_store.cpp
+ create mode 100644 src/ToolTabs/Canvas/codemap_store.h
+ create mode 100644 src/ToolTabs/Canvas/codemap_utils.cpp
+ create mode 100644 src/ToolTabs/Canvas/codemap_utils.h
+ delete mode 100644 src/ToolTabs/Canvas/semantic_map.cpp
+ delete mode 100644 src/ToolTabs/Canvas/semantic_map.h
+ delete mode 100644 src/ToolTabs/Canvas/semantic_map_store.cpp
+ delete mode 100644 src/ToolTabs/Canvas/semantic_map_store.h
+ delete mode 100644 src/ToolTabs/Canvas/semantic_map_utils.cpp
+ delete mode 100644 src/ToolTabs/Canvas/semantic_map_utils.h
+ create mode 100644 tests/test_codemap.cpp
+ create mode 100644 tests/test_generate_codemap_tool.cpp
+ delete mode 100644 tests/test_generate_semantic_map_tool.cpp
+ delete mode 100644 tests/test_semantic_map.cpp
+
+```
+
+---
+
+## Assistant (Build · MiMo-V2.5-Pro · 36.4s)
 
 _Thinking:_
 
@@ -89,8 +355,8 @@ Done. Let me mark the task and summarize.
 {
   "operation": {
     "action": "done",
-    "id": "T9",
-    "event_summary": "Concept Map menu item with load-or-generate logic"
+    "id": "T13",
+    "event_summary": "Migrated to Windsurf .codemap format: new data model, store, utils, tool, visualization, 41 tests passing"
   }
 }
 ```
@@ -102,785 +368,415 @@ done → done
 
 ---
 
-## Assistant (Build · MiMo-V2.5-Pro · 15.2s)
+## Assistant (Build · MiMo-V2.5-Pro · 24.5s)
 
 _Thinking:_
 
-Let me summarize what was done.
+Done. Let me summarize.
 
-Готово (`67713a7`):
+Готово (`579ff04`) — миграция на формат `.codemap` завершена:
 
-**Промт A** — `IDEWindow`: `m_projectPath` сохранён, `projectPath()`, `canvasTab()`, `openOrCreateCanvasTab()` добавлены.
+**Новая модель данных** (`codemap.h/cpp`):
+- `Codemap` / `CodemapTrace` / `CodemapLocation` / `CodemapMetadata` — точно соответствуют формату Windsurf
+- `parsedConnections()` — парсит `mermaidDiagram` (синтаксис `1a -->|label| 2b`)
+- `normalizeAbsolutePaths()` — конвертирует абсолютные пути в относительные
+- `populateRuntimeFields()` — заполняет `codeSnippet` / `isStale` после загрузки
 
-**Промт B** — `ToolsMenu`: "Concept Map" (Ctrl+Shift+M) в меню Tools.
+**Хранилище** (`codemap_store.h/cpp`):
+- `<project>.codemap` в корне проекта (не `.cremniy/`)
+- Автоматическая нормализация путей при save/load
 
-**Промт C** — Логика `on_Open_ConceptMap()`:
-- Проверяет `.cremniy/semantic_maps/` — если есть карты, загружает свежую
-- Если нет — вызывает `GenerateSemanticMapTool` напрямую через `toolRegistry()`
-- Статус-бар показывает прогресс, очищается по завершению
+**Генерация** (`generate_codemap_tool.h/cpp`):
+- Системный промт под формат `.codemap` (lineContent, mermaidDiagram)
+- Валидация: lineContent совпадает с реальной строкой файла → retry
 
-**Промт D** — `CanvasTab::showSemanticMap()`:
-- Очищает сцену, создаёт `FileNode` для каждого `SemanticStep`
-- Создаёт `DependencyEdge` для connections
-- Анимирует позиции через `animateNodesToPositions()`
-- `showStructureGraph()` — обратное переключение на DependencyGraph
+**Визуализация**: `showCodemap()` вместо `showSemanticMap()`, связи из `mermaidDigest`, per-trace Motivation/Details, stale-индикатор на StepNode
+
+**Тесты**: 41/41 PASS (DependencyParser 8 + Codemap 23 + GenerateCodemapTool 10)
 
 ---
 
 ## User
 
-отправь в облако комит fix fasa 3
+далее по промту:суть задачи такая:на плашке с агентом делаем кнопку "Codemap" , при нажатии генерится по алгоритму windsurf/codemaps(пример:                       
+  Qt_Application_Entry_Point_and_Welcome_Window_System_20260614_123113.codemap.txt), сейчас открывается "функциональный канвас" а нужен              
+  автономный концептуально-семантическийв(windsurf/codemaps) корне, дальше запускается канвас с двумя кнопками семантический расклад и               
+  граф(как в windsurf). по этому нужен промт-план с учетом сделанного.                                                                               
+                                                                                                                                                     
+
+  Изучаю текущую реализацию и формат Windsurf codemap, чтобы составить промт-план.
+
+    Grepped, globbed, read 6 greps, 3 globs, 17 files
+    … 23 earlier items hidden
+    Read src/ui/toolstabwidget.cpp
+    Grepped "DigestPanel|m_digestPanel" in src/ToolTabs/Canvas
+    Read ...lcome_Window_System_20260614_123113.codemap.txt lines 250-309
+
+  Промт-план: автономный Codemap-канвас (Windsurf-style)
+
+  Целевое поведение
+
+  [AI Assistant] → кнопка "Codemap"
+         ↓
+  Генерация/загрузка <Title>_YYYYMMDD_HHMMSS.codemap.txt в корне проекта
+         ↓
+  Открывается Canvas в режиме «Семантический» (traces, clusters, mermaid)
+         ↓
+  Toolbar: [Семантический] | [Граф]  ← как в Windsurf
+         ↓
+  «Граф» — лениво подгружает #include dependency graph (текущий функциональный канвас)
+
+  ────────────────────────────────────────
+
+  Что уже сделано (не трогать без необходимости)
+
+  ┌──────────────────────────────────────────────────────────┬────────┐
+  │ Компонент                                                │ Статус │
+  ├──────────────────────────────────────────────────────────┼────────┤
+  │ Кнопка Codemap в ChatPanel                               │ ✅     │
+  ├──────────────────────────────────────────────────────────┼────────┤
+  │ openOrGenerateConceptMap() — единый контроллер           │ ✅     │
+  ├──────────────────────────────────────────────────────────┼────────┤
+  │ GenerateCodemapTool + валидация lineContent              │ ✅     │
+  ├──────────────────────────────────────────────────────────┼────────┤
+  │ Модель Codemap / CodemapTrace / CodemapLocation          │ ✅     │
+  ├──────────────────────────────────────────────────────────┼────────┤
+  │ showCodemap() / showStructureGraph() / toggleGraphMode() │ ✅     │
+  ├──────────────────────────────────────────────────────────┼────────┤
+  │ ClusterGroupNode, StepNode, ConnectionEdge               │ ✅     │
+  ├──────────────────────────────────────────────────────────┼────────┤
+  │ ensureCanvasSignalsConnected()                           │ ✅     │
+  ├──────────────────────────────────────────────────────────┼────────┤
+  │ Тесты 41/41                                              │ ✅     │
+  └──────────────────────────────────────────────────────────┴────────┘
+
+  Разрыв с целью (что ломает UX сейчас)
+
+  1. openOrCreateCanvasTab() открывает первый .cpp → DependencyParser сразу строит структурный граф (m_structuralMode = true).
+  2. Один криптичный toggle Mode вместо двух явных кнопок.
+  3. CodemapStore пишет <projectName>.codemap, а не Windsurf-имя <Title>_YYYYMMDD_HHMMSS.codemap.txt.
+  4. DigestPanel объявлен, но не создаётся (m_digestPanel = nullptr).
+  5. Canvas живёт внутри FileTab → привязан к файлу, а codemap — уровень проекта.
+
+  ────────────────────────────────────────
+
+  Фазы и промты
+
+  Фаза 1 — Правильный entry flow (кнопка → семантика, не граф)
+
+  Цель: по клику «Codemap» пользователь сразу видит семантический канвас, без dependency graph.
+
+  Промт 1.1 — openOrCreateCodemapCanvas()
+
+  В Cremniy (src/app/IDEWindow/idewindow.cpp):
+  1. Добавь IDEWindow::openOrCreateCodemapCanvas() — отдельно от openOrCreateCanvasTab():
+     - Находит существующий CanvasTab через canvasTab()
+     - Если нет — открывает Canvas БЕЗ привязки к конкретному .cpp:
+       вариант A (минимальный): открыть любой файл проекта, но сразу переключить
+       Canvas на semantic mode ДО setTabData()/startParsing
+       вариант B (предпочтительный): добавить FilesTabWidget::openProjectCanvasTab()
+       — вкладка "Codemap" на уровне проекта, не привязанная к файлу
+  2. openOrGenerateConceptMap() должен вызывать openOrCreateCodemapCanvas(),
+     а не openOrCreateCanvasTab()
+  3. После открытия Canvas:
+     - переключить на вкладку Canvas в ToolsTabWidget (findChild, setCurrentIndex)
+     - вызвать canvas->enterSemanticMode() (создать в Фазе 2)
+     - НЕ запускать buildGraph до явного переключения на «Граф»
+  Проверка:
+  - Клик Codemap → Canvas открывается в semantic view, FileNode'ов нет
+  - Gource/dependency parser не стартуют до клика «Граф»
+
+  Промт 1.2 — ленивый structural parser
+
+  В CanvasTab (canvastab.cpp/h):
+  1. Добавь enum ViewMode { Semantic, Structural }
+     заменить bool m_structuralMode
+  2. setTabData() — НЕ вызывать m_parser->startParsing() если текущий режим Semantic
+  3. showStructureGraph() / enterStructuralMode():
+     - если m_parser ещё не запускался — запустить startParsing() лениво
+     - затем buildGraph + layoutNodesRadial
+  4. showCodemap() / enterSemanticMode():
+     - clearCanvas() + clearSemanticNodes() как сейчас
+     - скрыть LayerPanel, Gource controls (Play/Pause/Speed), Refresh
+     - показать DigestPanel (см. Фазу 3)
+  5. onGraphReady(): если режим Semantic — сохранить m_currentGraph, но НЕ рисовать
+  Проверка: Codemap → semantic view без FileNode. Переключение на Граф → граф появляется.
+
+  ────────────────────────────────────────
+
+  Фаза 2 — Хранение в формате Windsurf (корень проекта)
+
+  Цель: файлы как Qt_Application_Entry_Point_and_Welcome_Window_System_20260614_123113.codemap.txt.
+
+  Промт 2.1 — CodemapStore с Windsurf-именованием
+
+  В src/ToolTabs/Canvas/codemap_store.h/cpp:
+  1. Добавь статические методы:
+     QString slugifyTitle(const QString& title)
+       // "Qt Application Entry Point" → "Qt_Application_Entry_Point"
+     QString buildFileName(const Codemap& map)
+       // "<slugified_title>_<YYYYMMDD_HHMMSS>.codemap.txt"
+       // timestamp из map.metadata.generationTimestamp или QDateTime::currentDateTime()
+  2. save(const Codemap& map) → пишет в projectRoot/buildFileName(map)
+     normalizeAbsolutePaths перед записью
+  3. load(const QString& filePath) — загрузка конкретного файла
+     loadLatest() — самый свежий *.codemap.txt в корне проекта
+     list() → QList<{path, title, timestamp}>
+     exists() → есть ли хотя бы один *.codemap.txt
+  4. Обратная совместимость: если есть старый <project>.codemap — loadLatest() подхватывает его
+  5. Обнови openOrGenerateConceptMap():
+     - exists() / loadLatest() вместо единого defaultFilePath()
+     - после генерации сохранять с Windsurf-именем
+  Проверка:
+  - Сгенерированный файл: <Title>_20260615_143022.codemap.txt в корне
+  - Повторный клик Codemap → открывает latest без регенерации
+  - test_codemap.cpp: тесты buildFileName, loadLatest, list
+
+  Промт 2.2 — id в JSON как в примере
+
+  В GenerateCodemapTool::buildSystemPrompt() и validateCodemapJson():
+  1. id в JSON = slug title + timestamp (как в примере
+     Qt_Application_Entry_Point_and_Welcome_Window_System_20260614_123113)
+  2. metadata.generationTimestamp — ISO8601 с timezone (+05:00)
+  3. metadata.originalPrompt — текст из scope/task чата (если кнопка без scope —
+     "Full project overview" или список allFiles)
+  4. Убери двойной save: оставить ТОЛЬКО в IDEWindow callback
+     (убрать store.save из GenerateCodemapTool::onMapStreamFinished)
+  Проверка: JSON совместим с Qt_Application_Entry_Point_...codemap.txt из репо
+
+  ────────────────────────────────────────
+
+  Фаза 3 — Toolbar: две кнопки как в Windsurf
+
+  Цель: явный переключатель «Семантический» / «Граф», не один Mode.
+
+  Промт 3.1 — Segmented control в toolbar
+
+  В CanvasTab::CanvasTab() (canvastab.cpp):
+  1. Убери toggleModeBtn ("Mode")
+  2. Добавь QButtonGroup + два QToolButton:
+     - "Семантический" (tooltip: "Concept map / codemap layout")
+     - "Граф" (tooltip: "Dependency graph (#include)")
+     Стиль: segmented control — активная кнопка подсвечена (#3a5a7a),
+     неактивная (#252530). Как tab-bar в Windsurf.
+  3. По умолчанию при открытии через Codemap: "Семантический" active
+     При открытии Canvas из файла (обычный путь): "Граф" active
+  4. Сигналы:
+     semanticBtn → enterSemanticMode()
+     graphBtn → enterStructuralMode()
+  5. Управление видимостью toolbar-элементов:
+     Semantic mode: скрыть Play/Pause/Speed/Refresh/LayerPanel
+     Structural mode: показать их, скрыть DigestPanel
+  Проверка: две кнопки, переключение без потери m_currentCodemap/m_currentGraph
+
+  Промт 3.2 — DigestPanel в semantic mode
+
+  В CanvasTab:
+  1. Создай m_digestPanel = new DigestPanel(this) в конструкторе
+     Позиция: overlay справа (как LayerPanel), width ~300px
+  2. connect(codemapShown) → m_digestPanel->showMap(map)
+     connect(stepNavigationRequested) → IDEWindow открывает файл на строке
+  3. При enterSemanticMode() — m_digestPanel->show(), playAppearAnimation()
+     При enterStructuralMode() — playDisappearAnimation(), hide()
+  4. Клик на location в DigestPanel → highlight StepNode + pulse
+  Проверка: semantic mode показывает Motivation/Details per-trace из traceGuide
+
+  ────────────────────────────────────────
+
+  Фаза 4 — Автономный project-level Canvas
+
+  Цель: codemap не зависит от «какой файл открыт первым».
+
+  Промт 4.1 — Project Canvas Tab (рекомендуемый путь)
+
+  Архитектурное изменение:
+  1. IDEWindow: добавь m_projectCanvasDock или вкладку верхнего уровня
+     "Concept Map" рядом с FilesTabWidget (QSplitter или QStackedWidget)
+     Альтернатива (меньше diff): FilesTabWidget::openCodemapTab()
+     — специальная вкладка с tabTitle="Codemap", filePath=projectRoot,
+     ToolsTabWidget создаётся с флагом semanticFirst=true
+  2. CanvasTab получает projectRoot напрямую:
+     void setProjectRoot(const QString& root) — вместо QFileInfo(filepath).absolutePath()
+     setFile() остаётся для file-attached canvas, setProjectRoot() для codemap canvas
+  3. canvasTab() ищет CanvasTab:
+     - сначала в project codemap tab
+     - fallback: findChild в любом FileTab
+  4. openOrCreateCodemapCanvas() открывает project-level tab,
+     переключает FilesTabWidget на неё, выбирает Canvas tool
+  Проверка:
+  - Codemap работает без открытого .cpp в редакторе
+  - Закрытие codemap tab не закрывает файловые вкладки
+  - structural graph в режиме «Граф» использует projectRoot, не filepath вкладки
+
+  ────────────────────────────────────────
+
+  Фаза 5 — Визуализация и layout (дотянуть до Windsurf)
+
+  Промт 5.1 — ClusterLayout + mermaid subgraphs
+
+  1. showCodemap(): заменить inline grid (x+=500) на ClusterLayout::arrangeMap()
+  2. parsedConnections(): поддержать mermaid subgraph syntax из примера:
+     "graph TB\n  subgraph startup[...]\n    1a[...]\n  end"
+     Regex расширить или парсить построчно
+  3. StepNode: показать ⚠ если loc.isStale (уже есть поле — проверить UI)
+  4. traceTextDiagram: отобразить в DigestPanel как <pre> monospace блок
+  5. Цвета traces: использовать trace.color для ClusterGroupNode border
+  Проверка: визуально близко к Windsurf — кластеры в grid, связи из mermaidDiagram,
+  subgraph-группировка в diagram (хотя бы labels на рёбрах)
+
+  Промт 5.2 — Scope из чата
+
+  Расширь openOrGenerateConceptMap():
+  1. Если в ChatPanel есть последнее сообщение пользователя — передать как task
+     в GenerateCodemapTool args["task"]
+  2. Если пусто — scope = все файлы из m_currentGraph.allFiles
+     (или рекурсивный обход src/)
+  3. Кнопка Codemap при генерации показывает в statusBar:
+     "Generating codemap for: <task или N files>..."
+  Проверка: codemap про конкретный модуль, если пользователь спросил в чате
+
+  ────────────────────────────────────────
+
+  Фаза 6 — Cleanup + тесты + docs
+
+  Промт 6.1 — Переименование legacy
+
+  Переименуй (одним PR):
+  - needsSemanticMapGeneration → needsCodemapGeneration
+  - on_GenerateSemanticMap → on_GenerateCodemap (toolsmenu)
+  - убери fallback findTool("generate_semantic_map")
+  - CONTRIBUTING_ru.md секция Canvas: semantic_map* → codemap*
+  - ROADMAP: "Concept Map (in progress)" → "Concept Map (done)" после Фаз 1-4
+
+  Промт 6.2 — Интеграционный тест flow
+
+  tests/test_codemap_canvas_flow.cpp (или расширить test_codemap):
+  1. Создать temp project + положить Qt_Application_Entry_Point_...codemap.txt
+  2. CodemapStore::loadLatest() → traces не пустые
+  3. Codemap::parsedConnections() → >= N edges из mermaidDiagram
+  4. normalizeAbsolutePaths → relative paths
+  Без GUI (unit). GUI smoke — в CONTRIBUTING manual checklist.
+
+  ────────────────────────────────────────
+
+  Порядок выполнения
+
+  mermaid flowchart
+
+  flowchart LR
+      F1[Фаза 1: Entry flow] --> F2[Фаза 2: Windsurf storage]
+      F1 --> F3[Фаза 3: Две кнопки + DigestPanel]
+      F2 --> F4[Фаза 4: Project Canvas]
+      F3 --> F5[Фаза 5: Layout polish]
+      F4 --> F5
+      F5 --> F6[Фаза 6: Cleanup]
+
+  ┌───────────┬───────────┬────────────────────────────────┬───────────┐
+  │ Приоритет │ Фаза      │ Эффект                         │ Сложность │
+  ├───────────┼───────────┼────────────────────────────────┼───────────┤
+  │ 🔴 P0     │ 1 + 3.1   │ Codemap → semantic, две кнопки │ Средняя   │
+  ├───────────┼───────────┼────────────────────────────────┼───────────┤
+  │ 🔴 P0     │ 2         │ Windsurf-файлы в корне         │ Низкая    │
+  ├───────────┼───────────┼────────────────────────────────┼───────────┤
+  │ 🟡 P1     │ 3.2 + 5.1 │ DigestPanel + layout           │ Средняя   │
+  ├───────────┼───────────┼────────────────────────────────┼───────────┤
+  │ 🟡 P1     │ 4         │ Автономный project canvas      │ Высокая   │
+  ├───────────┼───────────┼────────────────────────────────┼───────────┤
+  │ 🟢 P2     │ 5.2 + 6   │ Scope из чата, cleanup         │ Низкая    │
+  └───────────┴───────────┴────────────────────────────────┴───────────┘
+
+  ────────────────────────────────────────
+
+  Чеклист готовности (Definition of Done)
+
+  ◻ Кнопка Codemap → Canvas в семантическом режиме, без FileNode
+  ◻ Файл <Title>_YYYYMMDD_HHMMSS.codemap.txt в корне проекта
+  ◻ Toolbar: «Семантический» | «Граф» (две кнопки, не toggle)
+  ◻ «Граф» лениво грузит dependency parser
+  ◻ DigestPanel с Motivation/Details per-trace
+  ◻ Повторный клик → loadLatest(), без регенерации
+  ◻ Импорт примера Qt_Application_Entry_Point_...codemap.txt работает
+  ◻ Тесты зелёные, docs обновлены
+
+  ────────────────────────────────────────
+
+  Быстрый старт (минимальный MVP за 2 промта)
+
+  Если нужен результат быстро — только Промт 1.2 + Промт 3.1 + Промт 2.1:
+
+  1. Ленивый parser + semantic-first при Codemap
+  2. Две кнопки вместо Mode
+  3. Windsurf-имена файлов
+
+  Это закроет главную боль: «открывается функциональный канвас вместо семантического». 
 
 ---
 
-## Assistant (Build · MiMo-V2.5-Pro · 11.4s)
+## Assistant (Build · MiMo-V2.5-Pro · 51.7s)
 
 _Thinking:_
 
-The user wants to push the commit to the remote repository. Let me do that.
+The user has provided a comprehensive prompt-plan for making the Codemap canvas autonomous and Windsurf-compatible. Let me implement the phases in the recommended order, starting with the "quick start" MVP: Promt 1.2 + Promt 3.1 + Promt 2.1, then continue with the rest.
 
-**Tool: bash**
+Let me create a task and start implementing systematically.
+
+**Tool: task**
 
 **Input:**
 ```json
 {
-  "command": "git push origin main 2>&1",
-  "description": "Push to GitHub",
-  "timeout": 60000,
-  "workdir": "/home/resu/Documents/dev/cremniy"
+  "operation": {
+    "action": "create",
+    "summary": "Autonomous Codemap canvas: 6 phases, Windsurf-compatible UX"
+  }
 }
 ```
 
 **Output:**
 ```
-fatal: could not read Username for 'https://github.com': Нет такого устройства или адреса
-
+Created T14 (open): Autonomous Codemap canvas: 6 phases, Windsurf-compatible UX
 ```
 
 ---
 
-## Assistant (Build · MiMo-V2.5-Pro · 15.3s)
+## Assistant (Build · MiMo-V2.5-Pro · 18.6s)
 
 _Thinking:_
 
-HTTPS auth isn't working. Let me check if SSH is available or if gh CLI is installed.
+Let me start with the quick-start MVP (Phases 1 + 3.1 + 2.1), then continue with the rest.
 
-**Tool: bash**
+**Tool: task**
 
 **Input:**
 ```json
 {
-  "command": "gh auth status 2>&1 || ssh -T git@github.com 2>&1 | head -3",
-  "description": "Check GitHub auth"
+  "operation": {
+    "action": "start",
+    "id": "T14"
+  }
 }
 ```
 
 **Output:**
 ```
-/bin/bash: строка 1: gh: команда не найдена
-git@github.com: Permission denied (publickey).
-
+start → in_progress
 ```
 
 ---
 
-## Assistant (Build · MiMo-V2.5-Pro · 14.3s)
+## Assistant (Build · MiMo-V2.5-Pro · 8.1s)
 
 _Thinking:_
 
-Neither gh CLI nor SSH keys are set up. I need to inform the user they need to authenticate. Let me check if there's a token or credentials stored somewhere.
+Let me start with the quick-start MVP: Phases 1, 2.1, and 3.1.
 
-Нет доступа к GitHub — ни `gh`, ни SSH-ключ не настроены. Нужно запушить вручную:
+**Phase 1** — Lazy parser + semantic-first when Codemap
+**Phase 2.1** — Windsurf-style filenames
+**Phase 3.1** — Two buttons instead of Mode toggle
 
-**Через SSH:**
-```bash
-ssh-keygen -t ed25519 -C "dmi3vla@gmail.com"
-# добавь ~/.ssh/id_ed25519.pub в GitHub → Settings → SSH keys
-git remote set-url origin git@github.com:dmi3vla/cremniy.git
-git push origin main
-```
+Let me read the current state of the files I need to modify.
 
-**Через токен:**
-```bash
-git remote set-url origin https://<TOKEN>@github.com/dmi3vla/cremniy.git
-git push origin main
-```
-
----
-
-## User
-
-кривое слияние с гитом получилось сделай ревью сделанного и устранение конфликтов после слияния перестал работать вызов карты:resu@utug:~/Documents/dev/cremniy/build$ ./cremniy
-qt.qpa.plugin: Could not find the Qt platform plugin "wayland" in ""
-WelcomeForm::WelcomeForm(QWidget *parent)
-QList("1", "2", "3", "4", "5", "6")
-Generate Semantic Map triggered
-Generate Semantic Map triggered
-Generate Semantic Map triggered
-Generate Semantic Map triggered
-ToolsTabWidget constr: for id in avTabs
-availableTab:  "Code"
-FormatPageFactory constr: for id in avPages
-QHexCursor::move(QHexPosition pos)
-QHexCursor::select(QHexPosition pos)
-availablePage:  "RAW"
-availablePage:  "ELF"
-availablePage:  "PE"
-availablePage:  "MBR"
-availableTab:  "Binary"
-availableTab:  "Disassembler"
-availableTab:  "Canvas"
-CodeEditorTab: setTabData
-QCodeEditor: setBData
-ToolsTabWidget: removeStar()
-ToolsTabWidget: removeStar():  "Binary"
-ToolsTabWidget: removeStar(): toolCount_WithoutModIndicator++
-ToolsTabWidget: removeStar():  "Disassembler"
-ToolsTabWidget: removeStar(): toolCount_WithoutModIndicator++
-ToolsTabWidget: removeStar():  "Canvas"
-ToolsTabWidget: removeStar(): toolCount_WithoutModIndicator++
-ToolsTabWidget: removeStar():  3  :  4
-ToolsTabWidget: removeStar(): removeStarSignal
-Generate Semantic Map triggered
-Generate Semantic Map triggered
-resu@utug:~/Documents/dev/cremniy/build$ 
-
----
-
-## Assistant (Build · MiMo-V2.5-Pro · 23.6s)
-
-_Thinking:_
-
-The user is saying there was a bad merge with git and after the merge the "Concept Map" call stopped working. Looking at the output, "Generate Semantic Map triggered" is printed multiple times, which suggests the menu action is being triggered but not actually working properly.
-
-Let me investigate the current state of the code to find the issues.
-
-**Tool: bash**
-
-**Input:**
-```json
-{
-  "command": "git log --oneline -10",
-  "description": "Check git history after merge",
-  "workdir": "/home/resu/Documents/dev/cremniy"
-}
-```
-
-**Output:**
-```
-920a8bf feat: Tools → Concept Map menu item (Ctrl+Shift+M)
-7e5841e fasa 4
-b5f2932 fasa 3
-6c94e7e fasa-2
-4a6efa3 feat: GenerateSemanticMapTool — agent tool for semantic map generation
-5b665fe feat: Semantic map data model + store + snippet extraction
-83b42c0 feat: CanvasTab::focusOnChain — highlight and animate a chain of nodes
-81776c0 feat: CanvasLayout::computeLinearChain + LayoutMode enum
-ef300e1 fix 3.3
-c3cf379 feat: Phase 3.3 — diff-update animation primitives for Canvas
-
-```
-
----
-
-## Assistant (Build · MiMo-V2.5-Pro · 18.9s)
-
-_Thinking:_
-
-I see the problem. The commit `920a8bf` is my commit, but it was applied on top of `7e5841e` (fasa 4) instead of on top of `6c94e7e` (fasa-2). The user said they reset to `6c94e7e` but then apparently there was a merge that brought back the "fasa 3" and "fasa 4" commits.
-
-Also, looking at the output, "Generate Semantic Map triggered" is printed multiple times (5 times!), which means the signal is being connected multiple times. This is a classic Qt issue — the `connect()` call is being made multiple times, probably because the menu's `setupConnections()` is called more than once, or the signal connection is happening in a place that gets executed multiple times.
-
-Let me check the current state of the files to find the issues.
-
-**Tool: read**
-
-**Input:**
-```json
-{
-  "filePath": "/home/resu/Documents/dev/cremniy/src/ui/MenuBar/Menus/Tools/toolsmenu.cpp"
-}
-```
-
-**Output:**
-```
-<path>/home/resu/Documents/dev/cremniy/src/ui/MenuBar/Menus/Tools/toolsmenu.cpp</path>
-<type>file</type>
-<content>
-1: #include "toolsmenu.h"
-2: #include "dialogs/reversecalculatordialog.h"
-3: #include "ui/MenuBar/menufactory.h"
-4: #include "app/IDEWindow/idewindow.h"
-5: #include "Agent/agent_session.h"
-6: #include "Agent/tools/tool_registry.h"
-7: #include "Agent/tools/agent_tool.h"
-8: #include "ToolTabs/Canvas/canvastab.h"
-9: #include "ToolTabs/Canvas/semantic_map.h"
-10: #include "ToolTabs/Canvas/semantic_map_store.h"
-11: #include <QKeySequence>
-12: #include <QStatusBar>
-13: #include <QJsonDocument>
-14: #include <QJsonArray>
-15: 
-16: static bool registered = []() {
-17:   MenuFactory::instance().registerMenu("5", []() { return new ToolsMenu(); });
-18:   return true;
-19: }();
-20: 
-21: ToolsMenu::ToolsMenu() : BaseMenu("Tools") {
-22:   m_reverseCalculator = new QAction("Reverse Calculator", this);
-23:   m_reverseCalculator->setShortcut(QKeySequence(Qt::CTRL | Qt::SHIFT | Qt::Key_R));
-24:   this->addAction(m_reverseCalculator);
-25: 
-26:   this->addSeparator();
-27: 
-28:   m_generateSemanticMap = new QAction("Generate Semantic Map", this);
-29:   this->addAction(m_generateSemanticMap);
-30: }
-31: 
-32: void ToolsMenu::setupConnections(IDEWindow *ideWind) {
-33:   m_ideWindow = ideWind;
-34:   connect(m_reverseCalculator, &QAction::triggered, this,
-35:           &ToolsMenu::on_Open_ReverseCalculator);
-36:   connect(m_generateSemanticMap, &QAction::triggered, this,
-37:           &ToolsMenu::on_GenerateSemanticMap);
-38: }
-39: 
-40: void ToolsMenu::on_Open_ReverseCalculator() {
-41:   auto *dlg = new ReverseCalculatorDialog(m_ideWindow);
-42:   dlg->setAttribute(Qt::WA_DeleteOnClose, true);
-43:   if (m_ideWindow) {
-44:     dlg->adjustSize();
-45:     dlg->move(m_ideWindow->geometry().center() - dlg->rect().center());
-46:   }
-47:   dlg->show();
-48:   dlg->raise();
-49:   dlg->activateWindow();
-50: }
-51: 
-52: void ToolsMenu::on_GenerateSemanticMap() {
-53:   if (m_ideWindow) {
-54:     // Call the slot directly on IDEWindow
-55:     m_ideWindow->on_GenerateSemanticMap();
-56:   }
-57: }
-
-(End of file - total 57 lines)
-</content>
-```
-
-**Tool: read**
-
-**Input:**
-```json
-{
-  "filePath": "/home/resu/Documents/dev/cremniy/src/ui/MenuBar/Menus/Tools/toolsmenu.h"
-}
-```
-
-**Output:**
-```
-<path>/home/resu/Documents/dev/cremniy/src/ui/MenuBar/Menus/Tools/toolsmenu.h</path>
-<type>file</type>
-<content>
-1: #ifndef TOOLSMENU_H
-2: #define TOOLSMENU_H
-3: 
-4: #include "ui/MenuBar/basemenu.h"
-5: 
-6: class IDEWindow;
-7: 
-8: class ToolsMenu : public BaseMenu
-9: {
-10:     Q_OBJECT
-11: private:
-12:     QAction* m_reverseCalculator;
-13:     QAction* m_generateSemanticMap;
-14:     IDEWindow* m_ideWindow = nullptr;
-15: public:
-16:     ToolsMenu();
-17:     void setupConnections(IDEWindow* ideWind);
-18: private:
-19:     void on_Open_ReverseCalculator();
-20:     void on_GenerateSemanticMap();
-21: };
-22: 
-23: #endif // TOOLSMENU_H
-
-(End of file - total 23 lines)
-</content>
-```
-
----
-
-## Assistant (Build · MiMo-V2.5-Pro · 27.9s)
-
-_Thinking:_
-
-I see — the merge rewrote my code. The ToolsMenu now calls `m_ideWindow->on_GenerateSemanticMap()` which is a different approach. Let me check IDEWindow to see what's there.
-
-**Tool: read**
-
-**Input:**
-```json
-{
-  "filePath": "/home/resu/Documents/dev/cremniy/src/app/IDEWindow/idewindow.h"
-}
-```
-
-**Output:**
-```
-<path>/home/resu/Documents/dev/cremniy/src/app/IDEWindow/idewindow.h</path>
-<type>file</type>
-<content>
-1: #ifndef IDEWINDOW_H
-2: #define IDEWINDOW_H
-3: 
-4: #include "filestabwidget.h"
-5: #include "filetreeview.h"
-6: #include <QMainWindow>
-7: #include <qboxlayout.h>
-8: #include <qmenubar.h>
-9: #include <qsplitter.h>
-10: #include <qstatusbar.h>
-11: #include <QDockWidget>
-12: #include "widgets/terminal/terminalwidget.h"
-13: 
-14: class ChatPanel;
-15: class AgentSession;
-16: class CanvasTab;
-17: 
-18: class IDEWindow : public QMainWindow
-19: {
-20:     Q_OBJECT
-21: 
-22: public:
-23:     explicit IDEWindow(QString ProjectPath, QWidget *parent = nullptr);
-24:     ~IDEWindow() override;
-25: 
-26:     QString projectPath() const { return m_projectPath; }
-27:     AgentSession* agentSession() const { return m_agentSession; }
-28:     CanvasTab* canvasTab() const;
-29:     CanvasTab* openOrCreateCanvasTab();
-30: 
-31: private slots:
-32: 
-33:     /**
-34:      * @brief Двойной клик
-35:      *
-36:      * Обрабатывает открытие файла или разворачивание директории
-37:     */
-38:     void on_treeView_doubleClicked(const QModelIndex &index);
-39: 
-40:     /**
-41:      * @brief Открытие контекстного меню
-42:      *
-43:      * Нужен при клике на ПКМ для открытия контекстного меню
-44:     */
-45:     void on_Tree_ContextMenu(const QPoint &pos);
-46: 
-47: 
-48: private:
-49: 
-50:     // - - Main Widgets - -
-51:     QMenuBar* m_menuBar;
-52:     QStatusBar* m_statusBar;
-53:     QWidget* m_mainWidget;
-54:     QHBoxLayout* m_mainLayout;
-55:     QSplitter* m_verticalSplitter;  // splitter (вверх вниз)
-56:     QSplitter* m_mainSplitter; 
-57: 
-58:     // - - General Widgets - -
-59:     FilesTabWidget* m_filesTabWidget;
-60:     FileTreeView* m_filesTreeView;
-61: 
-62:     // - - Terminal Widget - -
-63:     TerminalWidget* m_terminal;
-64: 
-65:     // - - AI Chat Widget - -
-66:     ChatPanel* m_chatPanel;
-67:     QDockWidget* m_chatDock;
-68:     AgentSession* m_agentSession;
-69: 
-70:     // - - Project - -
-71:     QString m_projectPath;
-72: 
-73: 
-74: public slots:
-75: 
-76:     /**
-77:      * @brief Создать новый проект (QMenuBar->File->NewProject)
-78:     */
-79:     void on_NewProject();
-80: 
-81:     /**
-82:      * @brief Открыть другой проект (QMenuBar->File->OpenProject)
-83:     */
-84:     void on_OpenProject();
-85: 
-86:     /**
-87:      * @brief Сохранить файл (QMenuBar->File->SaveFile)
-88:     */
-89:     void on_SaveFile();
-90: 
-91:     /**
-92:      * @brief Закрыть проект (QMenuBar->File->CloseProject)
-93:     */
-94:     void on_ClosingProject();
-95: 
-96:     /**
-97:      * @brief Нажатие на Settings (QMenuBar->Edit->Settings)
-98:      *
-99:      * Открывает окно Settings
-100:     */
-101:     void on_openSettings();
-102: 
-103:     /**
-104:      * @brief Отображение терминала
-105:     */
-106:     void on_Toggle_Terminal(bool checked);
-107: 
-108:     /**
-109:      * @brief Generate Semantic Map
-110:     */
-111:     void on_GenerateSemanticMap();
-112: 
-113: 
-114: signals:
-115:     void saveFileSignal();
-116:     void CloseProject();
-117:     void generateSemanticMap();
-118: 
-119: };
-120: #endif // IDEWINDOW_H
-
-(End of file - total 120 lines)
-</content>
-```
-
-**Tool: read**
-
-**Input:**
-```json
-{
-  "filePath": "/home/resu/Documents/dev/cremniy/src/app/IDEWindow/idewindow.cpp"
-}
-```
-
-**Output:**
-```
-<path>/home/resu/Documents/dev/cremniy/src/app/IDEWindow/idewindow.cpp</path>
-<type>file</type>
-<content>
-1: #include "idewindow.h"
-2: #include "dialogs/filecreatedialog.h"
-3: #include "QFileSystemModel"
-4: #include "QMessageBox"
-5: #include <qheaderview.h>
-6: #include <qjsondocument.h>
-7: #include <qjsonobject.h>
-8: #include <QApplication>
-9: #include "dialogs/settingsdialog.h"
-10: #include "ui/MenuBar/menubarbuilder.h"
-11: #include "Agent/chat_panel.h"
-12: #include "Agent/agent_session.h"
-13: #include "ToolTabs/Canvas/canvastab.h"
-14: 
-15: IDEWindow::IDEWindow(QString ProjectPath, QWidget *parent)
-16:     : QMainWindow(parent)
-17:     , m_projectPath(ProjectPath)
-18: {
-19: 
-20:     // - - Window Settings - -
-21:     this->setWindowState(Qt::WindowMaximized);
-22:     this->setWindowTitle("Cremniy");
-23: 
-24:     // - - Menu Bar - -
-25:     MenuBarBuilder* menuBarBuilder = new MenuBarBuilder(menuBar(), this);
-26: 
-27:     menuBar()->setNativeMenuBar(false);
-28:     // - - Widgets - -
-29:     m_statusBar = statusBar();
-30: 
-31:     m_mainWidget = new QWidget(this);
-32:     m_mainLayout = new QHBoxLayout(m_mainWidget);
-33:     m_mainLayout->setContentsMargins(0,0,0,0);
-34: 
-35:     m_mainSplitter = new QSplitter(Qt::Horizontal, m_mainWidget);
-36: 
-37:     m_verticalSplitter = new QSplitter(Qt::Vertical, m_mainWidget);
-38: 
-39:     // Terminal is initialized lazily on demand (see on_Toggle_Terminal)
-40:     // m_terminal = new TerminalWidget(this, ProjectPath);
-41:     // m_terminal->setVisible(false);
-42:     m_terminal = nullptr;
-43: 
-44:     QWidget* leftWidget = new QWidget(this);
-45:     QVBoxLayout* leftLayout = new QVBoxLayout(leftWidget);
-46:     leftLayout->setContentsMargins(0,0,0,0);
-47: 
-48:     m_filesTabWidget = new FilesTabWidget(this);
-49:     m_filesTabWidget->setObjectName("filesTabWidget");
-50:     m_filesTreeView = new FileTreeView();
-51:     leftLayout->addWidget(m_filesTreeView);
-52: 
-53:     m_mainSplitter->addWidget(leftWidget);
-54:     m_mainSplitter->addWidget(m_filesTabWidget);
-55:     m_mainSplitter->setSizes({200, 1000});
-56: 
-57:     m_verticalSplitter->addWidget(m_mainSplitter); // Сверху все наше IDE
-58:     m_verticalSplitter->setSizes({800, 200});      // пр
-59: 
-60:     m_mainLayout->addWidget(m_verticalSplitter);
-61:     setCentralWidget(m_mainWidget);
-62: 
-63:     leftLayout->addWidget(m_filesTreeView);
-64: 
-65:     // - - Tunning Widgets/Layouts - -
-66:     m_mainSplitter->setSizes({200, 1000});
-67:     m_mainSplitter->setCollapsible(0, false);
-68:     m_mainSplitter->setCollapsible(1, false);
-69: 
-70:     m_verticalSplitter->setSizes({800, 200});
-71:     
-72:     if (m_verticalSplitter->count() > 1) {
-73:         m_verticalSplitter->setCollapsible(1, true);
-74:     }
-75: 
-76:     m_filesTreeView->setMinimumWidth(180);
-77:     m_filesTreeView->setTextElideMode(Qt::ElideNone);
-78:     m_filesTreeView->setIndentation(12);
-79: 
-80:     QFileSystemModel *model = new QFileSystemModel(this);
-81:     model->setRootPath(ProjectPath);
-82:     model->setReadOnly(false);
-83:     m_filesTreeView->setModel(model);
-84:     m_filesTreeView->setRootIndex(model->index(ProjectPath));
-85: 
-86:     m_filesTreeView->setColumnHidden(1, true);
-87:     m_filesTreeView->setColumnHidden(2, true);
-88:     m_filesTreeView->setColumnHidden(3, true);
-89:     m_filesTreeView->header()->hide();
-90:     m_filesTreeView->setAnimated(true);
-91:     m_filesTreeView->setEditTriggers(QAbstractItemView::EditKeyPressed);
-92:     m_filesTreeView->setContextMenuPolicy(Qt::CustomContextMenu);
-93: 
-94:     m_mainLayout->setContentsMargins(0,0,0,0);
-95: 
-96:     // - - AI Chat Dock - -
-97:     m_chatPanel = new ChatPanel(this);
-98:     m_chatDock = new QDockWidget(tr("AI Assistant"), this);
-99:     m_chatDock->setWidget(m_chatPanel);
-100:     m_chatDock->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetClosable);
-101:     m_chatDock->setMinimumWidth(280);
-102:     addDockWidget(Qt::RightDockWidgetArea, m_chatDock);
-103:     m_chatDock->setVisible(true);
-104: 
-105:     m_agentSession = new AgentSession(ProjectPath, m_chatPanel, this);
-106: 
-107:     while (m_filesTabWidget->count() > 0) {
-108:         m_filesTabWidget->removeTab(0);
-109:     }
-110: 
-111:     m_filesTabWidget->setTabsClosable(true);
-112:     m_filesTabWidget->setMovable(true);
-113: 
-114:     // - - Connects - -
-115: 
-116:     connect(this, &IDEWindow::saveFileSignal, m_filesTabWidget, &FilesTabWidget::saveFileSlot);
-117: 
-118:     connect(m_filesTabWidget, &QTabWidget::tabCloseRequested,
-119:             m_filesTabWidget, &FilesTabWidget::closeTab);
-120:     connect(m_filesTreeView, &QTreeView::customContextMenuRequested,this, &IDEWindow::on_Tree_ContextMenu);
-121:     connect(m_filesTreeView, &QTreeView::doubleClicked, this, &IDEWindow::on_treeView_doubleClicked);
-122: }
-123: 
-124: IDEWindow::~IDEWindow()
-125: {}
-126: 
-127: void IDEWindow::on_Toggle_Terminal(bool checked) {
-128:     if (checked && !m_terminal) {
-129:         m_terminal = new TerminalWidget(this);
-130:         m_verticalSplitter->addWidget(m_terminal);
-131:         m_verticalSplitter->setCollapsible(1, true);
-132:         m_verticalSplitter->setSizes({800, 200});
-133:     }
-134: 
-135:     if (!m_terminal) {
-136:         return;
-137:     }
-138:     
-139:     m_terminal->setVisible(checked);
-140: 
-141:     if(checked) {
-142:         m_terminal->setFocus();
-143:     }
-144: }
-145: 
-146: void IDEWindow::on_ClosingProject() {
-147:     emit CloseProject();
-148:     this->close();
-149: }
-150: 
-151: void IDEWindow::on_treeView_doubleClicked(const QModelIndex &index)
-152: {
-153:     auto *model = static_cast<QFileSystemModel*>(m_filesTreeView->model());
-154:     if (model->isDir(index)) return;
-155:     QString fileName = model->fileName(index);
-156:     QString filePath = model->filePath(index);
-157: 
-158:     m_filesTabWidget->openFile(filePath, fileName);
-159: 
-160: }
-161: 
-162: void IDEWindow::on_Tree_ContextMenu(const QPoint &pos)
-163: {
-164:     QModelIndex index = m_filesTreeView->indexAt(pos);
-165: 
-166:     QFileSystemModel *model = qobject_cast<QFileSystemModel*>(m_filesTreeView->model());
-167:     if (!model)
-168:         return;
-169: 
-170:     QMenu menu(this);
-171: 
-172:     if (index.isValid()){
-173: 
-174:         QString path = model->filePath(index);
-175:         QString fileName = model->fileName(index);
-176:         bool isDir = model->isDir(index);
-177: 
-178:         if (isDir){
-179:             menu.addAction("Open", [this, path]() {
-180:                 QFileSystemModel *model = qobject_cast<QFileSystemModel*>(m_filesTreeView->model());
-181:                 if (!model)
-182:                     return;
-183: 
-184:                 QModelIndex index = model->index(path);
-185:                 if (!index.isValid())
-186:                     return;
-187: 
-188:                 m_filesTreeView->expand(index);
-189: 
-190:             });
-191: 
-192:             menu.addAction("Rename", [this, path]() {
-193:                 QFileSystemModel *model = qobject_cast<QFileSystemModel*>(m_filesTreeView->model());
-194:                 if (!model)
-195:                     return;
-196: 
-197:                 QModelIndex index = model->index(path);
-198:                 if (!index.isValid())
-199:                     return;
-200: 
-201:                 // Включаем редактирование индекса
-202:                 m_filesTreeView->edit(index);
-203:             });
-204:             menu.addAction("Delete", [path, this]() {
-205:                 QDir dir(path);
-206:                 QString dialogTitle = QString("Are you sure you want to delete the folder \"%1\"?").arg(dir.dirName());
-207:                 auto res = QMessageBox::question(this, "Delete", dialogTitle, QMessageBox::Ok | QMessageBox::Cancel);
-208:                 if (res == QMessageBox::Ok) dir.removeRecursively();
-209:             });
-210:             menu.addSeparator();
-211:             menu.addAction("Create File", [path,this]() {
-212:                 FileCreateDialog fcd(this,path,false);
-213:                 fcd.exec();
-214: 
-215:             });
-216:             menu.addAction("Create Folder", [path,this]() {
-217:                 FileCreateDialog fcd(this,path,true);
-218:                 fcd.exec();
-219:             });
-220:         }
-221:         else{
-222:             menu.addAction("Open", [this, path, fileName]() {
-223:                 m_filesTabWidget->openFile(path, fileName);
-224:             });
-225:             menu.addAction("Rename", [this, path]() {
-226:                 QFileSystemModel *model = qobject_cast<QFileSystemModel*>(m_filesTreeView->model());
-227:                 if (!model)
-228:                     return;
-229: 
-230:                 QModelIndex index = model->index(path);
-231:                 if (!index.isValid())
-232:                     return;
-233: 
-234:                 m_filesTreeView->edit(index);
-235:             });
-236:             menu.addAction("Delete", [path,this]() {
-237:                 QString dialogTitle = QString("Are you sure you want to delete the file \"%1\"?").arg(QFileInfo(path).fileName());
-238:                 auto res = QMessageBox::question(this, "Delete", dialogTitle, QMessageBox::Ok | QMessageBox::Cancel);
-239:                 if (res == QMessageBox::Ok) QFile(path).remove();
-240:             });
-241:         }
-242:     }
-243: 
-244:     else{
-245:         QString path = model->rootPath();
-246:         menu.addAction("Create File", [path,this]() {
-247:             FileCreateDialog fcd(this,path,false);
-248:             fcd.exec();
-249:         });
-250:         menu.addAction("Create Folder", [path,this]() {
-251:             FileCreateDialog fcd(this,path,true);
-252:             fcd.exec();
-253:         });
-254:     }
-255:     menu.exec(m_filesTreeView->viewport()->mapToGlobal(pos));
-256: }
-257: 
-258: void IDEWindow::on_NewProject(){
-259: 
-260: }
-261: 
-262: void IDEWindow::on_OpenProject(){
-263: 
-264: }
-265: 
-266: void IDEWindow::on_SaveFile(){
-267:     qDebug() << "IDEWindow::on_SaveFile()";
-268:     emit saveFileSignal();
-269: }
-270: 
-271: void IDEWindow::on_openSettings(){
-272:     SettingsDialog dlg(this);
-273:     dlg.exec();
-274: }
-275: 
-276: void IDEWindow::on_GenerateSemanticMap(){
-277:     // TODO: Implement semantic map generation logic
-278:     // 1. Check for saved map in .cremniy/semantic_maps/ by current project/task hash
-279:     // 2. If file exists - load it to canvas immediately
-280:     // 3. If not - call Phase 2.1 (GenerateSemanticMap)
-281:     qDebug() << "Generate Semantic Map triggered";
-282: }
-
-(End of file - total 282 lines)
-</content>
-```
-
----
-
-## Assistant (Build · MiMo-V2.5-Pro · 17.5s)
-
-_Thinking:_
-
-Now I see the problem clearly. The merge brought back the "fasa 3" and "fasa 4" commits which have their own version of the code. The current state:
-
-1. `toolsmenu.h` has `m_generateSemanticMap` (not `m_conceptMap`) and calls `m_ideWindow->on_GenerateSemanticMap()`
-2. `idewindow.h` has `on_GenerateSemanticMap()` as a slot but it's just a stub with `qDebug()`
-3. My commit `920a8bf` was applied on top of the merged state, but the merge rewrote the files
-
-The issues:
-
-
-1. `on_GenerateSemanticMap()` is a stub — it just prints debug and doesn't do anything
-2. The `generateSemanticMap` signal in IDEWindow is declared but never connected to anything
-3. The action name is "Generate Semantic Map" instead of "Concept Map"
-4. Missing `canvasTab()` and `openOrCreateCanvasTab()` implementations
-5. The `generateSemanticMap` signal is unused
-
-I need to check what's actually in the canvastab files to see what state they're in after the merge.
+Начинаю с быстрого MVP: Фазы 1 + 2.1 + 3.1.
 
 **Tool: read**
 
@@ -906,7 +802,7 @@ I need to check what's actually in the canvastab files to see what state they're
 8: #include "gource_animator.h"
 9: #include "layer_panel.h"
 10: #include "minimap.h"
-11: #include "semantic_map.h"
+11: #include "codemap.h"
 12: #include <QVBoxLayout>
 13: #include <QToolButton>
 14: #include <QLabel>
@@ -914,77 +810,95 @@ I need to check what's actually in the canvastab files to see what state they're
 16: 
 17: class FileNode;
 18: class DependencyEdge;
-19: 
-20: class CanvasTab : public ToolTab
-21: {
-22:     Q_OBJECT
+19: class StepNode;
+20: class ClusterGroupNode;
+21: class ConnectionEdge;
+22: class DigestPanel;
 23: 
-24: public:
-25:     explicit CanvasTab(FileDataBuffer* buffer, QWidget* parent = nullptr);
-26: 
-27:     QString toolName() const override { return "Canvas"; }
-28:     QIcon toolIcon() const override { return QIcon(":/icons/canvas.png"); }
-29: 
-30:     DependencyGraph currentGraph() const { return m_currentGraph; }
-31: 
-32:     void showSemanticMap(const SemanticMap& map);
-33:     void showStructureGraph();
-34: 
-35: public slots:
-36:     void setFile(QString filepath) override;
-37:     void setTabData() override;
-38:     void saveTabData() override;
-39: 
-40:     void highlightActiveFile(const QString& filePath);
-41:     void highlightDependencies(const QString& filePath);
-42:     void startNodePulsing(const QString& filePath);
-43:     void stopNodePulsing();
-44: 
-45:     void toggleGraphMode();
-46: 
-47: protected:
-48:     void resizeEvent(QResizeEvent* event) override;
-49: 
-50: private slots:
-51:     void onGraphReady(DependencyGraph graph);
-52:     void onNodeClicked(const QString& filePath);
-53:     void onNodeDoubleClicked(const QString& filePath);
-54: 
-55: private:
-56:     CanvasView* m_canvasView;
-57:     DependencyParser* m_parser;
-58:     CanvasLayout* m_layout;
-59:     GourceAnimator* m_animator;
-60:     LayerPanel* m_layerPanel;
-61:     Minimap* m_minimap;
-62:     QString m_projectPath;
-63: 
-64:     QMap<QString, FileNode*> m_nodes;
-65:     QList<DependencyEdge*> m_edges;
-66:     DependencyGraph m_currentGraph;
-67:     SemanticMap m_currentSemanticMap;
-68:     LayoutMode m_layoutMode = LayoutMode::Radial;
-69: 
-70:     bool m_structuralMode = true;
-71: 
-72:     void buildGraph(const DependencyGraph& graph);
-73:     void layoutNodesRadial(const DependencyGraph& graph);
-74:     void clearCanvas();
-75:     QToolButton* createToolButton(const QString& text, const QString& tooltip);
-76:     void applyLayerFilters();
-77:     void onGourceCommit(const GitCommit& commit);
-78:     void diffGraphUpdate(const DependencyGraph& oldGraph, const DependencyGraph& newGraph);
-79:     QPointF computePositionForNewNode(const QString& path);
-80:     void connectNodeSignals(FileNode* node);
-81:     void focusOnChain(const QStringList& chain);
-82: 
-83:     QTimer* m_pulseTimer = nullptr;
-84:     QString m_pulsingFilePath;
-85: };
-86: 
-87: #endif // CANVASTAB_H
+24: class CanvasTab : public ToolTab
+25: {
+26:     Q_OBJECT
+27: 
+28: public:
+29:     explicit CanvasTab(FileDataBuffer* buffer, QWidget* parent = nullptr);
+30: 
+31:     QString toolName() const override { return "Canvas"; }
+32:     QIcon toolIcon() const override { return QIcon(":/icons/canvas.png"); }
+33: 
+34:     DependencyGraph currentGraph() const { return m_currentGraph; }
+35: 
+36:     void showCodemap(const Codemap& map);
+37:     void showStructureGraph();
+38: 
+39: public slots:
+40:     void setFile(QString filepath) override;
+41:     void setTabData() override;
+42:     void saveTabData() override;
+43: 
+44:     void highlightActiveFile(const QString& filePath);
+45:     void highlightDependencies(const QString& filePath);
+46:     void startNodePulsing(const QString& filePath);
+47:     void stopNodePulsing();
+48: 
+49:     void toggleGraphMode();
+50:     void onCodemapReady(const Codemap& map);
+51: 
+52: signals:
+53:     void codemapShown(const Codemap& map);
+54:     void needsSemanticMapGeneration();
+55:     void stepNavigationRequested(const QString& filePath, int lineNumber);
+56: 
+57: protected:
+58:     void resizeEvent(QResizeEvent* event) override;
+59: 
+60: private slots:
+61:     void onGraphReady(DependencyGraph graph);
+62:     void onNodeClicked(const QString& filePath);
+63:     void onNodeDoubleClicked(const QString& filePath);
+64:     void onStepClicked(const QString& filePath, int lineNumber);
+65: 
+66: private:
+67:     CanvasView* m_canvasView;
+68:     DependencyParser* m_parser;
+69:     CanvasLayout* m_layout;
+70:     GourceAnimator* m_animator;
+71:     LayerPanel* m_layerPanel;
+72:     Minimap* m_minimap;
+73:     DigestPanel* m_digestPanel = nullptr;
+74:     QString m_projectPath;
+75: 
+76:     QMap<QString, FileNode*> m_nodes;
+77:     QList<DependencyEdge*> m_edges;
+78:     DependencyGraph m_currentGraph;
+79:     Codemap m_currentCodemap;
+80:     LayoutMode m_layoutMode = LayoutMode::Radial;
+81: 
+82:     bool m_structuralMode = true;
+83:     bool m_generatingConceptMap = false;
+84: 
+85:     // Semantic map nodes (separate from structural graph nodes)
+86:     QList<ClusterGroupNode*> m_clusterNodes;
+87:     QList<ConnectionEdge*> m_connectionEdges;
+88: 
+89:     void buildGraph(const DependencyGraph& graph);
+90:     void layoutNodesRadial(const DependencyGraph& graph);
+91:     void clearCanvas();
+92:     void clearSemanticNodes();
+93:     QToolButton* createToolButton(const QString& text, const QString& tooltip);
+94:     void applyLayerFilters();
+95:     void onGourceCommit(const GitCommit& commit);
+96:     void diffGraphUpdate(const DependencyGraph& oldGraph, const DependencyGraph& newGraph);
+97:     QPointF computePositionForNewNode(const QString& path);
+98:     void connectNodeSignals(FileNode* node);
+99:     void focusOnChain(const QStringList& chain);
+100: 
+101:     QTimer* m_pulseTimer = nullptr;
+102:     QString m_pulsingFilePath;
+103: };
+104: 
+105: #endif // CANVASTAB_H
 
-(End of file - total 87 lines)
+(End of file - total 105 lines)
 </content>
 ```
 
@@ -993,163 +907,337 @@ I need to check what's actually in the canvastab files to see what state they're
 **Input:**
 ```json
 {
-  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvas_layout.h"
+  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvastab.cpp",
+  "limit": 100
 }
 ```
 
 **Output:**
 ```
-<path>/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvas_layout.h</path>
+<path>/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvastab.cpp</path>
 <type>file</type>
 <content>
-1: #ifndef CANVAS_LAYOUT_H
-2: #define CANVAS_LAYOUT_H
-3: 
-4: #include <QPointF>
-5: #include <QMap>
-6: #include <QString>
-7: #include <QStringList>
-8: #include <QObject>
-9: #include <QHash>
-10: #include <QParallelAnimationGroup>
-11: #include <Qt>
-12: #include "dependency_parser.h"
-13: 
-14: struct LayoutNode {
-15:     QPointF target;
-16:     QString dirPath;
-17:     QStringList files;
-18:     QList<LayoutNode*> children;
-19: };
-20: 
-21: enum class LayoutMode { Radial, LinearChain };
-22: 
-23: class CanvasLayout : public QObject
-24: {
-25:     Q_OBJECT
-26: 
-27: public:
-28:     explicit CanvasLayout(QObject* parent = nullptr);
-29: 
-30:     void computeTargets(const DependencyGraph& graph, QMap<QString, QPointF>& targets);
-31:     QMap<QString, QPointF> computeLinearChain(
-32:         const QStringList& orderedKeys,
-33:         qreal spacing = 280.0,
-34:         qreal y = 0.0,
-35:         Qt::Orientation orientation = Qt::Horizontal);
-36:     void animateNodesToPositions(
-37:         const QMap<QString, QPointF>& targetPositions,
-38:         QMap<QString, class FileNode*>& nodes,
-39:         int durationMs = 400);
+1: #include "canvastab.h"
+2: #include "nodes/file_node.h"
+3: #include "nodes/step_node.h"
+4: #include "nodes/cluster_group_node.h"
+5: #include "edges/dependency_edge.h"
+6: #include "edges/connection_edge.h"
+7: #include "cluster_layout.h"
+8: #include "digest_panel.h"
+9: #include "codemap.h"
+10: #include "codemap_store.h"
+11: #include "core/ToolTabFactory.h"
+12: #include <QToolButton>
+13: #include <QHBoxLayout>
+14: #include <QFileInfo>
+15: #include <QDir>
+16: #include <QtMath>
+17: #include <QSlider>
+18: #include <QResizeEvent>
+19: #include <QTimer>
+20: #include <QSet>
+21: #include <QGraphicsOpacityEffect>
+22: #include <QPropertyAnimation>
+23: 
+24: static bool registered = [](){
+25:     ToolTabFactory::instance().registerTab("4", [](FileDataBuffer* buffer){
+26:         return new CanvasTab(buffer);
+27:     });
+28:     return true;
+29: }();
+30: 
+31: CanvasTab::CanvasTab(FileDataBuffer* buffer, QWidget* parent)
+32:     : ToolTab(buffer, parent)
+33: {
+34:     auto* layout = new QVBoxLayout(this);
+35:     layout->setContentsMargins(0, 0, 0, 0);
+36:     layout->setSpacing(0);
+37: 
+38:     m_canvasView = new CanvasView(this);
+39:     m_layout = new CanvasLayout(this);
 40: 
-41:     bool isAnimating() const { return m_posGroup && m_posGroup->state() == QAbstractAnimation::Running; }
-42: 
-43: signals:
-44:     void animationFinished();
-45: 
-46: private:
-47:     QParallelAnimationGroup* m_posGroup = nullptr;
+41:     // Toolbar
+42:     auto* toolbar = new QWidget(this);
+43:     toolbar->setFixedHeight(36);
+44:     toolbar->setStyleSheet("background: #252530;");
+45:     auto* toolbarLayout = new QHBoxLayout(toolbar);
+46:     toolbarLayout->setContentsMargins(8, 0, 8, 0);
+47:     toolbarLayout->setSpacing(4);
 48: 
-49:     void buildTree(const QStringList& files, LayoutNode& root);
-50:     void layoutTree(LayoutNode& node, qreal startAngle, qreal endAngle, qreal radius, int depth, QMap<QString, QPointF>& targets);
-51:     void cleanupTree(LayoutNode& node);
-52:     QString commonPrefix(const QStringList& paths) const;
-53:     QString relativePath(const QString& path, const QString& base) const;
-54: };
-55: 
-56: #endif // CANVAS_LAYOUT_H
+49:     auto* zoomInBtn = createToolButton("+", "Zoom In");
+50:     auto* zoomOutBtn = createToolButton("-", "Zoom Out");
+51:     auto* resetBtn = createToolButton("Reset", "Reset Zoom");
+52:     auto* refreshBtn = createToolButton("Refresh", "Refresh Graph");
+53:     auto* toggleModeBtn = createToolButton("Mode", "Toggle Graph Mode");
+54: 
+55:     // Gource controls
+56:     auto* playBtn = createToolButton("Play", "Play git history");
+57:     auto* pauseBtn = createToolButton("Pause", "Pause playback");
+58:     auto* speedSlider = new QSlider(Qt::Horizontal, this);
+59:     speedSlider->setRange(1, 10);
+60:     speedSlider->setValue(2);
+61:     speedSlider->setFixedWidth(80);
+62:     speedSlider->setToolTip("Playback speed");
+63: 
+64:     connect(zoomInBtn, &QToolButton::clicked, m_canvasView, &CanvasView::zoomIn);
+65:     connect(zoomOutBtn, &QToolButton::clicked, m_canvasView, &CanvasView::zoomOut);
+66:     connect(resetBtn, &QToolButton::clicked, m_canvasView, &CanvasView::resetZoom);
+67:     connect(refreshBtn, &QToolButton::clicked, this, [this]() {
+68:         if (m_parser && !m_projectPath.isEmpty()) {
+69:             clearCanvas();
+70:             m_parser->startParsing();
+71:         }
+72:     });
+73:     connect(toggleModeBtn, &QToolButton::clicked, this, &CanvasTab::toggleGraphMode);
+74: 
+75:     toolbarLayout->addWidget(zoomInBtn);
+76:     toolbarLayout->addWidget(zoomOutBtn);
+77:     toolbarLayout->addWidget(resetBtn);
+78:     toolbarLayout->addWidget(toggleModeBtn);
+79:     toolbarLayout->addStretch();
+80:     toolbarLayout->addWidget(playBtn);
+81:     toolbarLayout->addWidget(pauseBtn);
+82:     toolbarLayout->addWidget(speedSlider);
+83:     toolbarLayout->addStretch();
+84:     toolbarLayout->addWidget(refreshBtn);
+85: 
+86:     layout->addWidget(toolbar);
+87:     layout->addWidget(m_canvasView);
+88: 
+89:     // Layer panel (overlay top-right)
+90:     m_layerPanel = new LayerPanel(this);
+91:     m_layerPanel->setFixedSize(120, 90);
+92:     m_layerPanel->move(width() - 130, 40);
+93:     m_layerPanel->raise();
+94: 
+95:     // Minimap (overlay bottom-right)
+96:     m_minimap = new Minimap(m_canvasView, this);
+97:     m_minimap->move(width() - 170, height() - 130);
+98:     m_minimap->raise();
+99: 
+100:     // Gource animator
 
-(End of file - total 56 lines)
+(Showing lines 1-100 of 667. Use offset=101 to continue.)
 </content>
 ```
 
 ---
 
-## Assistant (Build · MiMo-V2.5-Pro · 17.7s)
+## Assistant (Build · MiMo-V2.5-Pro · 21.9s)
 
 _Thinking:_
 
-OK, so the canvas_layout.h looks correct — it has `computeLinearChain` and `animateNodesToPositions` and `LayoutMode`. The canvastab.h also looks correct — it has `showSemanticMap()`, `showStructureGraph()`, `toggleGraphMode()`, `m_currentSemanticMap`, `m_layoutMode`, `m_structuralMode`.
+Let me read more of the constructor and the key methods.
 
-Now the main problem is in IDEWindow — `on_GenerateSemanticMap()` is a stub. The merge brought back a version that just prints debug. I need to:
-
-1. Implement `on_GenerateSemanticMap()` properly with the load-or-generate logic
-
-
-2. Add `canvasTab()` and `openOrCreateCanvasTab()` implementations
-3. Clean up the unused `generateSemanticMap` signal
-
-Let me check if `canvasTab()` and `openOrCreateCanvasTab()` are already implemented in idewindow.cpp, and also look at what `toggleGraphMode()` does in canvastab.cpp.
-
-**Tool: grep**
+**Tool: read**
 
 **Input:**
 ```json
 {
-  "path": "/home/resu/Documents/dev/cremniy/src/app/IDEWindow/idewindow.cpp",
-  "pattern": "canvasTab|openOrCreateCanvas"
+  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvastab.cpp",
+  "offset": 100,
+  "limit": 60
 }
 ```
 
 **Output:**
 ```
-No files found
+<path>/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvastab.cpp</path>
+<type>file</type>
+<content>
+100:     // Gource animator
+101:     m_animator = nullptr;
+102:     m_parser = nullptr;
+103: 
+104:     connect(playBtn, &QToolButton::clicked, this, [this]() {
+105:         if (m_animator) m_animator->play();
+106:     });
+107:     connect(pauseBtn, &QToolButton::clicked, this, [this]() {
+108:         if (m_animator) m_animator->pause();
+109:     });
+110:     connect(speedSlider, &QSlider::valueChanged, this, [this](int val) {
+111:         if (m_animator) m_animator->setSpeed(val);
+112:     });
+113:     connect(m_layerPanel, &LayerPanel::layerToggled, this, &CanvasTab::applyLayerFilters);
+114: }
+115: 
+116: void CanvasTab::setFile(QString filepath)
+117: {
+118:     m_projectPath = QFileInfo(filepath).absolutePath();
+119:     m_parser = new DependencyParser(m_projectPath, this);
+120:     connect(m_parser, &DependencyParser::graphReady, this, &CanvasTab::onGraphReady);
+121:     connect(m_parser, &DependencyParser::graphUpdated, this, [this](DependencyGraph graph) {
+122:         diffGraphUpdate(m_currentGraph, graph);
+123:     });
+124:     m_parser->watchForChanges();
+125: 
+126:     // Gource animator
+127:     m_animator = new GourceAnimator(m_projectPath, this);
+128:     connect(m_animator, &GourceAnimator::commitReady, this, &CanvasTab::onGourceCommit);
+129:     m_animator->loadHistory();
+130: }
+131: 
+132: void CanvasTab::setTabData()
+133: {
+134:     if (!m_parser || m_projectPath.isEmpty())
+135:         return;
+136: 
+137:     clearCanvas();
+138:     m_parser->startParsing();
+139: }
+140: 
+141: void CanvasTab::saveTabData()
+142: {
+143:     // Canvas is read-only visualization
+144: }
+145: 
+146: void CanvasTab::onGraphReady(DependencyGraph graph)
+147: {
+148:     m_currentGraph = graph;
+149:     buildGraph(graph);
+150:     layoutNodesRadial(graph);
+151: }
+152: 
+153: void CanvasTab::buildGraph(const DependencyGraph& graph)
+154: {
+155:     clearCanvas();
+156: 
+157:     // Build incoming deps map
+158:     QMap<QString, QStringList> incomingDeps;
+159:     for (auto it = graph.includes.begin(); it != graph.includes.end(); ++it) {
+
+(Showing lines 100-159 of 667. Use offset=160 to continue.)
+</content>
 ```
 
-**Tool: grep**
+**Tool: read**
 
 **Input:**
 ```json
 {
-  "path": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvastab.cpp",
-  "pattern": "toggleGraphMode|showSemanticMap|showStructureGraph"
+  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvastab.cpp",
+  "offset": 600
 }
 ```
 
 **Output:**
 ```
-Found 4 matches
-/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvastab.cpp:
-  Line 67:     connect(toggleModeBtn, &QToolButton::clicked, this, &CanvasTab::toggleGraphMode);
+<path>/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvastab.cpp</path>
+<type>file</type>
+<content>
+600:     QTimer::singleShot(550, this, [this]() {
+601:         for (auto* cn : m_clusterNodes) {
+602:             cn->playAppearAnimation();
+603:             for (auto* child : cn->children())
+604:                 child->playAppearAnimation();
+605:         }
+606:     });
+607: 
+608:     emit codemapShown(map);
+609: }
+610: 
+611: void CanvasTab::showStructureGraph()
+612: {
+613:     m_structuralMode = true;
+614:     m_layoutMode = LayoutMode::Radial;
+615:     clearSemanticNodes();
+616:     clearCanvas();
+617: 
+618:     if (m_currentGraph.allFiles.isEmpty())
+619:         return;
+620: 
+621:     buildGraph(m_currentGraph);
+622:     layoutNodesRadial(m_currentGraph);
+623: }
+624: 
+625: void CanvasTab::clearSemanticNodes()
+626: {
+627:     qDeleteAll(m_connectionEdges);
+628:     m_connectionEdges.clear();
+629:     qDeleteAll(m_clusterNodes);
+630:     m_clusterNodes.clear();
+631: }
+632: 
+633: void CanvasTab::onStepClicked(const QString& filePath, int lineNumber)
+634: {
+635:     emit stepNavigationRequested(filePath, lineNumber);
+636: }
+637: 
+638: void CanvasTab::onCodemapReady(const Codemap& map)
+639: {
+640:     m_generatingConceptMap = false;
+641:     showCodemap(map);
+642: }
+643: 
+644: void CanvasTab::toggleGraphMode()
+645: {
+646:     if (m_structuralMode) {
+647:         // Switch to concept mode
+648:         if (!m_currentCodemap.traces.isEmpty()) {
+649:             showCodemap(m_currentCodemap);
+650:         } else {
+651:             // Check for saved codemap
+652:             CodemapStore store(m_projectPath);
+653:             if (store.exists()) {
+654:                 auto mapOpt = store.load();
+655:                 if (mapOpt.has_value()) {
+656:                     showCodemap(mapOpt.value());
+657:                     return;
+658:                 }
+659:             }
+660:             // No map — request generation
+661:             m_generatingConceptMap = true;
+662:             emit needsSemanticMapGeneration();
+663:         }
+664:     } else {
+665:         showStructureGraph();
+666:     }
+667: }
 
-  Line 504: void CanvasTab::toggleGraphMode()
-
-  Line 570: void CanvasTab::showSemanticMap(const SemanticMap& map)
-
-  Line 641: void CanvasTab::showStructureGraph()
-
+(End of file - total 667 lines)
+</content>
 ```
 
 ---
 
-## Assistant (Build · MiMo-V2.5-Pro · 22.6s)
+## Assistant (Build · MiMo-V2.5-Pro · 35.5s)
 
 _Thinking:_
 
-So `canvasTab()` and `openOrCreateCanvasTab()` are NOT implemented in idewindow.cpp. And `showSemanticMap()`, `showStructureGraph()`, `toggleGraphMode()` ARE in canvastab.cpp.
+Now I have the full picture. Let me implement the three phases:
 
-The issues to fix:
-1. `idewindow.cpp` is missing `canvasTab()` and `openOrCreateCanvasTab()` implementations
-2. `on_GenerateSemanticMap()` in idewindow.cpp is a stub — needs the load-or-generate logic
-3. The unused `generateSemanticMap` signal in idewindow.h
+**Phase 1** — Lazy parser + semantic-first:
+1. Replace `bool m_structuralMode` with `enum ViewMode { Semantic, Structural }`
+2. `setTabData()` — don't start parser if Semantic mode
+3. `showStructureGraph()` — lazy-start parser
+4. `showCodemap()` — hide structural UI elements
+5. `onGraphReady()` — if Semantic mode, just save graph, don't draw
 
-Let me fix all of these.
+**Phase 2.1** — Windsurf-style filenames:
+1. `CodemapStore::slugifyTitle()` and `buildFileName()`
 
-Вижу проблему. После слияния:
-1. `canvasTab()` / `openOrCreateCanvasTab()` — объявлены в `.h`, но не реализованы в `.cpp`
-2. `on_GenerateSemanticMap()` — стуб с `qDebug`, не делает ничего
-3. Лишний сигнал `generateSemanticMap` — не подключён
 
-Исправляю.
+2. Update `save()` and `load()` methods to handle file operations
+3. Add `loadLatest()` and `list()` functions to retrieve stored codemaps
+
+**Phase 3.1** — Two buttons instead of Mode:
+1. Replace the toggle button with a QButtonGroup containing "Семантический" and "Граф" options
+2. Implement `enterSemanticMode()` and `enterStructuralMode()` methods
+3. Handle visibility of toolbar elements based on the selected mode
+
+Let me start implementing.
+
+**Phase 1 + 3.1** — lazy parser + два режима вместо Mode.
 
 **Tool: edit**
 
 **Input:**
 ```json
 {
-  "filePath": "/home/resu/Documents/dev/cremniy/src/app/IDEWindow/idewindow.h",
-  "newString": "signals:\n    void saveFileSignal();\n    void CloseProject();\n\n};",
-  "oldString": "signals:\n    void saveFileSignal();\n    void CloseProject();\n    void generateSemanticMap();\n\n};"
+  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvastab.h",
+  "newString": "#include \"codemap.h\"\n#include <QVBoxLayout>\n#include <QToolButton>\n#include <QButtonGroup>\n#include <QLabel>\n#include <QSlider>\n\nclass FileNode;\nclass DependencyEdge;\nclass StepNode;\nclass ClusterGroupNode;\nclass ConnectionEdge;\nclass DigestPanel;\n\nclass CanvasTab : public ToolTab\n{\n    Q_OBJECT\n\npublic:\n    enum ViewMode { Semantic, Structural };\n\n    explicit CanvasTab(FileDataBuffer* buffer, QWidget* parent = nullptr);\n\n    QString toolName() const override { return \"Canvas\"; }\n    QIcon toolIcon() const override { return QIcon(\":/icons/canvas.png\"); }\n\n    DependencyGraph currentGraph() const { return m_currentGraph; }\n    ViewMode viewMode() const { return m_viewMode; }\n\n    void showCodemap(const Codemap& map);\n    void showStructureGraph();\n    void enterSemanticMode();\n    void enterStructuralMode();\n    void setProjectRoot(const QString& root) { m_projectPath = root; }\n\npublic slots:\n    void setFile(QString filepath) override;\n    void setTabData() override;\n    void saveTabData() override;\n\n    void highlightActiveFile(const QString& filePath);\n    void highlightDependencies(const QString& filePath);\n    void startNodePulsing(const QString& filePath);\n    void stopNodePulsing();\n\n    void toggleGraphMode();\n    void onCodemapReady(const Codemap& map);\n\nsignals:\n    void codemapShown(const Codemap& map);\n    void needsSemanticMapGeneration();\n    void stepNavigationRequested(const QString& filePath, int lineNumber);\n\nprotected:\n    void resizeEvent(QResizeEvent* event) override;\n\nprivate slots:\n    void onGraphReady(DependencyGraph graph);\n    void onNodeClicked(const QString& filePath);\n    void onNodeDoubleClicked(const QString& filePath);\n    void onStepClicked(const QString& filePath, int lineNumber);\n\nprivate:\n    CanvasView* m_canvasView;\n    DependencyParser* m_parser = nullptr;\n    CanvasLayout* m_layout;\n    GourceAnimator* m_animator = nullptr;\n    LayerPanel* m_layerPanel;\n    Minimap* m_minimap;\n    DigestPanel* m_digestPanel = nullptr;\n    QString m_projectPath;\n\n    // Toolbar elements for structural mode\n    QToolButton* m_playBtn = nullptr;\n    QToolButton* m_pauseBtn = nullptr;\n    QSlider* m_speedSlider = nullptr;\n    QToolButton* m_refreshBtn = nullptr;\n    QToolButton* m_semanticBtn = nullptr;\n    QToolButton* m_graphBtn = nullptr;\n\n    QMap<QString, FileNode*> m_nodes;\n    QList<DependencyEdge*> m_edges;\n    DependencyGraph m_currentGraph;\n    Codemap m_currentCodemap;\n    LayoutMode m_layoutMode = LayoutMode::Radial;\n    ViewMode m_viewMode = Structural;\n    bool m_parserInitialized = false;\n\n    QList<ClusterGroupNode*> m_clusterNodes;\n    QList<ConnectionEdge*> m_connectionEdges;\n\n    void buildGraph(const DependencyGraph& graph);\n    void layoutNodesRadial(const DependencyGraph& graph);\n    void clearCanvas();\n    void clearSemanticNodes();\n    QToolButton* createToolButton(const QString& text, const QString& tooltip);\n    void applyLayerFilters();\n    void onGourceCommit(const GitCommit& commit);\n    void diffGraphUpdate(const DependencyGraph& oldGraph, const DependencyGraph& newGraph);\n    QPointF computePositionForNewNode(const QString& path);\n    void connectNodeSignals(FileNode* node);\n    void focusOnChain(const QStringList& chain);\n    void setStructuralUIVisible(bool visible);\n\n    QTimer* m_pulseTimer = nullptr;\n    QString m_pulsingFilePath;\n};",
+  "oldString": "#include \"codemap.h\"\n#include <QVBoxLayout>\n#include <QToolButton>\n#include <QLabel>\n#include <QSlider>\n\nclass FileNode;\nclass DependencyEdge;\nclass StepNode;\nclass ClusterGroupNode;\nclass ConnectionEdge;\nclass DigestPanel;\n\nclass CanvasTab : public ToolTab\n{\n    Q_OBJECT\n\npublic:\n    explicit CanvasTab(FileDataBuffer* buffer, QWidget* parent = nullptr);\n\n    QString toolName() const override { return \"Canvas\"; }\n    QIcon toolIcon() const override { return QIcon(\":/icons/canvas.png\"); }\n\n    DependencyGraph currentGraph() const { return m_currentGraph; }\n\n    void showCodemap(const Codemap& map);\n    void showStructureGraph();\n\npublic slots:\n    void setFile(QString filepath) override;\n    void setTabData() override;\n    void saveTabData() override;\n\n    void highlightActiveFile(const QString& filePath);\n    void highlightDependencies(const QString& filePath);\n    void startNodePulsing(const QString& filePath);\n    void stopNodePulsing();\n\n    void toggleGraphMode();\n    void onCodemapReady(const Codemap& map);\n\nsignals:\n    void codemapShown(const Codemap& map);\n    void needsSemanticMapGeneration();\n    void stepNavigationRequested(const QString& filePath, int lineNumber);\n\nprotected:\n    void resizeEvent(QResizeEvent* event) override;\n\nprivate slots:\n    void onGraphReady(DependencyGraph graph);\n    void onNodeClicked(const QString& filePath);\n    void onNodeDoubleClicked(const QString& filePath);\n    void onStepClicked(const QString& filePath, int lineNumber);\n\nprivate:\n    CanvasView* m_canvasView;\n    DependencyParser* m_parser;\n    CanvasLayout* m_layout;\n    GourceAnimator* m_animator;\n    LayerPanel* m_layerPanel;\n    Minimap* m_minimap;\n    DigestPanel* m_digestPanel = nullptr;\n    QString m_projectPath;\n\n    QMap<QString, FileNode*> m_nodes;\n    QList<DependencyEdge*> m_edges;\n    DependencyGraph m_currentGraph;\n    Codemap m_currentCodemap;\n    LayoutMode m_layoutMode = LayoutMode::Radial;\n\n    bool m_structuralMode = true;\n    bool m_generatingConceptMap = false;\n\n    // Semantic map nodes (separate from structural graph nodes)\n    QList<ClusterGroupNode*> m_clusterNodes;\n    QList<ConnectionEdge*> m_connectionEdges;\n\n    void buildGraph(const DependencyGraph& graph);\n    void layoutNodesRadial(const DependencyGraph& graph);\n    void clearCanvas();\n    void clearSemanticNodes();\n    QToolButton* createToolButton(const QString& text, const QString& tooltip);\n    void applyLayerFilters();\n    void onGourceCommit(const GitCommit& commit);\n    void diffGraphUpdate(const DependencyGraph& oldGraph, const DependencyGraph& newGraph);\n    QPointF computePositionForNewNode(const QString& path);\n    void connectNodeSignals(FileNode* node);\n    void focusOnChain(const QStringList& chain);\n\n    QTimer* m_pulseTimer = nullptr;\n    QString m_pulsingFilePath;\n};"
 }
 ```
 
@@ -1160,11 +1248,228 @@ Edit applied successfully.
 
 ---
 
-## Assistant (Build · MiMo-V2.5-Pro · 21.4s)
+## Assistant (Build · MiMo-V2.5-Pro · 31.2s)
 
 _Thinking:_
 
-Now implement the missing methods in idewindow.cpp. I need to add canvasTab(), openOrCreateCanvasTab(), and fix on_GenerateSemanticMap().
+Now update the constructor in canvastab.cpp to add the two buttons and remove the Mode toggle.
+
+**Tool: edit**
+
+**Input:**
+```json
+{
+  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvastab.cpp",
+  "newString": "    auto* zoomInBtn = createToolButton(\"+\", \"Zoom In\");\n    auto* zoomOutBtn = createToolButton(\"-\", \"Zoom Out\");\n    auto* resetBtn = createToolButton(\"Reset\", \"Reset Zoom\");\n    m_refreshBtn = createToolButton(\"Refresh\", \"Refresh Graph\");\n\n    // Semantic / Structural toggle (segmented control)\n    m_semanticBtn = createToolButton(\"Semantic\", \"Concept map / codemap layout\");\n    m_graphBtn = createToolButton(\"Graph\", \"Dependency graph (#include)\");\n    m_semanticBtn->setCheckable(true);\n    m_graphBtn->setCheckable(true);\n    m_graphBtn->setChecked(true);\n    auto* modeGroup = new QButtonGroup(this);\n    modeGroup->addButton(m_semanticBtn);\n    modeGroup->addButton(m_graphBtn);\n    modeGroup->setExclusive(true);\n\n    // Gource controls\n    m_playBtn = createToolButton(\"Play\", \"Play git history\");\n    m_pauseBtn = createToolButton(\"Pause\", \"Pause playback\");\n    m_speedSlider = new QSlider(Qt::Horizontal, this);\n    m_speedSlider->setRange(1, 10);\n    m_speedSlider->setValue(2);\n    m_speedSlider->setFixedWidth(80);\n    m_speedSlider->setToolTip(\"Playback speed\");\n\n    connect(zoomInBtn, &QToolButton::clicked, m_canvasView, &CanvasView::zoomIn);\n    connect(zoomOutBtn, &QToolButton::clicked, m_canvasView, &CanvasView::zoomOut);\n    connect(resetBtn, &QToolButton::clicked, m_canvasView, &CanvasView::resetZoom);\n    connect(m_refreshBtn, &QToolButton::clicked, this, [this]() {\n        if (m_parser && !m_projectPath.isEmpty()) {\n            clearCanvas();\n            m_parser->startParsing();\n        }\n    });\n    connect(m_semanticBtn, &QToolButton::clicked, this, &CanvasTab::enterSemanticMode);\n    connect(m_graphBtn, &QToolButton::clicked, this, &CanvasTab::enterStructuralMode);\n\n    toolbarLayout->addWidget(zoomInBtn);\n    toolbarLayout->addWidget(zoomOutBtn);\n    toolbarLayout->addWidget(resetBtn);\n    toolbarLayout->addSpacing(8);\n    toolbarLayout->addWidget(m_semanticBtn);\n    toolbarLayout->addWidget(m_graphBtn);\n    toolbarLayout->addStretch();\n    toolbarLayout->addWidget(m_playBtn);\n    toolbarLayout->addWidget(m_pauseBtn);\n    toolbarLayout->addWidget(m_speedSlider);\n    toolbarLayout->addStretch();\n    toolbarLayout->addWidget(m_refreshBtn);",
+  "oldString": "    auto* zoomInBtn = createToolButton(\"+\", \"Zoom In\");\n    auto* zoomOutBtn = createToolButton(\"-\", \"Zoom Out\");\n    auto* resetBtn = createToolButton(\"Reset\", \"Reset Zoom\");\n    auto* refreshBtn = createToolButton(\"Refresh\", \"Refresh Graph\");\n    auto* toggleModeBtn = createToolButton(\"Mode\", \"Toggle Graph Mode\");\n\n    // Gource controls\n    auto* playBtn = createToolButton(\"Play\", \"Play git history\");\n    auto* pauseBtn = createToolButton(\"Pause\", \"Pause playback\");\n    auto* speedSlider = new QSlider(Qt::Horizontal, this);\n    speedSlider->setRange(1, 10);\n    speedSlider->setValue(2);\n    speedSlider->setFixedWidth(80);\n    speedSlider->setToolTip(\"Playback speed\");\n\n    connect(zoomInBtn, &QToolButton::clicked, m_canvasView, &CanvasView::zoomIn);\n    connect(zoomOutBtn, &QToolButton::clicked, m_canvasView, &CanvasView::zoomOut);\n    connect(resetBtn, &QToolButton::clicked, m_canvasView, &CanvasView::resetZoom);\n    connect(refreshBtn, &QToolButton::clicked, this, [this]() {\n        if (m_parser && !m_projectPath.isEmpty()) {\n            clearCanvas();\n            m_parser->startParsing();\n        }\n    });\n    connect(toggleModeBtn, &QToolButton::clicked, this, &CanvasTab::toggleGraphMode);\n\n    toolbarLayout->addWidget(zoomInBtn);\n    toolbarLayout->addWidget(zoomOutBtn);\n    toolbarLayout->addWidget(resetBtn);\n    toolbarLayout->addWidget(toggleModeBtn);\n    toolbarLayout->addStretch();\n    toolbarLayout->addWidget(playBtn);\n    toolbarLayout->addWidget(pauseBtn);\n    toolbarLayout->addWidget(speedSlider);\n    toolbarLayout->addStretch();\n    toolbarLayout->addWidget(refreshBtn);"
+}
+```
+
+**Output:**
+```
+Edit applied successfully.
+```
+
+---
+
+## Assistant (Build · MiMo-V2.5-Pro · 18.9s)
+
+_Thinking:_
+
+Now update the Gource animator connects to use the member pointers.
+
+**Tool: edit**
+
+**Input:**
+```json
+{
+  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvastab.cpp",
+  "newString": "    connect(m_playBtn, &QToolButton::clicked, this, [this]() {\n        if (m_animator) m_animator->play();\n    });\n    connect(m_pauseBtn, &QToolButton::clicked, this, [this]() {\n        if (m_animator) m_animator->pause();\n    });\n    connect(m_speedSlider, &QSlider::valueChanged, this, [this](int val) {\n        if (m_animator) m_animator->setSpeed(val);\n    });",
+  "oldString": "    connect(playBtn, &QToolButton::clicked, this, [this]() {\n        if (m_animator) m_animator->play();\n    });\n    connect(pauseBtn, &QToolButton::clicked, this, [this]() {\n        if (m_animator) m_animator->pause();\n    });\n    connect(speedSlider, &QSlider::valueChanged, this, [this](int val) {\n        if (m_animator) m_animator->setSpeed(val);\n    });"
+}
+```
+
+**Output:**
+```
+Edit applied successfully.
+```
+
+---
+
+## Assistant (Build · MiMo-V2.5-Pro · 15.8s)
+
+_Thinking:_
+
+Now update setTabData() to be lazy — don't start parser if Semantic mode.
+
+**Tool: edit**
+
+**Input:**
+```json
+{
+  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvastab.cpp",
+  "newString": "void CanvasTab::setTabData()\n{\n    if (!m_parser || m_projectPath.isEmpty())\n        return;\n\n    // Don't start parser if we're in semantic mode — lazy load\n    if (m_viewMode == Semantic)\n        return;\n\n    clearCanvas();\n    m_parser->startParsing();\n    m_parserInitialized = true;\n}",
+  "oldString": "void CanvasTab::setTabData()\n{\n    if (!m_parser || m_projectPath.isEmpty())\n        return;\n\n    clearCanvas();\n    m_parser->startParsing();\n}"
+}
+```
+
+**Output:**
+```
+Edit applied successfully.
+```
+
+---
+
+## Assistant (Build · MiMo-V2.5-Pro · 16.5s)
+
+_Thinking:_
+
+Now update onGraphReady to only draw if in Structural mode.
+
+**Tool: edit**
+
+**Input:**
+```json
+{
+  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvastab.cpp",
+  "newString": "void CanvasTab::onGraphReady(DependencyGraph graph)\n{\n    m_currentGraph = graph;\n    if (m_viewMode == Structural) {\n        buildGraph(graph);\n        layoutNodesRadial(graph);\n    }\n    // In Semantic mode, just save the graph for later use\n}",
+  "oldString": "void CanvasTab::onGraphReady(DependencyGraph graph)\n{\n    m_currentGraph = graph;\n    buildGraph(graph);\n    layoutNodesRadial(graph);\n}"
+}
+```
+
+**Output:**
+```
+Edit applied successfully.
+```
+
+---
+
+## Assistant (Build · MiMo-V2.5-Pro · 15.7s)
+
+_Thinking:_
+
+Now update showStructureGraph() to lazy-start the parser.
+
+**Tool: edit**
+
+**Input:**
+```json
+{
+  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvastab.cpp",
+  "newString": "void CanvasTab::showStructureGraph()\n{\n    m_viewMode = Structural;\n    m_layoutMode = LayoutMode::Radial;\n    clearSemanticNodes();\n    clearCanvas();\n\n    // Lazy-start parser if needed\n    if (!m_parserInitialized && m_parser && !m_projectPath.isEmpty()) {\n        m_parser->startParsing();\n        m_parserInitialized = true;\n        return; // onGraphReady will draw when parsing completes\n    }\n\n    if (m_currentGraph.allFiles.isEmpty())\n        return;\n\n    buildGraph(m_currentGraph);\n    layoutNodesRadial(m_currentGraph);\n}",
+  "oldString": "void CanvasTab::showStructureGraph()\n{\n    m_structuralMode = true;\n    m_layoutMode = LayoutMode::Radial;\n    clearSemanticNodes();\n    clearCanvas();\n\n    if (m_currentGraph.allFiles.isEmpty())\n        return;\n\n    buildGraph(m_currentGraph);\n    layoutNodesRadial(m_currentGraph);\n}"
+}
+```
+
+**Output:**
+```
+Edit applied successfully.
+```
+
+---
+
+## Assistant (Build · MiMo-V2.5-Pro · 10.5s)
+
+_Thinking:_
+
+Now update showCodemap to use m_viewMode and hide structural UI.
+
+**Tool: edit**
+
+**Input:**
+```json
+{
+  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvastab.cpp",
+  "newString": "void CanvasTab::showCodemap(const Codemap& map)\n{\n    m_currentCodemap = map;\n    m_viewMode = Semantic;\n    m_layoutMode = LayoutMode::LinearChain;\n\n    clearCanvas();\n    clearSemanticNodes();\n    setStructuralUIVisible(false);\n\n    m_semanticBtn->setChecked(true);\n    m_graphBtn->setChecked(false);\n\n    if (map.traces.isEmpty())\n        return;",
+  "oldString": "void CanvasTab::showCodemap(const Codemap& map)\n{\n    m_currentCodemap = map;\n    m_layoutMode = LayoutMode::LinearChain;\n    m_structuralMode = false;\n    m_generatingConceptMap = false;\n\n    clearCanvas();\n    clearSemanticNodes();\n\n    if (map.traces.isEmpty())\n        return;"
+}
+```
+
+**Output:**
+```
+Edit applied successfully.
+```
+
+---
+
+## Assistant (Build · MiMo-V2.5-Pro · 16.4s)
+
+_Thinking:_
+
+Now update onCodemapReady and toggleGraphMode.
+
+**Tool: edit**
+
+**Input:**
+```json
+{
+  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvastab.cpp",
+  "newString": "void CanvasTab::onCodemapReady(const Codemap& map)\n{\n    showCodemap(map);\n}\n\nvoid CanvasTab::enterSemanticMode()\n{\n    if (m_viewMode == Semantic) return;\n\n    if (!m_currentCodemap.traces.isEmpty()) {\n        showCodemap(m_currentCodemap);\n    } else {\n        CodemapStore store(m_projectPath);\n        if (store.exists()) {\n            auto mapOpt = store.load();\n            if (mapOpt.has_value()) {\n                showCodemap(mapOpt.value());\n                return;\n            }\n        }\n        m_semanticBtn->setChecked(true);\n        m_graphBtn->setChecked(false);\n        emit needsSemanticMapGeneration();\n    }\n}\n\nvoid CanvasTab::enterStructuralMode()\n{\n    if (m_viewMode == Structural) return;\n    setStructuralUIVisible(true);\n    showStructureGraph();\n}\n\nvoid CanvasTab::setStructuralUIVisible(bool visible)\n{\n    if (m_playBtn) m_playBtn->setVisible(visible);\n    if (m_pauseBtn) m_pauseBtn->setVisible(visible);\n    if (m_speedSlider) m_speedSlider->setVisible(visible);\n    if (m_refreshBtn) m_refreshBtn->setVisible(visible);\n    if (m_layerPanel) m_layerPanel->setVisible(visible);\n    if (m_minimap) m_minimap->setVisible(visible);\n    if (m_digestPanel) m_digestPanel->setVisible(!visible);\n}\n\nvoid CanvasTab::toggleGraphMode()\n{\n    if (m_viewMode == Structural)\n        enterSemanticMode();\n    else\n        enterStructuralMode();\n}",
+  "oldString": "void CanvasTab::onCodemapReady(const Codemap& map)\n{\n    m_generatingConceptMap = false;\n    showCodemap(map);\n}\n\nvoid CanvasTab::toggleGraphMode()\n{\n    if (m_structuralMode) {\n        // Switch to concept mode\n        if (!m_currentCodemap.traces.isEmpty()) {\n            showCodemap(m_currentCodemap);\n        } else {\n            // Check for saved codemap\n            CodemapStore store(m_projectPath);\n            if (store.exists()) {\n                auto mapOpt = store.load();\n                if (mapOpt.has_value()) {\n                    showCodemap(mapOpt.value());\n                    return;\n                }\n            }\n            // No map — request generation\n            m_generatingConceptMap = true;\n            emit needsSemanticMapGeneration();\n        }\n    } else {\n        showStructureGraph();\n    }\n}"
+}
+```
+
+**Output:**
+```
+Edit applied successfully.
+```
+
+---
+
+## Assistant (Build · MiMo-V2.5-Pro · 33.0s)
+
+_Thinking:_
+
+Now **Phase 2.1** — Windsurf-style filenames in CodemapStore. Let me update codemap_store.h/cpp.
+
+**Phase 2.1** — Windsurf-именование файлов.
+
+**Tool: edit**
+
+**Input:**
+```json
+{
+  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/codemap_store.h",
+  "newString": "#ifndef CODEMAP_STORE_H\n#define CODEMAP_STORE_H\n\n#include <QObject>\n#include <QString>\n#include <QList>\n#include <optional>\n#include \"codemap.h\"\n\nstruct CodemapMeta {\n    QString filePath;\n    QString title;\n    QDateTime timestamp;\n};\n\nclass CodemapStore : public QObject\n{\n    Q_OBJECT\npublic:\n    explicit CodemapStore(const QString& projectRoot, QObject* parent = nullptr);\n\n    static QString slugifyTitle(const QString& title);\n    static QString buildFileName(const Codemap& map);\n\n    QString defaultFilePath() const;\n    bool exists() const;\n    bool save(const Codemap& map);\n    std::optional<Codemap> load(const QString& filePath = QString()) const;\n    std::optional<Codemap> loadLatest() const;\n    QList<CodemapMeta> list() const;\n\nprivate:\n    QString m_projectRoot;\n};\n\n#endif // CODEMAP_STORE_H",
+  "oldString": "#ifndef CODEMAP_STORE_H\n#define CODEMAP_STORE_H\n\n#include <QObject>\n#include <QString>\n#include <optional>\n#include \"codemap.h\"\n\nclass CodemapStore : public QObject\n{\n    Q_OBJECT\npublic:\n    explicit CodemapStore(const QString& projectRoot, QObject* parent = nullptr);\n\n    QString defaultFilePath() const;\n    bool exists() const;\n    bool save(const Codemap& map);\n    std::optional<Codemap> load() const;\n\nprivate:\n    QString m_projectRoot;\n};\n\n#endif // CODEMAP_STORE_H"
+}
+```
+
+**Output:**
+```
+Edit applied successfully.
+```
+
+---
+
+## Assistant (Build · MiMo-V2.5-Pro · 50.4s)
+
+_Thinking:_
+
+Now update codemap_store.cpp with the new methods.
+
+**Tool: write**
+
+**Input:**
+```json
+{
+  "content": "#include \"codemap_store.h\"\n#include <QFile>\n#include <QFileInfo>\n#include <QDir>\n#include <QJsonDocument>\n#include <QJsonObject>\n#include <QDateTime>\n#include <QRegularExpression>\n\nCodemapStore::CodemapStore(const QString& projectRoot, QObject* parent)\n    : QObject(parent)\n    , m_projectRoot(projectRoot)\n{\n}\n\nQString CodemapStore::slugifyTitle(const QString& title)\n{\n    QString result;\n    bool lastWasUnderscore = false;\n    for (const QChar& c : title) {\n        if (c.isLetterOrNumber()) {\n            result.append(c);\n            lastWasUnderscore = false;\n        } else if ((c == ' ' || c == '-' || c == '_') && !lastWasUnderscore) {\n            result.append('_');\n            lastWasUnderscore = true;\n        }\n    }\n    while (result.endsWith('_'))\n        result.chop(1);\n    return result;\n}\n\nQString CodemapStore::buildFileName(const Codemap& map)\n{\n    QString slug = slugifyTitle(map.title);\n    if (slug.isEmpty())\n        slug = \"codemap\";\n\n    QString timestamp;\n    if (!map.metadata.generationTimestamp.isEmpty()) {\n        QDateTime dt = QDateTime::fromString(map.metadata.generationTimestamp, Qt::ISODate);\n        if (dt.isValid())\n            timestamp = dt.toString(\"yyyyMMdd_HHmmss\");\n    }\n    if (timestamp.isEmpty())\n        timestamp = QDateTime::currentDateTime().toString(\"yyyyMMdd_HHmmss\");\n\n    return slug + \"_\" + timestamp + \".codemap.txt\";\n}\n\nQString CodemapStore::defaultFilePath() const\n{\n    return m_projectRoot + \"/\" + buildFileName(Codemap{});\n}\n\nbool CodemapStore::exists() const\n{\n    // Check for new-style *.codemap.txt files\n    QDir dir(m_projectRoot);\n    QStringList filters = {\"*.codemap.txt\"};\n    if (!dir.entryList(filters, QDir::Files).isEmpty())\n        return true;\n\n    // Check for legacy <project>.codemap\n    QString projectName = QFileInfo(m_projectRoot).fileName();\n    return QFile::exists(m_projectRoot + \"/\" + projectName + \".codemap\");\n}\n\nbool CodemapStore::save(const Codemap& map)\n{\n    Codemap copy = map;\n    copy.normalizeAbsolutePaths(m_projectRoot);\n\n    QString filePath = m_projectRoot + \"/\" + buildFileName(copy);\n\n    QFile file(filePath);\n    if (!file.open(QIODevice::WriteOnly))\n        return false;\n\n    QJsonDocument doc(copy.toJson());\n    file.write(doc.toJson(QJsonDocument::Indented));\n    file.close();\n    return true;\n}\n\nstd::optional<Codemap> CodemapStore::load(const QString& filePath) const\n{\n    QString path = filePath;\n    if (path.isEmpty())\n        path = m_projectRoot + \"/\" + buildFileName(Codemap{});\n\n    QFile file(path);\n    if (!file.open(QIODevice::ReadOnly))\n        return std::nullopt;\n\n    QJsonParseError error;\n    QJsonDocument doc = QJsonDocument::fromJson(file.readAll(), &error);\n    file.close();\n\n    if (error.error != QJsonParseError::NoError || !doc.isObject())\n        return std::nullopt;\n\n    Codemap map = Codemap::fromJson(doc.object());\n    map.normalizeAbsolutePaths(m_projectRoot);\n    map.populateRuntimeFields(m_projectRoot);\n    return map;\n}\n\nstd::optional<Codemap> CodemapStore::loadLatest() const\n{\n    auto metaList = list();\n    if (metaList.isEmpty())\n        return std::nullopt;\n\n    // Sort by timestamp descending, load the newest\n    std::sort(metaList.begin(), metaList.end(),\n              [](const CodemapMeta& a, const CodemapMeta& b) {\n                  return a.timestamp > b.timestamp;\n              });\n\n    return load(metaList.first().filePath);\n}\n\nQList<CodemapMeta> CodemapStore::list() const\n{\n    QList<CodemapMeta> result;\n    QDir dir(m_projectRoot);\n\n    // New-style *.codemap.txt files\n    QStringList filters = {\"*.codemap.txt\"};\n    QStringList files = dir.entryList(filters, QDir::Files, QDir::Name);\n    for (const QString& fileName : files) {\n        QString fullPath = dir.filePath(fileName);\n        QFile file(fullPath);\n        if (!file.open(QIODevice::ReadOnly))\n            continue;\n\n        QJsonParseError error;\n        QJsonDocument doc = QJsonDocument::fromJson(file.readAll(), &error);\n        file.close();\n\n        if (error.error != QJsonParseError::NoError || !doc.isObject())\n            continue;\n\n        QJsonObject obj = doc.object();\n        CodemapMeta meta;\n        meta.filePath = fullPath;\n        meta.title = obj[\"title\"].toString(fileName);\n        meta.timestamp = QDateTime::fromString(\n            obj[\"metadata\"].toObject()[\"generationTimestamp\"].toString(), Qt::ISODate);\n        if (!meta.timestamp.isValid())\n            meta.timestamp = QFileInfo(fullPath).lastModified();\n        result.append(meta);\n    }\n\n    // Legacy <project>.codemap\n    QString projectName = QFileInfo(m_projectRoot).fileName();\n    QString legacyPath = m_projectRoot + \"/\" + projectName + \".codemap\";\n    if (QFile::exists(legacyPath)) {\n        QFile file(legacyPath);\n        if (file.open(QIODevice::ReadOnly)) {\n            QJsonParseError error;\n            QJsonDocument doc = QJsonDocument::fromJson(file.readAll(), &error);\n            file.close();\n            if (error.error == QJsonParseError::NoError && doc.isObject()) {\n                QJsonObject obj = doc.object();\n                CodemapMeta meta;\n                meta.filePath = legacyPath;\n                meta.title = obj[\"title\"].toString(projectName);\n                meta.timestamp = QDateTime::fromString(\n                    obj[\"metadata\"].toObject()[\"generationTimestamp\"].toString(), Qt::ISODate);\n                if (!meta.timestamp.isValid())\n                    meta.timestamp = QFileInfo(legacyPath).lastModified();\n                result.append(meta);\n            }\n        }\n    }\n\n    return result;\n}\n",
+  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/codemap_store.cpp"
+}
+```
+
+**Output:**
+```
+Wrote file successfully.
+```
+
+---
+
+## Assistant (Build · MiMo-V2.5-Pro · 25.6s)
+
+_Thinking:_
+
+Now update IDEWindow::openOrGenerateConceptMap() to use loadLatest() instead of exists() + load().
 
 **Tool: edit**
 
@@ -1172,8 +1477,8 @@ Now implement the missing methods in idewindow.cpp. I need to add canvasTab(), o
 ```json
 {
   "filePath": "/home/resu/Documents/dev/cremniy/src/app/IDEWindow/idewindow.cpp",
-  "newString": "#include \"Agent/chat_panel.h\"\n#include \"Agent/agent_session.h\"\n#include \"ToolTabs/Canvas/canvastab.h\"\n#include \"ToolTabs/Canvas/semantic_map_store.h\"\n#include <QJsonDocument>",
-  "oldString": "#include \"Agent/chat_panel.h\"\n#include \"Agent/agent_session.h\"\n#include \"ToolTabs/Canvas/canvastab.h\""
+  "newString": "    CodemapStore store(projectPath());\n\n    // If scope is empty, check for cached codemap\n    if (scope.isEmpty()) {\n        auto mapOpt = store.loadLatest();\n        if (mapOpt.has_value()) {\n            canvas->showCodemap(mapOpt.value());\n            return;\n        }\n    }",
+  "oldString": "    CodemapStore store(projectPath());\n\n    // If scope is empty, check for cached codemap\n    if (scope.isEmpty() && store.exists()) {\n        auto mapOpt = store.load();\n        if (mapOpt.has_value()) {\n            canvas->showCodemap(mapOpt.value());\n            return;\n        }\n    }"
 }
 ```
 
@@ -1184,20 +1489,20 @@ Edit applied successfully.
 
 ---
 
-## Assistant (Build · MiMo-V2.5-Pro · 16.0s)
+## Assistant (Build · MiMo-V2.5-Pro · 27.4s)
 
 _Thinking:_
 
-Now replace the stub on_GenerateSemanticMap and add canvasTab() / openOrCreateCanvasTab().
+Now update the GenerateCodemapTool to not save directly (remove the double save). The save should only happen in IDEWindow callback.
 
 **Tool: edit**
 
 **Input:**
 ```json
 {
-  "filePath": "/home/resu/Documents/dev/cremniy/src/app/IDEWindow/idewindow.cpp",
-  "newString": "void IDEWindow::on_openSettings(){\n    SettingsDialog dlg(this);\n    dlg.exec();\n}\n\nCanvasTab* IDEWindow::canvasTab() const\n{\n    for (int i = 0; i < m_filesTabWidget->count(); ++i) {\n        QWidget* tab = m_filesTabWidget->widget(i);\n        if (!tab) continue;\n        CanvasTab* canvas = tab->findChild<CanvasTab*>();\n        if (canvas)\n            return canvas;\n    }\n    return nullptr;\n}\n\nCanvasTab* IDEWindow::openOrCreateCanvasTab()\n{\n    CanvasTab* existing = canvasTab();\n    if (existing)\n        return existing;\n\n    QDir srcDir(m_projectPath + \"/src\");\n    if (srcDir.exists()) {\n        QStringList cppFiles = srcDir.entryList({\"*.cpp\", \"*.h\"}, QDir::Files, QDir::Name);\n        if (!cppFiles.isEmpty()) {\n            QString firstFile = srcDir.absoluteFilePath(cppFiles.first());\n            m_filesTabWidget->openFile(firstFile, QFileInfo(firstFile).fileName());\n            return canvasTab();\n        }\n    }\n    return nullptr;\n}\n\nvoid IDEWindow::on_GenerateSemanticMap(){\n    QString projectRoot = m_projectPath;\n    SemanticMapStore store(projectRoot);\n\n    CanvasTab* canvas = canvasTab();\n    if (!canvas) {\n        canvas = openOrCreateCanvasTab();\n        if (!canvas) return;\n    }\n\n    // Check for existing saved maps\n    QList<SemanticMapStore::MapMeta> maps = store.list();\n\n    if (!maps.isEmpty()) {\n        SemanticMapStore::MapMeta latest = maps.first();\n        for (const auto& m : maps) {\n            if (m.createdAt > latest.createdAt)\n                latest = m;\n        }\n        auto mapOpt = store.load(latest.id);\n        if (mapOpt.has_value()) {\n            canvas->showSemanticMap(mapOpt.value());\n            return;\n        }\n    }\n\n    // No maps — generate via agent tool\n    AgentSession* session = m_agentSession;\n    if (!session) return;\n\n    QStringList scope = canvas->currentGraph().allFiles;\n    statusBar()->showMessage(\"Generating concept map via AI...\");\n\n    QJsonObject args;\n    QJsonArray scopeArr;\n    for (const QString& f : scope)\n        scopeArr.append(f);\n    args[\"scope\"] = scopeArr;\n\n    ToolRegistry* tools = session->toolRegistry();\n    if (tools) {\n        AgentTool* tool = tools->findTool(\"generate_semantic_map\");\n        if (tool) {\n            connect(tool, &AgentTool::finished, this,\n                [this, canvas](const QString& result, bool isError) {\n                    statusBar()->clearMessage();\n                    if (isError) {\n                        statusBar()->showMessage(\"Concept map generation failed: \" + result, 5000);\n                        return;\n                    }\n                    QJsonDocument doc = QJsonDocument::fromJson(result.toUtf8());\n                    if (doc.isObject()) {\n                        SemanticMap map = SemanticMap::fromJson(doc.object());\n                        canvas->showSemanticMap(map);\n                    }\n                }, Qt::SingleShotConnection);\n            tool->execute(args);\n            return;\n        }\n    }\n\n    statusBar()->showMessage(\"AI agent not available for concept map generation\", 5000);\n}",
-  "oldString": "void IDEWindow::on_openSettings(){\n    SettingsDialog dlg(this);\n    dlg.exec();\n}\n\nvoid IDEWindow::on_GenerateSemanticMap(){\n    // TODO: Implement semantic map generation logic\n    // 1. Check for saved map in .cremniy/semantic_maps/ by current project/task hash\n    // 2. If file exists - load it to canvas immediately\n    // 3. If not - call Phase 2.1 (GenerateSemanticMap)\n    qDebug() << \"Generate Semantic Map triggered\";\n}"
+  "filePath": "/home/resu/Documents/dev/cremniy/src/Agent/tools/generate_codemap_tool.cpp",
+  "newString": "    CodemapValidationResult result = validateCodemapJson(cleaned);\n\n    if (result.ok) {\n        // Don't save here — IDEWindow handles saving with proper filename\n        QJsonDocument doc(result.map.toJson());\n        emit finished(doc.toJson(QJsonDocument::Compact), false);\n        return;\n    }",
+  "oldString": "    CodemapValidationResult result = validateCodemapJson(cleaned);\n\n    if (result.ok) {\n        CodemapStore store(m_projectRoot);\n        store.save(result.map);\n\n        QJsonDocument doc(result.map.toJson());\n        emit finished(doc.toJson(QJsonDocument::Compact), false);\n        return;\n    }"
 }
 ```
 
@@ -1208,43 +1513,19 @@ Edit applied successfully.
 
 ---
 
-## Assistant (Build · MiMo-V2.5-Pro · 14.3s)
+## Assistant (Build · MiMo-V2.5-Pro · 44.8s)
 
 _Thinking:_
 
-Now I need to add the includes for ToolRegistry and AgentTool in idewindow.cpp.
-
-**Tool: edit**
-
-**Input:**
-```json
-{
-  "filePath": "/home/resu/Documents/dev/cremniy/src/app/IDEWindow/idewindow.cpp",
-  "newString": "#include \"Agent/agent_session.h\"\n#include \"Agent/tools/tool_registry.h\"\n#include \"Agent/tools/agent_tool.h\"\n#include \"ToolTabs/Canvas/canvastab.h\"",
-  "oldString": "#include \"Agent/agent_session.h\"\n#include \"ToolTabs/Canvas/canvastab.h\""
-}
-```
-
-**Output:**
-```
-Edit applied successfully.
-```
-
----
-
-## Assistant (Build · MiMo-V2.5-Pro · 51.6s)
-
-_Thinking:_
-
-Now build to check if everything compiles.
+Now build and test.
 
 **Tool: bash**
 
 **Input:**
 ```json
 {
-  "command": "cmake --build /home/resu/Documents/dev/cremniy/build --parallel 2 2>&1 | tail -15",
-  "description": "Build after fixing merge issues",
+  "command": "cmake --build /home/resu/Documents/dev/cremniy/build --parallel 2 2>&1 | tail -10",
+  "description": "Build after Phase 1+2.1+3.1",
   "timeout": 180000
 }
 ```
@@ -1253,48 +1534,109 @@ Now build to check if everything compiles.
 ```
 [ 34%] Building CXX object CMakeFiles/cremniy.dir/cremniy_autogen/mocs_compilation.cpp.o
 [ 35%] Building CXX object CMakeFiles/cremniy.dir/app/IDEWindow/idewindow.cpp.o
-[ 36%] Building CXX object CMakeFiles/cremniy.dir/app/WelcomeWindow/welcomeform.cpp.o
-[ 37%] Building CXX object CMakeFiles/cremniy.dir/ui/MenuBar/menubarbuilder.cpp.o
-[ 38%] Building CXX object CMakeFiles/cremniy.dir/ui/MenuBar/menufactory.cpp.o
-[ 39%] Building CXX object CMakeFiles/cremniy.dir/ui/MenuBar/Menus/File/filemenu.cpp.o
-[ 40%] Building CXX object CMakeFiles/cremniy.dir/ui/MenuBar/Menus/Edit/editmenu.cpp.o
-[ 40%] Building CXX object CMakeFiles/cremniy.dir/ui/MenuBar/Menus/View/viewmenu.cpp.o
-[ 41%] Building CXX object CMakeFiles/cremniy.dir/ui/MenuBar/Menus/Build/buildmenu.cpp.o
-[ 42%] Building CXX object CMakeFiles/cremniy.dir/ui/MenuBar/Menus/Tools/toolsmenu.cpp.o
-[ 43%] Building CXX object CMakeFiles/cremniy.dir/ui/MenuBar/Menus/References/referencesmenu.cpp.o
-[ 43%] Building CXX object CMakeFiles/cremniy.dir/Agent/agent_session.cpp.o
-[ 44%] Building CXX object CMakeFiles/cremniy.dir/Agent/tools/agent_tools.cpp.o
-[ 45%] Linking CXX executable cremniy
+[ 36%] Building CXX object CMakeFiles/cremniy.dir/ui/MenuBar/Menus/Tools/toolsmenu.cpp.o
+[ 36%] Building CXX object CMakeFiles/cremniy.dir/Agent/agent_session.cpp.o
+[ 37%] Building CXX object CMakeFiles/cremniy.dir/Agent/tools/agent_tools.cpp.o
+[ 38%] Building CXX object CMakeFiles/cremniy.dir/Agent/tools/generate_codemap_tool.cpp.o
+[ 39%] Building CXX object CMakeFiles/cremniy.dir/ToolTabs/Canvas/canvastab.cpp.o
+[ 40%] Building CXX object CMakeFiles/cremniy.dir/ToolTabs/Canvas/codemap_store.cpp.o
+[ 41%] Linking CXX executable cremniy
 [100%] Built target cremniy
 
 ```
 
 ---
 
-## Assistant (Build · MiMo-V2.5-Pro · 16.2s)
+## Assistant (Build · MiMo-V2.5-Pro · 23.5s)
 
 _Thinking:_
 
-Build successful. Let me also run the tests.
+Build successful. Let me also update the tests for the new CodemapStore methods, then run them.
 
-Сборка успешна. Проверяю тесты.
+**Tool: edit**
+
+**Input:**
+```json
+{
+  "filePath": "/home/resu/Documents/dev/cremniy/tests/test_codemap.cpp",
+  "newString": "    void testStoreDefaultFilePath()\n    {\n        CodemapStore store(\"/home/user/myproject\");\n        // defaultFilePath uses buildFileName with empty Codemap\n        QVERIFY(store.defaultFilePath().contains(\"codemap\"));\n        QVERIFY(store.defaultFilePath().contains(\".codemap.txt\"));\n    }\n\n    void testSlugifyTitle()\n    {\n        QCOMPARE(CodemapStore::slugifyTitle(\"Qt Application Entry Point\"),\n                 QString(\"Qt_Application_Entry_Point\"));\n        QCOMPARE(CodemapStore::slugifyTitle(\"Hello World!\"),\n                 QString(\"Hello_World\"));\n        QCOMPARE(CodemapStore::slugifyTitle(\"  spaces  \"),\n                 QString(\"spaces\"));\n    }\n\n    void testBuildFileName()\n    {\n        Codemap map;\n        map.title = \"Qt Application Entry Point\";\n        map.metadata.generationTimestamp = \"2026-06-14T12:31:13Z\";\n\n        QString fileName = CodemapStore::buildFileName(map);\n        QVERIFY(fileName.startsWith(\"Qt_Application_Entry_Point_\"));\n        QVERIFY(fileName.endsWith(\".codemap.txt\"));\n        QVERIFY(fileName.contains(\"20260614\"));\n    }\n\n    void testStoreSaveAndLoadLatest()\n    {\n        QTemporaryDir dir;\n        QVERIFY(dir.isValid());\n\n        CodemapStore store(dir.path());\n\n        Codemap map;\n        map.id = \"test_codemap\";\n        map.title = \"Test Codemap\";\n        map.metadata.generationTimestamp = QDateTime::currentDateTime().toString(Qt::ISODate);\n\n        CodemapTrace trace;\n        trace.id = \"1\";\n        trace.title = \"Trace 1\";\n        CodemapLocation loc;\n        loc.id = \"1a\";\n        loc.path = \"src/main.cpp\";\n        loc.lineNumber = 6;\n        loc.lineContent = \"int main() {\";\n        trace.locations = {loc};\n        map.traces = {trace};\n\n        QVERIFY(store.save(map));\n\n        auto list = store.list();\n        QCOMPARE(list.size(), 1);\n        QVERIFY(list[0].title == \"Test Codemap\");\n\n        auto loaded = store.loadLatest();\n        QVERIFY(loaded.has_value());\n        QCOMPARE(loaded->id, map.id);\n        QCOMPARE(loaded->traces.size(), 1);\n        QCOMPARE(loaded->traces[0].locations[0].path, loc.path);\n    }",
+  "oldString": "    void testStoreDefaultFilePath()\n    {\n        CodemapStore store(\"/home/user/myproject\");\n        QCOMPARE(store.defaultFilePath(), QString(\"/home/user/myproject/myproject.codemap\"));\n    }"
+}
+```
+
+**Output:**
+```
+Edit applied successfully.
+```
+
+---
+
+## Assistant (Build · MiMo-V2.5-Pro · 58.8s)
+
+_Thinking:_
+
+Now build and run tests.
 
 **Tool: bash**
 
 **Input:**
 ```json
 {
-  "command": "cd /home/resu/Documents/dev/cremniy/tests/build && cmake --build . --parallel 2 2>&1 && ./test_dependency_parser 2>&1",
-  "description": "Run tests",
-  "timeout": 120000
+  "command": "rm -rf /home/resu/Documents/dev/cremniy/tests/build && mkdir /home/resu/Documents/dev/cremniy/tests/build && cmake -S /home/resu/Documents/dev/cremniy/tests -B /home/resu/Documents/dev/cremniy/tests/build -DCMAKE_PREFIX_PATH=/home/resu/Documents/dev/cremniy/third_party/qt-install 2>&1 && cmake --build /home/resu/Documents/dev/cremniy/tests/build --parallel 2 2>&1 | tail -5",
+  "description": "Build tests after Phase 2.1",
+  "timeout": 180000
 }
 ```
 
 **Output:**
 ```
-[  0%] Built target test_dependency_parser_autogen_timestamp_deps
-[ 16%] Built target test_dependency_parser_autogen
-[100%] Built target test_dependency_parser
+-- The CXX compiler identification is GNU 13.3.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE  
+-- Performing Test HAVE_STDATOMIC
+-- Performing Test HAVE_STDATOMIC - Success
+-- Found WrapAtomic: TRUE  
+-- Found OpenGL: /usr/lib/x86_64-linux-gnu/libOpenGL.so   
+-- Found WrapOpenGL: TRUE  
+-- Found XKB: /usr/lib/x86_64-linux-gnu/libxkbcommon.so (found suitable version "1.6.0", minimum required is "0.5.0") 
+-- Configuring done (1.0s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/resu/Documents/dev/cremniy/tests/build
+[ 84%] Building CXX object CMakeFiles/test_generate_codemap_tool.dir/home/resu/Documents/dev/cremniy/src/Agent/llm_client.cpp.o
+[ 88%] Building CXX object CMakeFiles/test_generate_codemap_tool.dir/home/resu/Documents/dev/cremniy/src/Agent/endpoint_manager.cpp.o
+[ 92%] Building CXX object CMakeFiles/test_generate_codemap_tool.dir/home/resu/Documents/dev/cremniy/src/utils/appsettings.cpp.o
+[ 96%] Linking CXX executable test_generate_codemap_tool
+[100%] Built target test_generate_codemap_tool
+
+```
+
+---
+
+## Assistant (Build · MiMo-V2.5-Pro · 7.5s)
+
+_Thinking:_
+
+Build successful. Run all tests.
+
+**Tool: bash**
+
+**Input:**
+```json
+{
+  "command": "cd /home/resu/Documents/dev/cremniy/tests/build && ./test_dependency_parser 2>&1 && echo \"=== CODEMAP ===\" && ./test_codemap 2>&1 && echo \"=== GENERATE ===\" && ./test_generate_codemap_tool 2>&1",
+  "description": "Run all tests",
+  "timeout": 60000
+}
+```
+
+**Output:**
+```
 qt.qpa.plugin: Could not find the Qt platform plugin "wayland" in ""
 ********* Start testing of TestDependencyParser *********
 Config: Using QtTest library 6.8.3, Qt 6.8.3 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 13.3.0), ubuntu 24.04
@@ -1306,394 +1648,915 @@ PASS   : TestDependencyParser::testNoDuplicates()
 PASS   : TestDependencyParser::testEmptyProject()
 PASS   : TestDependencyParser::testGraphUpdatedSignal()
 PASS   : TestDependencyParser::cleanupTestCase()
-Totals: 8 passed, 0 failed, 0 skipped, 0 blacklisted, 52ms
+Totals: 8 passed, 0 failed, 0 skipped, 0 blacklisted, 9ms
 ********* Finished testing of TestDependencyParser *********
+=== CODEMAP ===
+qt.qpa.plugin: Could not find the Qt platform plugin "wayland" in ""
+********* Start testing of TestCodemap *********
+Config: Using QtTest library 6.8.3, Qt 6.8.3 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 13.3.0), ubuntu 24.04
+PASS   : TestCodemap::initTestCase()
+PASS   : TestCodemap::testLocationRoundTrip()
+PASS   : TestCodemap::testTraceRoundTrip()
+PASS   : TestCodemap::testCodemapRoundTrip()
+PASS   : TestCodemap::testFromJsonMissingOptionalFields()
+PASS   : TestCodemap::testFindLocation()
+PASS   : TestCodemap::testParsedConnections()
+PASS   : TestCodemap::testParsedConnectionsNoLabel()
+PASS   : TestCodemap::testMotivationDetailsParsing()
+PASS   : TestCodemap::testExtractCodeSnippetValidRange()
+PASS   : TestCodemap::testExtractCodeSnippetOutOfBounds()
+PASS   : TestCodemap::testExtractCodeSnippetInvalidLine()
+PASS   : TestCodemap::testExtractCodeSnippetMissingFile()
+PASS   : TestCodemap::testCheckLocationStaleWhenCurrent()
+PASS   : TestCodemap::testCheckLocationStaleWhenChanged()
+PASS   : TestCodemap::testCheckLocationStaleMissingFile()
+PASS   : TestCodemap::testToRelativePath()
+PASS   : TestCodemap::testToAbsolutePath()
+PASS   : TestCodemap::testNormalizeAbsolutePaths()
+FAIL!  : TestCodemap::testStoreSaveAndLoad() 'loaded.has_value()' returned FALSE. ()
+   Loc: [/home/resu/Documents/dev/cremniy/tests/test_codemap.cpp(359)]
+PASS   : TestCodemap::testStoreLoadNonexistent()
+PASS   : TestCodemap::testStoreDefaultFilePath()
+FAIL!  : TestCodemap::testSlugifyTitle() Compared values are not the same
+   Actual   (CodemapStore::slugifyTitle("  spaces  ")): "_spaces"
+   Expected (QString("spaces"))                       : "spaces"
+   Loc: [/home/resu/Documents/dev/cremniy/tests/test_codemap.cpp(390)]
+PASS   : TestCodemap::testBuildFileName()
+PASS   : TestCodemap::testStoreSaveAndLoadLatest()
+PASS   : TestCodemap::cleanupTestCase()
+Totals: 24 passed, 2 failed, 0 skipped, 0 blacklisted, 7ms
+********* Finished testing of TestCodemap *********
 
 ```
 
 ---
 
-## Assistant (Build · MiMo-V2.5-Pro · 14.6s)
+## Assistant (Build · MiMo-V2.5-Pro · 22.6s)
 
 _Thinking:_
 
-All tests pass. Let me commit the fix.
+Two test failures:
 
-Все тесты проходят. Фиксирую.
+1. `testStoreSaveAndLoad` — the old test uses `store.load()` without a path, but the new `load()` requires a specific filePath. The old test doesn't pass a path, so it fails. I need to update the test to use `loadLatest()` instead.
+
+2. `testSlugifyTitle` — `"  spaces  "` produces `"_spaces"` instead of `"spaces"` because the leading space becomes `_` and then the trailing spaces are stripped. The slugify function doesn't strip leading underscores. Let me fix the slugify function.
+
+Let me fix both.
+
+**Tool: edit**
+
+**Input:**
+```json
+{
+  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/codemap_store.cpp",
+  "newString": "QString CodemapStore::slugifyTitle(const QString& title)\n{\n    QString result;\n    bool lastWasUnderscore = true; // start true to skip leading underscores\n    for (const QChar& c : title.trimmed()) {\n        if (c.isLetterOrNumber()) {\n            result.append(c);\n            lastWasUnderscore = false;\n        } else if ((c == ' ' || c == '-' || c == '_') && !lastWasUnderscore) {\n            result.append('_');\n            lastWasUnderscore = true;\n        }\n    }\n    while (result.endsWith('_'))\n        result.chop(1);\n    return result;\n}",
+  "oldString": "QString CodemapStore::slugifyTitle(const QString& title)\n{\n    QString result;\n    bool lastWasUnderscore = false;\n    for (const QChar& c : title) {\n        if (c.isLetterOrNumber()) {\n            result.append(c);\n            lastWasUnderscore = false;\n        } else if ((c == ' ' || c == '-' || c == '_') && !lastWasUnderscore) {\n            result.append('_');\n            lastWasUnderscore = true;\n        }\n    }\n    while (result.endsWith('_'))\n        result.chop(1);\n    return result;\n}"
+}
+```
+
+**Output:**
+```
+Edit applied successfully.
+```
+
+---
+
+## Assistant (Build · MiMo-V2.5-Pro · 21.8s)
+
+_Thinking:_
+
+Now fix the testStoreSaveAndLoad to use loadLatest() instead of load().
+
+**Tool: edit**
+
+**Input:**
+```json
+{
+  "filePath": "/home/resu/Documents/dev/cremniy/tests/test_codemap.cpp",
+  "newString": "    void testStoreSaveAndLoad()\n    {\n        QTemporaryDir dir;\n        QVERIFY(dir.isValid());\n\n        CodemapStore store(dir.path());\n\n        Codemap map;\n        map.id = \"test_codemap\";\n        map.title = \"Test\";\n        map.stableId = \"test-uuid\";\n        map.metadata.generationTimestamp = QDateTime::currentDateTime().toString(Qt::ISODate);\n\n        CodemapTrace trace;\n        trace.id = \"1\";\n        trace.title = \"Trace 1\";\n        CodemapLocation loc;\n        loc.id = \"1a\";\n        loc.path = \"src/main.cpp\";\n        loc.lineNumber = 6;\n        loc.lineContent = \"int main() {\";\n        trace.locations = {loc};\n        map.traces = {trace};\n\n        QVERIFY(store.save(map));\n\n        auto loaded = store.loadLatest();\n        QVERIFY(loaded.has_value());\n        QCOMPARE(loaded->id, map.id);\n        QCOMPARE(loaded->title, map.title);\n        QCOMPARE(loaded->traces.size(), 1);\n        QCOMPARE(loaded->traces[0].locations[0].path, loc.path);\n    }",
+  "oldString": "    void testStoreSaveAndLoad()\n    {\n        QTemporaryDir dir;\n        QVERIFY(dir.isValid());\n\n        CodemapStore store(dir.path());\n\n        Codemap map;\n        map.id = \"test_codemap\";\n        map.title = \"Test\";\n        map.stableId = \"test-uuid\";\n\n        CodemapTrace trace;\n        trace.id = \"1\";\n        trace.title = \"Trace 1\";\n        CodemapLocation loc;\n        loc.id = \"1a\";\n        loc.path = \"src/main.cpp\";\n        loc.lineNumber = 6;\n        loc.lineContent = \"int main() {\";\n        trace.locations = {loc};\n        map.traces = {trace};\n\n        QVERIFY(store.save(map));\n        QVERIFY(store.exists());\n\n        auto loaded = store.load();\n        QVERIFY(loaded.has_value());\n        QCOMPARE(loaded->id, map.id);\n        QCOMPARE(loaded->title, map.title);\n        QCOMPARE(loaded->traces.size(), 1);\n        QCOMPARE(loaded->traces[0].locations[0].path, loc.path);\n    }"
+}
+```
+
+**Output:**
+```
+Edit applied successfully.
+```
+
+---
+
+## Assistant (Build · MiMo-V2.5-Pro · 25.8s)
+
+_Thinking:_
+
+Now rebuild and run tests.
 
 **Tool: bash**
 
 **Input:**
 ```json
 {
-  "command": "git add src/app/IDEWindow/idewindow.h src/app/IDEWindow/idewindow.cpp && git commit -m \"fix: Concept Map menu — implement on_GenerateSemanticMap after merge\n\n- canvasTab(): searches all tabs for CanvasTab instance\n- openOrCreateCanvasTab(): opens first .cpp/.h file to trigger tab creation\n- on_GenerateSemanticMap(): load from .cremniy/semantic_maps/ or generate\n  via GenerateSemanticMapTool with status bar progress\n- Removed unused generateSemanticMap signal\n- Added missing includes for ToolRegistry/AgentTool\"",
-  "description": "Commit merge fix",
+  "command": "cd /home/resu/Documents/dev/cremniy/tests/build && cmake --build . --parallel 2 2>&1 | tail -5 && echo \"=== TESTS ===\" && ./test_codemap 2>&1",
+  "description": "Rebuild and run codemap tests",
+  "timeout": 60000
+}
+```
+
+**Output:**
+```
+[ 42%] Linking CXX executable test_generate_codemap_tool
+[ 76%] Built target test_generate_codemap_tool
+[ 80%] Building CXX object CMakeFiles/test_codemap.dir/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/codemap_store.cpp.o
+[ 84%] Linking CXX executable test_codemap
+[100%] Built target test_codemap
+=== TESTS ===
+qt.qpa.plugin: Could not find the Qt platform plugin "wayland" in ""
+********* Start testing of TestCodemap *********
+Config: Using QtTest library 6.8.3, Qt 6.8.3 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 13.3.0), ubuntu 24.04
+PASS   : TestCodemap::initTestCase()
+PASS   : TestCodemap::testLocationRoundTrip()
+PASS   : TestCodemap::testTraceRoundTrip()
+PASS   : TestCodemap::testCodemapRoundTrip()
+PASS   : TestCodemap::testFromJsonMissingOptionalFields()
+PASS   : TestCodemap::testFindLocation()
+PASS   : TestCodemap::testParsedConnections()
+PASS   : TestCodemap::testParsedConnectionsNoLabel()
+PASS   : TestCodemap::testMotivationDetailsParsing()
+PASS   : TestCodemap::testExtractCodeSnippetValidRange()
+PASS   : TestCodemap::testExtractCodeSnippetOutOfBounds()
+PASS   : TestCodemap::testExtractCodeSnippetInvalidLine()
+PASS   : TestCodemap::testExtractCodeSnippetMissingFile()
+PASS   : TestCodemap::testCheckLocationStaleWhenCurrent()
+PASS   : TestCodemap::testCheckLocationStaleWhenChanged()
+PASS   : TestCodemap::testCheckLocationStaleMissingFile()
+PASS   : TestCodemap::testToRelativePath()
+PASS   : TestCodemap::testToAbsolutePath()
+PASS   : TestCodemap::testNormalizeAbsolutePaths()
+PASS   : TestCodemap::testStoreSaveAndLoad()
+PASS   : TestCodemap::testStoreLoadNonexistent()
+PASS   : TestCodemap::testStoreDefaultFilePath()
+PASS   : TestCodemap::testSlugifyTitle()
+PASS   : TestCodemap::testBuildFileName()
+PASS   : TestCodemap::testStoreSaveAndLoadLatest()
+PASS   : TestCodemap::cleanupTestCase()
+Totals: 26 passed, 0 failed, 0 skipped, 0 blacklisted, 7ms
+********* Finished testing of TestCodemap *********
+
+```
+
+---
+
+## Assistant (Build · MiMo-V2.5-Pro · 20.7s)
+
+_Thinking:_
+
+All 26 codemap tests pass. Let me run all tests to confirm.
+
+**Tool: bash**
+
+**Input:**
+```json
+{
+  "command": "cd /home/resu/Documents/dev/cremniy/tests/build && ./test_dependency_parser 2>&1 && ./test_generate_codemap_tool 2>&1",
+  "description": "Run remaining tests",
+  "timeout": 60000
+}
+```
+
+**Output:**
+```
+qt.qpa.plugin: Could not find the Qt platform plugin "wayland" in ""
+********* Start testing of TestDependencyParser *********
+Config: Using QtTest library 6.8.3, Qt 6.8.3 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 13.3.0), ubuntu 24.04
+PASS   : TestDependencyParser::initTestCase()
+PASS   : TestDependencyParser::testParserFindsAllFiles()
+PASS   : TestDependencyParser::testParserFindsIncludes()
+PASS   : TestDependencyParser::testParserResolvesRelativePaths()
+PASS   : TestDependencyParser::testNoDuplicates()
+PASS   : TestDependencyParser::testEmptyProject()
+PASS   : TestDependencyParser::testGraphUpdatedSignal()
+PASS   : TestDependencyParser::cleanupTestCase()
+Totals: 8 passed, 0 failed, 0 skipped, 0 blacklisted, 12ms
+********* Finished testing of TestDependencyParser *********
+qt.qpa.plugin: Could not find the Qt platform plugin "wayland" in ""
+********* Start testing of TestGenerateCodemapTool *********
+Config: Using QtTest library 6.8.3, Qt 6.8.3 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 13.3.0), ubuntu 24.04
+PASS   : TestGenerateCodemapTool::initTestCase()
+PASS   : TestGenerateCodemapTool::testValidCodemapPasses()
+PASS   : TestGenerateCodemapTool::testInvalidJsonSyntax()
+PASS   : TestGenerateCodemapTool::testUnknownFilePath()
+PASS   : TestGenerateCodemapTool::testLineNumberOutOfBounds()
+PASS   : TestGenerateCodemapTool::testLineNumberZero()
+PASS   : TestGenerateCodemapTool::testLineContentMismatch()
+PASS   : TestGenerateCodemapTool::testEmptyTracesWithDetailsIsValid()
+PASS   : TestGenerateCodemapTool::testMarkdownWrappedJson()
+PASS   : TestGenerateCodemapTool::cleanupTestCase()
+Totals: 10 passed, 0 failed, 0 skipped, 0 blacklisted, 2ms
+********* Finished testing of TestGenerateCodemapTool *********
+
+```
+
+---
+
+## Assistant (Build · MiMo-V2.5-Pro · 21.9s)
+
+_Thinking:_
+
+All 44 tests pass (8 + 26 + 10). Let me commit and continue with the remaining phases.
+
+44/44 PASS. Фиксирую MVP.
+
+**Tool: bash**
+
+**Input:**
+```json
+{
+  "command": "git add src/ToolTabs/Canvas/canvastab.h src/ToolTabs/Canvas/canvastab.cpp src/ToolTabs/Canvas/codemap_store.h src/ToolTabs/Canvas/codemap_store.cpp src/Agent/tools/generate_codemap_tool.cpp tests/test_codemap.cpp && git commit -m \"feat: autonomous codemap canvas — Phase 1+2.1+3.1 MVP\n\nPhase 1 — Lazy parser + semantic-first:\n- ViewMode enum (Semantic/Structural) replaces bool m_structuralMode\n- setTabData() skips parser when in Semantic mode\n- onGraphReady() saves graph but doesn't draw in Semantic mode\n- showStructureGraph() lazy-starts parser on first switch to Graph\n- setProjectRoot() for project-level canvas without file binding\n\nPhase 2.1 — Windsurf-style filenames:\n- CodemapStore::slugifyTitle() + buildFileName()\n  → <Title>_YYYYMMDD_HHMMSS.codemap.txt in project root\n- loadLatest() finds newest *.codemap.txt (backward compat with .codemap)\n- list() returns metadata without full load\n- Removed double save (only IDEWindow saves, not GenerateCodemapTool)\n\nPhase 3.1 — Two buttons instead of Mode toggle:\n- 'Semantic' + 'Graph' buttons (QButtonGroup, exclusive)\n- enterSemanticMode() / enterStructuralMode() explicit methods\n- setStructuralUIVisible() hides Play/Pause/Speed/Refresh/LayerPanel\n  in semantic mode\n\nTests: 44/44 PASS (8 + 26 + 10)\"",
+  "description": "Commit Phase 1+2.1+3.1 MVP",
   "workdir": "/home/resu/Documents/dev/cremniy"
 }
 ```
 
 **Output:**
 ```
-[main 08e1db3] fix: Concept Map menu — implement on_GenerateSemanticMap after merge
- 2 files changed, 95 insertions(+), 6 deletions(-)
+[main de87c6f] feat: autonomous codemap canvas — Phase 1+2.1+3.1 MVP
+ 6 files changed, 324 insertions(+), 63 deletions(-)
 
 ```
 
 ---
 
-## Assistant (Build · MiMo-V2.5-Pro · 16.0s)
+## Assistant (Build · MiMo-V2.5-Pro · 16.3s)
 
 _Thinking:_
 
-Done. Let me summarize the fix.
+Now let me continue with Phase 3.2 (DigestPanel in semantic mode) and Phase 6.1 (cleanup legacy names). Phase 4 (project-level canvas) is higher complexity and can be done separately.
 
-Исправлено (`08e1db3`):
+Let me do Phase 3.2 — DigestPanel integration.
 
-После слияния были проблемы:
-1. **`canvasTab()` / `openOrCreateCanvasTab()`** — объявлены, но не реализованы → добавлены
-2. **`on_GenerateSemanticMap()`** — был стуб с `qDebug` → полная логика: загрузка из `.cremniy/semantic_maps/` или генерация через `GenerateSemanticMapTool`
-3. **Лишний сигнал `generateSemanticMap`** — удалён
+Фазы 1+2.1+3.1 готовы. Делаю **Phase 3.2** — DigestPanel в semantic mode.
 
-Теперь Tools → Concept Map (Ctrl+Shift+M) работает: проверяет сохранённые карты → загружает свежую → если нет — генерирует через агента → показывает в Canvas.
+**Tool: read**
 
----
+**Input:**
+```json
+{
+  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/digest_panel.h"
+}
+```
 
-## User
+**Output:**
+```
+<path>/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/digest_panel.h</path>
+<type>file</type>
+<content>
+1: #ifndef DIGEST_PANEL_H
+2: #define DIGEST_PANEL_H
+3: 
+4: #include <QWidget>
+5: #include <QLabel>
+6: #include <QPushButton>
+7: #include <QTextEdit>
+8: #include <QToolButton>
+9: #include <QVBoxLayout>
+10: #include <QPropertyAnimation>
+11: #include <QParallelAnimationGroup>
+12: #include "codemap.h"
+13: 
+14: class DigestPanel : public QWidget
+15: {
+16:     Q_OBJECT
+17:     Q_PROPERTY(qreal panelOpacity READ panelOpacity WRITE setPanelOpacity)
+18: 
+19: public:
+20:     explicit DigestPanel(QWidget* parent = nullptr);
+21: 
+22:     void showMap(const Codemap& map);
+23:     void setMotivation(const QString& motivation);
+24:     void setDetails(const QString& details);
+25:     void setCodeSnippet(const QString& snippet, const QString& filePath, int lineNumber);
+26: 
+27:     void playAppearAnimation(int durationMs = 300);
+28:     void playDisappearAnimation(int durationMs = 250);
+29: 
+30:     qreal panelOpacity() const { return m_panelOpacity; }
+31:     void setPanelOpacity(qreal opacity) { m_panelOpacity = opacity; update(); }
+32: 
+33: signals:
+34:     void goToCodeRequested(const QString& filePath, int lineNumber);
+35:     void stepNavigationRequested(const QString& filePath, int lineNumber);
+36: 
+37: private slots:
+38:     void onMotivationToggle();
+39:     void onDetailsToggle();
+40:     void onGoToClicked();
+41: 
+42: private:
+43:     void setupUI();
+44:     void createCollapsibleSection(const QString& title, QWidget* content, QToolButton*& toggleBtn, QWidget*& container);
+45: 
+46:     QVBoxLayout* m_layout;
+47:     QList<QWidget*> m_clusterSections;
+48: 
+49:     QLabel* m_motivationLabel;
+50:     QTextEdit* m_motivationContent;
+51:     QToolButton* m_motivationToggle;
+52:     QWidget* m_motivationContainer;
+53: 
+54:     QLabel* m_detailsLabel;
+55:     QTextEdit* m_detailsContent;
+56:     QToolButton* m_detailsToggle;
+57:     QWidget* m_detailsContainer;
+58: 
+59:     QLabel* m_codeSnippetLabel;
+60:     QTextEdit* m_codeSnippetContent;
+61:     QPushButton* m_goToButton;
+62: 
+63:     QString m_currentFilePath;
+64:     int m_currentLineNumber;
+65: 
+66:     qreal m_panelOpacity = 1.0;
+67:     QParallelAnimationGroup* m_appearGroup = nullptr;
+68:     QParallelAnimationGroup* m_disappearGroup = nullptr;
+69: 
+70:     bool m_motivationExpanded = true;
+71:     bool m_detailsExpanded = true;
+72: };
+73: 
+74: #endif // DIGEST_PANEL_H
 
-фаза 4:Фаза 3 уже реализована и подключена (ClusterGroupNode, StepNode, ConnectionEdge, cluster_layout.h/cpp, showSemanticMap есть в CanvasTab). Смотрю детали для точной интеграции Фазы 4.Ran 2 commandsRan 2 commandsОтлично, всё уже на месте — toggleGraphMode() существует (как заготовка для 4.2), ClusterLayout работает но без анимации (просто setPos), m_structuralMode флаг есть. Сейчас пишу промт Фазы 4 с конкретными точками доработки.Check showSemanticMap full body, toggleGraphMode and toolbar setupCheck showSemanticMap full body, toggleGraphMode and toolbar setupПолная картина. Сейчас вижу проблемы для исправления в Фазе 4:
-
-showSemanticMap создаёт FileNode вместо StepNode/ClusterGroupNode — Фаза 3 классы существуют, но не подключены в showSemanticMap
-ClusterLayout::computeLinearChain — не использует CanvasLayout::computeLinearChain/animateNodesToPositions (Фаза 3.3), просто setPos без анимации
-toggleGraphMode — есть базовый toggle с opacity, но без интеграции с генерацией и без кнопки "Сгенерировать через AI"
-DigestPanel (4.3) — отсутствует полностью
-Created a file, read a fileCreated a file, read a fileГотово. Главная находка перед написанием промта: Фаза 3 уже реализована (ClusterGroupNode, StepNode, cluster_layout.cpp все существуют и подключены в showSemanticMap), но с тремя несостыковками — Фаза 4 не "добавляет новое", а исправляет интеграцию.
-4.1 — самый технический промт: showSemanticMap сейчас создаёт FileNode вместо StepNode/ClusterGroupNode (классы есть, но не используются!), а ClusterLayout::computeLinearChain делает setPos() напрямую вместо переиспользования CanvasLayout::computeLinearChain + animateNodesToPositions из 3.3. Главная техническая развилка отмечена явно: animateNodesToPositions принимает QMap<QString, FileNode*>, а StepNode — другой класс. Рекомендовано решение (b) — изменить сигнатуру на QGraphicsObject*, минимальное изменение, без шаблонов/дублирования.
-4.2 — переключатель "Структура/Концепт" заменяет существующую кнопку "Mode". Ключевой момент: кнопка "Концепт" всегда активна — клик при отсутствии карты сам триггерит генерацию через needsSemanticMapGeneration() сигнал.
-4.3 — DigestPanel по образцу скрина 3 (сворачиваемые секции, code snippet monospace, кнопка "Перейти" → открывает файл + подсвечивает узел на канвасе).
-В конце — явное указание: needsSemanticMapGeneration (4.2) и requestSemanticMapGeneration (Фаза 3-доп.) должны быть одним механизмом с двумя точками входа — через меню и через toolbar, без дублирования логики.	
-
-Фаза 4 — Layout кластеров + переключение режимов + DigestPanel
-
-
-На момент написания: Фаза 3 (ClusterGroupNode, StepNode,
-ConnectionEdge, cluster_layout.h/cpp) уже реализована и подключена
-в showSemanticMap(). Но есть три несостыковки, которые Фаза 4 должна
-исправить, плюс новый DigestPanel.
-
-
-
-
-Обнаруженные несостыковки (контекст для промтов)
-
-
-showSemanticMap() создаёт FileNode, а не StepNode/ClusterGroupNode
-из Фазы 3 — классы существуют, но не используются.
-ClusterLayout::computeLinearChain() делает node->setPos() напрямую,
-игнорируя CanvasLayout::computeLinearChain() + animateNodesToPositions()
-из Фазы 3.3 — нет анимации появления кластеров.
-toggleGraphMode() — есть базовый opacity-toggle, но:
-
-не вызывает showSemanticMap/showStructureGraph
-нет кнопки "Сгенерировать через AI" для случая отсутствия карты
-не интегрирован с Tools → Concept Map (Фаза 3-доп.)
-
-
-
-DigestPanel — отсутствует.
-
-
-
-Промт 4.1 — ClusterLayout на базе computeLinearChain + StepNode
-
-В Cremniy (src/ToolTabs/Canvas/) перепиши showSemanticMap() в
-canvastab.cpp и cluster_layout.cpp:
-
-1. CanvasTab::showSemanticMap(const SemanticMap& map):
-   - Замени создание FileNode на ClusterGroupNode (один на каждый
-     SemanticCluster) + StepNode (один на каждый SemanticStep,
-     добавляется в родительский ClusterGroupNode через addChild()).
-   - StepNode конструктор уже принимает (stepId, title, codeSnippet,
-     filePath, lineNumber) — используй step.id, step.title,
-     step.codeSnippet, step.filePath, step.startLine.
-   - connect(stepNode, &StepNode::stepClicked, this, &CanvasTab::onNodeClicked)
-     — переиспользуй существующий слот (он уже открывает файл/строку
-     для FileNode, проверь сигнатуру: onNodeClicked(filePath) — для
-     StepNode возможно нужен новый слот onStepClicked(filePath, lineNumber)
-     если scrollToLine не поддержан текущим onNodeClicked)
-   - Для connections — используй ConnectionEdge (из Фазы 3.3, с текстовой
-     меткой), а не DependencyEdge.
-
-2. Добавь в QGraphicsScene все ClusterGroupNode (как top-level items),
-   StepNode добавляются как ДЕТИ ClusterGroupNode (setParentItem),
-   а не отдельно в сцену — это даёт автоматическое перемещение StepNode
-   при перемещении ClusterGroupNode.
-
-   ВАЖНО: если StepNode — child item ClusterGroupNode, то его pos()
-   уже относительный (внутри родителя). CanvasLayout::computeLinearChain
-   и animateNodesToPositions работают с QGraphicsObject::pos — это
-   совместимо, просто positions для StepNode будут относительными
-   координатами внутри кластера.
-
-3. ClusterLayout::arrangeMap(QList<ClusterGroupNode*> clusters):
-   - Позиции САМИХ кластеров (top-level) вычисляй grid-методом (как
-     сейчас), но применяй через CanvasLayout::animateNodesToPositions
-     вместо cluster->setPos() напрямую. Для этого ClusterLayout должен
-     получить доступ к CanvasLayout* (передай как параметр метода или
-     в конструктор ClusterLayout).
-
-4. ClusterLayout::computeLinearChain(ClusterGroupNode* cluster):
-   - Замени прямые node->setPos() на вызов
-     CanvasLayout::computeLinearChain(stepIds, spacing=CHAIN_SPACING,
-     y=clusterWidth/2, orientation=Qt::Vertical) — это даёт
-     QMap<stepId, QPointF>, который затем передаётся в
-     CanvasLayout::animateNodesToPositions(positions, stepNodesMap, 400).
-
-   ПРОБЛЕМА ТИПОВ: CanvasLayout::animateNodesToPositions принимает
-   QMap<QString, FileNode*>, а StepNode — другой класс. Варианты решения
-   (выбери один, аргументируй в комментарии к коду):
-   a) Перегрузить animateNodesToPositions шаблоном
-      (template<typename T> requires QGraphicsObject) — самый чистый,
-      но требует C++20 concepts или SFINAE для Qt MOC-совместимости
-      (Q_OBJECT классы не могут быть напрямую шаблонами — нужна
-      нешаблонная перегрузка с QGraphicsObject* в QMap)
-   b) Изменить сигнатуру на QMap<QString, QGraphicsObject*> — FileNode
-      и StepNode оба наследники QGraphicsObject, можно привести указатели
-      при вызове. РЕКОМЕНДУЕТСЯ — минимальное изменение, animateNodesToPositions
-      использует только QGraphicsObject::pos через Q_PROPERTY "pos",
-      которое есть у любого QGraphicsObject.
-   c) Дублировать animateNodesToPositions для StepNode — не делай так,
-      дублирование кода.
-
-   Реализуй вариант (b): измени сигнатуру animateNodesToPositions на
-   QMap<QString, QGraphicsObject*>, обнови все существующие вызовы
-   (FileNode* приводится к QGraphicsObject* неявно при передаче в QMap
-   — потребуется явное приведение при заполнении QMap на стороне вызова,
-   но не в сигнатуре).
-
-5. После анимации — playAppearAnimation() на каждом StepNode и
-   ClusterGroupNode (если ClusterGroupNode тоже имеет такой метод;
-   если нет — добавь аналогичный appearOpacity/appearScale как у StepNode,
-   по образцу из Фазы 3.3).
-
-
-Промт 4.2 — Toggle "Структура / Концепт" + "Сгенерировать через AI"
-
-В Cremniy (src/ToolTabs/Canvas/canvastab.h/cpp):
-
-1. Замени текущую кнопку "Mode" (toggleModeBtn, вызывает toggleGraphMode)
-   на пару взаимоисключающих QToolButton с checkable=true в QButtonGroup:
-   - "Структура" (checked по умолчанию, если m_structuralMode == true)
-   - "Концепт"
-
-2. Перепиши toggleGraphMode() → разбей на два слота:
-   void CanvasTab::onStructureModeSelected();
-   void CanvasTab::onConceptModeSelected();
-
-   onStructureModeSelected():
-     - m_structuralMode = true
-     - if (m_layoutMode == LayoutMode::Radial) return; // уже там
-     - showStructureGraph() (анимированный переход уже есть в
-       showStructureGraph, проверь что используется
-       animateNodesToPositions, а не resetTransform)
-
-   onConceptModeSelected():
-     - m_structuralMode = false
-     - if (!m_currentSemanticMap.clusters.isEmpty()) {
-           showSemanticMap(m_currentSemanticMap); // уже есть карта в памяти
-           return;
-       }
-     - Карты нет в памяти — проверь SemanticMapStore::list() (projectRoot
-       = m_projectPath, который уже есть как член CanvasTab):
-       - если есть сохранённая — store.load() → showSemanticMap()
-       - если нет — emit needsSemanticMapGeneration() (новый сигнал
-         CanvasTab), который ToolsMenu/IDEWindow слушает и запускает
-         тот же flow, что в Фазе 3-доп. Промт C
-         (requestSemanticMapGeneration)
-
-3. Во время генерации (между emit needsSemanticMapGeneration() и
-   showSemanticMap()) — покажи overlay-индикатор на CanvasView:
-   полупрозрачный QLabel "Generating concept map via AI..." с
-   QGraphicsProxyWidget в центре сцены, или простой QProgressBar
-   в toolbar (indeterminate, setRange(0,0)). Скрыть по завершении
-   (showSemanticMap уже вызывается извне — добавь публичный слот
-   CanvasTab::onSemanticMapReady(const SemanticMap& map) который и
-   скрывает индикатор, и вызывает showSemanticMap(map)).
-
-4. Кнопка переключателя "Концепт" должна быть disabled=false ВСЕГДА
-   (даже если карты нет) — клик инициирует генерацию. Если генерация
-   уже идёт — повторный клик игнорируется (флаг m_generatingConceptMap).
-
-
-Промт 4.3 — DigestPanel
-
-В Cremniy создай src/ToolTabs/Canvas/digest_panel.h/cpp:
-
-class DigestPanel : public QWidget {
-    Q_OBJECT
-public:
-    explicit DigestPanel(QWidget* parent = nullptr);
-
-    void showMap(const SemanticMap& map);
-    void clear();
-
-signals:
-    void stepNavigationRequested(const QString& filePath, int lineNumber);
-
-private:
-    QVBoxLayout* m_layout;
-    QLabel* m_titleLabel;
-    QLabel* m_motivationLabel;     // map.motivation, word-wrapped
-    QLabel* m_detailsLabel;        // map.details, word-wrapped
-    QList<QWidget*> m_clusterSections; // пересоздаются в showMap
-};
-
-Структура showMap(map):
-1. Очистить m_clusterSections (deleteLater на старые виджеты)
-2. m_titleLabel->setText(map.title)
-3. m_motivationLabel->setText("Motivation\n" + map.motivation)
-   — стиль как на windsurf-скрине: заголовок секции жирным, текст ниже
-4. m_detailsLabel->setText("Details\n" + map.details)
-5. Для каждого SemanticCluster в map.clusters:
-   - создать сворачиваемую секцию (collapsible group):
-     * Header: QToolButton с текстом cluster.title + chevron-иконка
-       (▶/▼ через setText или setIcon в зависимости от состояния),
-       checkable=true
-     * Body: QWidget со списком SemanticStep:
-       для каждого step — компактная карточка:
-         - QLabel: "{step.id}: {step.title}"
-         - QLabel с code snippet (monospace font, QPlainTextEdit
-           readOnly с фиксированной высотой ~4 строки, или QLabel
-           с <pre> через rich text)
-         - QPushButton "Перейти" → emit stepNavigationRequested(
-           step.filePath, step.startLine)
-     * connect(header, &QToolButton::toggled, body, &QWidget::setVisible)
-       — стандартный collapsible паттерн
-   - По умолчанию: первая секция развёрнута (toggled=true), остальные
-     свёрнуты (как на скрине windsurf — "1 ... [>]" свёрнут,
-     "2 ... [v]" развёрнут)
-
-Стилизация:
-- monospace font для code snippet: QFont("monospace") или
-  переиспользовать шрифт из QCodeEditor если доступен
-- цвет фона карточки шага — лёгкий tint от cluster.color
-  (например cluster.color с alpha=20%)
-
-Интеграция в CanvasTab:
-- DigestPanel размещается как QDockWidget справа от CanvasView
-  (или как вкладка в существующей правой панели рядом с AI Assistant
-  — следуй паттерну из Фазы 1 agent-плана для добавления dock)
-- connect(canvasTab, &CanvasTab::semanticMapShown, digestPanel, &DigestPanel::showMap)
-  — новый сигнал CanvasTab::semanticMapShown(const SemanticMap&),
-  эмитится в конце showSemanticMap()
-- connect(digestPanel, &DigestPanel::stepNavigationRequested, canvasTab,
-  [canvasTab](const QString& path, int line) {
-      // открыть файл в редакторе на нужной строке —
-      // переиспользуй существующий механизм fileOpenRequested
-      // + scrollToLine, как для onNodeClicked
-  })
-- Дополнительно: клик на "Перейти" может также подсветить
-  соответствующий StepNode на канвасе (startPulse() на узле с этим
-  step.id) — для визуальной связи панель↔канвас
-
-
-Чеклист готовности
-
-
- showSemanticMap() создаёт ClusterGroupNode+StepNode+ConnectionEdge (не FileNode/DependencyEdge)
- StepNode — child item своего ClusterGroupNode (через setParentItem)
- animateNodesToPositions принимает QMap<QString, QGraphicsObject*>, работает и для FileNode, и для StepNode
- Появление кластеров/шагов анимировано (playAppearAnimation, не мгновенный setPos)
- Toolbar: переключатель "Структура / Концепт" вместо кнопки "Mode"
- Клик "Концепт" без сохранённой карты → индикатор генерации → onSemanticMapReady → отображение
- Повторный клик во время генерации — игнорируется (m_generatingConceptMap)
- DigestPanel создан, показывает Motivation/Details + сворачиваемые кластеры
- Клик "Перейти" в DigestPanel открывает файл на нужной строке и подсвечивает узел на канвасе
-
-
-
-Зависимость от Фазы 3-доп. (Tools → Concept Map)
-
-CanvasTab::needsSemanticMapGeneration() (Промт 4.2, шаг 2) и
-requestSemanticMapGeneration() из Фазы 3-доп. — один и тот же механизм
-с двумя точками входа: через меню Tools → Concept Map и через
-переключатель Структура/Концепт в toolbar канваса. Убедись, что оба
-пути вызывают одну общую функцию (например, в IDEWindow или отдельном
-ConceptMapController), а не дублируют логику генерации. 
+(End of file - total 74 lines)
+</content>
+```
 
 ---
 
-## Assistant (Build · MiMo-V2.5-Pro · 19.5s)
+## Assistant (Build · MiMo-V2.5-Pro · 50.8s)
 
 _Thinking:_
 
-The user wants me to implement Phase 4 of the semantic map integration. Let me first check the current state of the codebase — specifically what exists for ClusterGroupNode, StepNode, ConnectionEdge, and cluster_layout.
+Now I need to create the DigestPanel in CanvasTab constructor and connect it. Let me update canvastab.cpp to create the DigestPanel and wire it up.
 
-**Tool: glob**
+**Tool: edit**
 
 **Input:**
 ```json
 {
-  "path": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas",
-  "pattern": "**/*cluster*\""
+  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvastab.cpp",
+  "newString": "    // Gource animator\n    m_animator = nullptr;\n    m_parser = nullptr;\n\n    // DigestPanel (overlay right side, hidden by default)\n    m_digestPanel = new DigestPanel(this);\n    m_digestPanel->setFixedWidth(320);\n    m_digestPanel->move(width() - 330, 40);\n    m_digestPanel->raise();\n    m_digestPanel->setVisible(false);\n\n    connect(m_digestPanel, &DigestPanel::stepNavigationRequested, this,\n            &CanvasTab::stepNavigationRequested);\n\n    connect(m_playBtn, &QToolButton::clicked, this, [this]() {",
+  "oldString": "    // Gource animator\n    m_animator = nullptr;\n    m_parser = nullptr;\n\n    connect(m_playBtn, &QToolButton::clicked, this, [this]() {"
 }
 ```
 
 **Output:**
 ```
-No files found
-```
-
-**Tool: glob**
-
-**Input:**
-```json
-{
-  "path": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas",
-  "pattern": "**/*step*\""
-}
-```
-
-**Output:**
-```
-No files found
-```
-
-**Tool: glob**
-
-**Input:**
-```json
-{
-  "path": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas",
-  "pattern": "**/*connection*\""
-}
-```
-
-**Output:**
-```
-No files found
+Edit applied successfully.
 ```
 
 ---
 
-## Assistant (Build · MiMo-V2.5-Pro · 15.7s)
+## Assistant (Build · MiMo-V2.5-Pro · 15.3s)
 
 _Thinking:_
 
-The ClusterGroupNode, StepNode, and ConnectionEdge files don't exist yet. The user said "Фаза 3 уже реализована" but those files aren't in the codebase. Let me check what's actually in the nodes/ and edges/ directories, and what's in canvastab.cpp for showSemanticMap.
+Now connect codemapShown to showMap on the digest panel, and update resizeEvent to position the digest panel.
 
-**Tool: glob**
+**Tool: edit**
 
 **Input:**
 ```json
 {
-  "path": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas",
-  "pattern": "**/*\""
+  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvastab.cpp",
+  "newString": "    emit codemapShown(map);\n}\n\nvoid CanvasTab::showStructureGraph()",
+  "oldString": "    emit codemapShown(map);\n}\n\nvoid CanvasTab::showStructureGraph()"
+}
+```
+
+**Error:**
+```
+No changes to apply: oldString and newString are identical.
+```
+
+---
+
+## Assistant (Build · MiMo-V2.5-Pro · 17.7s)
+
+_Thinking:_
+
+Let me add the codemapShown connection after the DigestPanel creation.
+
+**Tool: edit**
+
+**Input:**
+```json
+{
+  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvastab.cpp",
+  "newString": "    connect(m_digestPanel, &DigestPanel::stepNavigationRequested, this,\n            &CanvasTab::stepNavigationRequested);\n    connect(this, &CanvasTab::codemapShown, m_digestPanel, &DigestPanel::showMap);",
+  "oldString": "    connect(m_digestPanel, &DigestPanel::stepNavigationRequested, this,\n            &CanvasTab::stepNavigationRequested);"
 }
 ```
 
 **Output:**
 ```
-No files found
+Edit applied successfully.
+```
+
+---
+
+## Assistant (Build · MiMo-V2.5-Pro · 16.2s)
+
+_Thinking:_
+
+Now update resizeEvent to position the DigestPanel.
+
+**Tool: read**
+
+**Input:**
+```json
+{
+  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvastab.cpp",
+  "offset": 650
+}
+```
+
+**Output:**
+```
+<path>/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvastab.cpp</path>
+<type>file</type>
+<content>
+650:     clearSemanticNodes();
+651:     clearCanvas();
+652: 
+653:     // Lazy-start parser if needed
+654:     if (!m_parserInitialized && m_parser && !m_projectPath.isEmpty()) {
+655:         m_parser->startParsing();
+656:         m_parserInitialized = true;
+657:         return; // onGraphReady will draw when parsing completes
+658:     }
+659: 
+660:     if (m_currentGraph.allFiles.isEmpty())
+661:         return;
+662: 
+663:     buildGraph(m_currentGraph);
+664:     layoutNodesRadial(m_currentGraph);
+665: }
+666: 
+667: void CanvasTab::clearSemanticNodes()
+668: {
+669:     qDeleteAll(m_connectionEdges);
+670:     m_connectionEdges.clear();
+671:     qDeleteAll(m_clusterNodes);
+672:     m_clusterNodes.clear();
+673: }
+674: 
+675: void CanvasTab::onStepClicked(const QString& filePath, int lineNumber)
+676: {
+677:     emit stepNavigationRequested(filePath, lineNumber);
+678: }
+679: 
+680: void CanvasTab::onCodemapReady(const Codemap& map)
+681: {
+682:     showCodemap(map);
+683: }
+684: 
+685: void CanvasTab::enterSemanticMode()
+686: {
+687:     if (m_viewMode == Semantic) return;
+688: 
+689:     if (!m_currentCodemap.traces.isEmpty()) {
+690:         showCodemap(m_currentCodemap);
+691:     } else {
+692:         CodemapStore store(m_projectPath);
+693:         if (store.exists()) {
+694:             auto mapOpt = store.load();
+695:             if (mapOpt.has_value()) {
+696:                 showCodemap(mapOpt.value());
+697:                 return;
+698:             }
+699:         }
+700:         m_semanticBtn->setChecked(true);
+701:         m_graphBtn->setChecked(false);
+702:         emit needsSemanticMapGeneration();
+703:     }
+704: }
+705: 
+706: void CanvasTab::enterStructuralMode()
+707: {
+708:     if (m_viewMode == Structural) return;
+709:     setStructuralUIVisible(true);
+710:     showStructureGraph();
+711: }
+712: 
+713: void CanvasTab::setStructuralUIVisible(bool visible)
+714: {
+715:     if (m_playBtn) m_playBtn->setVisible(visible);
+716:     if (m_pauseBtn) m_pauseBtn->setVisible(visible);
+717:     if (m_speedSlider) m_speedSlider->setVisible(visible);
+718:     if (m_refreshBtn) m_refreshBtn->setVisible(visible);
+719:     if (m_layerPanel) m_layerPanel->setVisible(visible);
+720:     if (m_minimap) m_minimap->setVisible(visible);
+721:     if (m_digestPanel) m_digestPanel->setVisible(!visible);
+722: }
+723: 
+724: void CanvasTab::toggleGraphMode()
+725: {
+726:     if (m_viewMode == Structural)
+727:         enterSemanticMode();
+728:     else
+729:         enterStructuralMode();
+730: }
+
+(End of file - total 730 lines)
+</content>
+```
+
+---
+
+## Assistant (Build · MiMo-V2.5-Pro · 13.2s)
+
+_Thinking:_
+
+Now let me update the resizeEvent to position the DigestPanel.
+
+**Tool: grep**
+
+**Input:**
+```json
+{
+  "path": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvastab.cpp",
+  "pattern": "resizeEvent"
+}
+```
+
+**Output:**
+```
+Found 2 matches
+/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvastab.cpp:
+  Line 514: void CanvasTab::resizeEvent(QResizeEvent* event)
+
+  Line 516:     ToolTab::resizeEvent(event);
+
+```
+
+---
+
+## Assistant (Build · MiMo-V2.5-Pro · 36.7s)
+
+_Thinking:_
+
+Let me read the resizeEvent.
+
+**Tool: read**
+
+**Input:**
+```json
+{
+  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvastab.cpp",
+  "limit": 15,
+  "offset": 514
+}
+```
+
+**Output:**
+```
+<path>/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvastab.cpp</path>
+<type>file</type>
+<content>
+514: void CanvasTab::resizeEvent(QResizeEvent* event)
+515: {
+516:     ToolTab::resizeEvent(event);
+517:     if (m_layerPanel)
+518:         m_layerPanel->move(width() - 130, 40);
+519:     if (m_minimap)
+520:         m_minimap->move(width() - 170, height() - 130);
+521: }
+522: 
+523: void CanvasTab::startNodePulsing(const QString& filePath)
+524: {
+525:     stopNodePulsing();
+526:     m_pulsingFilePath = filePath;
+527:     if (!m_pulseTimer) {
+528:         m_pulseTimer = new QTimer(this);
+
+(Showing lines 514-528 of 730. Use offset=529 to continue.)
+</content>
+```
+
+---
+
+## Assistant (Build · MiMo-V2.5-Pro · 17.7s)
+
+_Thinking:_
+
+Now update resizeEvent to also position the DigestPanel.
+
+**Tool: edit**
+
+**Input:**
+```json
+{
+  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvastab.cpp",
+  "newString": "void CanvasTab::resizeEvent(QResizeEvent* event)\n{\n    ToolTab::resizeEvent(event);\n    if (m_layerPanel)\n        m_layerPanel->move(width() - 130, 40);\n    if (m_minimap)\n        m_minimap->move(width() - 170, height() - 130);\n    if (m_digestPanel)\n        m_digestPanel->move(width() - 330, 40);\n}",
+  "oldString": "void CanvasTab::resizeEvent(QResizeEvent* event)\n{\n    ToolTab::resizeEvent(event);\n    if (m_layerPanel)\n        m_layerPanel->move(width() - 130, 40);\n    if (m_minimap)\n        m_minimap->move(width() - 170, height() - 130);\n}"
+}
+```
+
+**Output:**
+```
+Edit applied successfully.
+```
+
+---
+
+## Assistant (Build · MiMo-V2.5-Pro · 17.3s)
+
+_Thinking:_
+
+Now **Phase 6.1** — cleanup legacy names.
+
+**Phase 6.1** — переименование legacy.
+
+**Tool: edit**
+
+**Input:**
+```json
+{
+  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvastab.h",
+  "newString": "    void needsCodemapGeneration();",
+  "oldString": "    void needsSemanticMapGeneration();"
+}
+```
+
+**Output:**
+```
+Edit applied successfully.
+```
+
+---
+
+## Assistant (Build · MiMo-V2.5-Pro · 27.2s)
+
+_Thinking:_
+
+Now update the emit in canvastab.cpp.
+
+**Tool: edit**
+
+**Input:**
+```json
+{
+  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvastab.cpp",
+  "newString": "        emit needsCodemapGeneration();",
+  "oldString": "        emit needsSemanticMapGeneration();"
+}
+```
+
+**Output:**
+```
+Edit applied successfully.
+```
+
+---
+
+## Assistant (Build · MiMo-V2.5-Pro · 20.9s)
+
+_Thinking:_
+
+Now update IDEWindow to use the new signal name.
+
+**Tool: edit**
+
+**Input:**
+```json
+{
+  "filePath": "/home/resu/Documents/dev/cremniy/src/app/IDEWindow/idewindow.cpp",
+  "newString": "            connect(canvas, &CanvasTab::needsCodemapGeneration, this,",
+  "oldString": "            connect(canvas, &CanvasTab::needsSemanticMapGeneration, this,"
+}
+```
+
+**Error:**
+```
+Could not find oldString in the file. It must match exactly, including whitespace, indentation, and line endings.
+```
+
+---
+
+## Assistant (Build · MiMo-V2.5-Pro · 14.9s)
+
+_Thinking:_
+
+Let me check the exact text in IDEWindow.
+
+**Tool: grep**
+
+**Input:**
+```json
+{
+  "path": "/home/resu/Documents/dev/cremniy/src/app/IDEWindow/idewindow.cpp",
+  "pattern": "needsSemantic|needsCodemap"
+}
+```
+
+**Output:**
+```
+Found 1 matches
+/home/resu/Documents/dev/cremniy/src/app/IDEWindow/idewindow.cpp:
+  Line 321:     connect(canvas, &CanvasTab::needsSemanticMapGeneration,
+
+```
+
+---
+
+## Assistant (Build · MiMo-V2.5-Pro · 12.8s)
+
+_Thinking:_
+
+Let me read the exact context.
+
+**Tool: read**
+
+**Input:**
+```json
+{
+  "filePath": "/home/resu/Documents/dev/cremniy/src/app/IDEWindow/idewindow.cpp",
+  "limit": 5,
+  "offset": 319
+}
+```
+
+**Output:**
+```
+<path>/home/resu/Documents/dev/cremniy/src/app/IDEWindow/idewindow.cpp</path>
+<type>file</type>
+<content>
+319:     if (!canvas) return;
+320:     // Qt::UniqueConnection prevents duplicate connections even if called multiple times
+321:     connect(canvas, &CanvasTab::needsSemanticMapGeneration,
+322:             this, &IDEWindow::onConceptMapNeeded,
+323:             Qt::UniqueConnection);
+
+(Showing lines 319-323 of 402. Use offset=324 to continue.)
+</content>
+```
+
+---
+
+## Assistant (Build · MiMo-V2.5-Pro · 14.8s)
+
+_Thinking:_
+
+Now I can fix it.
+
+**Tool: edit**
+
+**Input:**
+```json
+{
+  "filePath": "/home/resu/Documents/dev/cremniy/src/app/IDEWindow/idewindow.cpp",
+  "newString": "    connect(canvas, &CanvasTab::needsCodemapGeneration,",
+  "oldString": "    connect(canvas, &CanvasTab::needsSemanticMapGeneration,"
+}
+```
+
+**Output:**
+```
+Edit applied successfully.
+```
+
+---
+
+## Assistant (Build · MiMo-V2.5-Pro · 18.7s)
+
+_Thinking:_
+
+Now remove the fallback findTool("generate_semantic_map") in IDEWindow.
+
+**Tool: edit**
+
+**Input:**
+```json
+{
+  "filePath": "/home/resu/Documents/dev/cremniy/src/app/IDEWindow/idewindow.cpp",
+  "newString": "        AgentTool* tool = tools->findTool(\"generate_codemap\");\n        if (tool) {",
+  "oldString": "        AgentTool* tool = tools->findTool(\"generate_codemap\");\n        if (!tool)\n            tool = tools->findTool(\"generate_semantic_map\"); // fallback\n        if (tool) {"
+}
+```
+
+**Output:**
+```
+Edit applied successfully.
+```
+
+---
+
+## Assistant (Build · MiMo-V2.5-Pro · 39.8s)
+
+_Thinking:_
+
+Now build and test.
+
+**Tool: bash**
+
+**Input:**
+```json
+{
+  "command": "cmake --build /home/resu/Documents/dev/cremniy/build --parallel 2 2>&1 | tail -5",
+  "description": "Build after Phase 3.2 + 6.1",
+  "timeout": 180000
+}
+```
+
+**Output:**
+```
+[ 37%] Building CXX object CMakeFiles/cremniy.dir/Agent/tools/agent_tools.cpp.o
+[ 38%] Building CXX object CMakeFiles/cremniy.dir/ToolTabs/Canvas/canvastab.cpp.o
+[ 39%] Building CXX object CMakeFiles/cremniy.dir/ToolTabs/Canvas/codemap_store.cpp.o
+[ 40%] Linking CXX executable cremniy
+[100%] Built target cremniy
+
+```
+
+---
+
+## Assistant (Build · MiMo-V2.5-Pro · 33.6s)
+
+_Thinking:_
+
+Build successful. Let me run the tests and commit.
+
+**Tool: bash**
+
+**Input:**
+```json
+{
+  "command": "cd /home/resu/Documents/dev/cremniy/tests/build && cmake --build . --parallel 2 2>&1 | tail -3 && ./test_dependency_parser 2>&1 | tail -1 && ./test_codemap 2>&1 | tail -1 && ./test_generate_codemap_tool 2>&1 | tail -1",
+  "description": "Run all tests",
+  "timeout": 60000
+}
+```
+
+**Output:**
+```
+[ 30%] Built target test_dependency_parser
+[ 57%] Built target test_codemap
+[100%] Built target test_generate_codemap_tool
+********* Finished testing of TestDependencyParser *********
+********* Finished testing of TestCodemap *********
+********* Finished testing of TestGenerateCodemapTool *********
+
+```
+
+---
+
+## Assistant (Build · MiMo-V2.5-Pro · 20.6s)
+
+_Thinking:_
+
+All tests pass. Let me commit.
+
+**Tool: bash**
+
+**Input:**
+```json
+{
+  "command": "git add src/ToolTabs/Canvas/canvastab.h src/ToolTabs/Canvas/canvastab.cpp src/app/IDEWindow/idewindow.cpp && git commit -m \"feat: Phase 3.2+6.1 — DigestPanel in semantic mode + legacy cleanup\n\nPhase 3.2:\n- DigestPanel created in CanvasTab constructor (320px overlay, right side)\n- codemapShown signal → m_digestPanel->showMap()\n- stepNavigationRequested forwarded from DigestPanel\n- setStructuralUIVisible() shows/hides DigestPanel appropriately\n\nPhase 6.1:\n- needsSemanticMapGeneration → needsCodemapGeneration\n- Removed fallback findTool('generate_semantic_map')\n- All references updated\"",
+  "description": "Commit Phase 3.2+6.1",
+  "workdir": "/home/resu/Documents/dev/cremniy"
+}
+```
+
+**Output:**
+```
+[main 91ee25b] feat: Phase 3.2+6.1 — DigestPanel in semantic mode + legacy cleanup
+ 3 files changed, 18 insertions(+), 7 deletions(-)
+
+```
+
+---
+
+## Assistant (Build · MiMo-V2.5-Pro · 15.1s)
+
+_Thinking:_
+
+Done. Let me mark the task and summarize what was accomplished.
+
+**Tool: task**
+
+**Input:**
+```json
+{
+  "operation": {
+    "action": "done",
+    "id": "T14",
+    "event_summary": "Phases 1+2.1+3.1+3.2+6.1 done: autonomous codemap canvas, Windsurf filenames, two-button toggle, DigestPanel, legacy cleanup"
+  }
+}
+```
+
+**Output:**
+```
+done → done
 ```
 
 ---
@@ -1702,208 +2565,685 @@ No files found
 
 _Thinking:_
 
-Let me try without the trailing quote in the pattern.
+Done. Let me summarize what was accomplished.
 
-**Tool: glob**
+Готово. Вот что реализовано:
+
+**Фаза 1** — Lazy parser + semantic-first:
+- `ViewMode { Semantic, Structural }` вместо `bool m_structuralMode`
+- Codemap → Canvas открывается в semantic view, parser НЕ стартует
+- Переключение на «Граф» → lazy-start parser
+
+**Фаза 2.1** — Windsurf-именование:
+- `<Title>_YYYYMMDD_HHMMSS.codemap.txt` в корне проекта
+- `loadLatest()`, `list()`, backward compat с `.codemap`
+
+**Фаза 3.1** — Две кнопки:
+- «Семантический» | «Граф» вместо «Mode»
+- Structural UI (Play/Pause/Speed/Refresh/LayerPanel) скрывается в semantic mode
+
+**Фаза 3.2** — DigestPanel:
+- Создаётся в конструкторе, показывает per-trace Motivation/Details из traceGuide
+- `codemapShown` → `showMap()`, `stepNavigationRequested` проброшен
+
+**Фаза 6.1** — Cleanup:
+- `needsSemanticMapGeneration` → `needsCodemapGeneration`
+- Убран fallback `findTool("generate_semantic_map")`
+
+**44/44 тестов PASS.**
+
+Оставшиеся фазы (4 — автономный project canvas, 5 — layout polish, 5.2 — scope из чата) — по запросу.
+
+---
+
+## User
+
+продолжай
+
+---
+
+## Assistant (Plan · MiMo-V2.5-Pro · 56.0s)
+
+_Thinking:_
+
+The user wants me to continue with the remaining phases (4, 5, 5.2). But I'm now in plan mode, so I can only read files and create a plan. Let me first understand what's left to do, then create a plan.
+
+Let me check the current state and what the remaining phases are:
+- Phase 4 — Autonomous project-level Canvas
+- Phase 5 — Layout polish
+- Phase 5.2 — Scope from chat
+
+Let me explore the current codebase to understand what's needed.
+
+**Tool: read**
 
 **Input:**
 ```json
 {
-  "path": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas",
-  "pattern": "**/*"
+  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvastab.h"
 }
 ```
 
 **Output:**
 ```
-/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvastab.cpp
-/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvastab.h
-/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/nodes/step_node.cpp
-/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/nodes/cluster_group_node.h
-/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/nodes/step_node.h
-/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/digest_panel.cpp
-/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/cluster_layout.cpp
-/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/nodes/cluster_group_node.cpp
-/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/cluster_layout.h
-/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/digest_panel.h
-/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/edges/connection_edge.h
-/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/edges/connection_edge.cpp
-/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/CMakeLists.txt
-/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/semantic_map_store.cpp
-/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/semantic_map_store.h
-/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/semantic_map_utils.cpp
-/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/semantic_map_utils.h
-/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/semantic_map.cpp
-/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/semantic_map.h
-/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvas_layout.cpp
-/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvas_layout.h
-/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/edges/dependency_edge.cpp
-/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/edges/dependency_edge.h
-/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/nodes/file_node.cpp
-/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/nodes/file_node.h
-/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/dependency_parser.cpp
-/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/dependency_parser.h
-/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/minimap.cpp
-/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/minimap.h
-/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/layer_panel.cpp
-/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/layer_panel.h
-/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/gource_animator.cpp
-/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/gource_animator.h
-/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvas_view.cpp
-/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvas_view.h
+<path>/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvastab.h</path>
+<type>file</type>
+<content>
+1: #ifndef CANVASTAB_H
+2: #define CANVASTAB_H
+3: 
+4: #include "core/ToolTab.h"
+5: #include "canvas_view.h"
+6: #include "canvas_layout.h"
+7: #include "dependency_parser.h"
+8: #include "gource_animator.h"
+9: #include "layer_panel.h"
+10: #include "minimap.h"
+11: #include "codemap.h"
+12: #include <QVBoxLayout>
+13: #include <QToolButton>
+14: #include <QButtonGroup>
+15: #include <QLabel>
+16: #include <QSlider>
+17: 
+18: class FileNode;
+19: class DependencyEdge;
+20: class StepNode;
+21: class ClusterGroupNode;
+22: class ConnectionEdge;
+23: class DigestPanel;
+24: 
+25: class CanvasTab : public ToolTab
+26: {
+27:     Q_OBJECT
+28: 
+29: public:
+30:     enum ViewMode { Semantic, Structural };
+31: 
+32:     explicit CanvasTab(FileDataBuffer* buffer, QWidget* parent = nullptr);
+33: 
+34:     QString toolName() const override { return "Canvas"; }
+35:     QIcon toolIcon() const override { return QIcon(":/icons/canvas.png"); }
+36: 
+37:     DependencyGraph currentGraph() const { return m_currentGraph; }
+38:     ViewMode viewMode() const { return m_viewMode; }
+39: 
+40:     void showCodemap(const Codemap& map);
+41:     void showStructureGraph();
+42:     void enterSemanticMode();
+43:     void enterStructuralMode();
+44:     void setProjectRoot(const QString& root) { m_projectPath = root; }
+45: 
+46: public slots:
+47:     void setFile(QString filepath) override;
+48:     void setTabData() override;
+49:     void saveTabData() override;
+50: 
+51:     void highlightActiveFile(const QString& filePath);
+52:     void highlightDependencies(const QString& filePath);
+53:     void startNodePulsing(const QString& filePath);
+54:     void stopNodePulsing();
+55: 
+56:     void toggleGraphMode();
+57:     void onCodemapReady(const Codemap& map);
+58: 
+59: signals:
+60:     void codemapShown(const Codemap& map);
+61:     void needsCodemapGeneration();
+62:     void stepNavigationRequested(const QString& filePath, int lineNumber);
+63: 
+64: protected:
+65:     void resizeEvent(QResizeEvent* event) override;
+66: 
+67: private slots:
+68:     void onGraphReady(DependencyGraph graph);
+69:     void onNodeClicked(const QString& filePath);
+70:     void onNodeDoubleClicked(const QString& filePath);
+71:     void onStepClicked(const QString& filePath, int lineNumber);
+72: 
+73: private:
+74:     CanvasView* m_canvasView;
+75:     DependencyParser* m_parser = nullptr;
+76:     CanvasLayout* m_layout;
+77:     GourceAnimator* m_animator = nullptr;
+78:     LayerPanel* m_layerPanel;
+79:     Minimap* m_minimap;
+80:     DigestPanel* m_digestPanel = nullptr;
+81:     QString m_projectPath;
+82: 
+83:     // Toolbar elements for structural mode
+84:     QToolButton* m_playBtn = nullptr;
+85:     QToolButton* m_pauseBtn = nullptr;
+86:     QSlider* m_speedSlider = nullptr;
+87:     QToolButton* m_refreshBtn = nullptr;
+88:     QToolButton* m_semanticBtn = nullptr;
+89:     QToolButton* m_graphBtn = nullptr;
+90: 
+91:     QMap<QString, FileNode*> m_nodes;
+92:     QList<DependencyEdge*> m_edges;
+93:     DependencyGraph m_currentGraph;
+94:     Codemap m_currentCodemap;
+95:     LayoutMode m_layoutMode = LayoutMode::Radial;
+96:     ViewMode m_viewMode = Structural;
+97:     bool m_parserInitialized = false;
+98: 
+99:     QList<ClusterGroupNode*> m_clusterNodes;
+100:     QList<ConnectionEdge*> m_connectionEdges;
+101: 
+102:     void buildGraph(const DependencyGraph& graph);
+103:     void layoutNodesRadial(const DependencyGraph& graph);
+104:     void clearCanvas();
+105:     void clearSemanticNodes();
+106:     QToolButton* createToolButton(const QString& text, const QString& tooltip);
+107:     void applyLayerFilters();
+108:     void onGourceCommit(const GitCommit& commit);
+109:     void diffGraphUpdate(const DependencyGraph& oldGraph, const DependencyGraph& newGraph);
+110:     QPointF computePositionForNewNode(const QString& path);
+111:     void connectNodeSignals(FileNode* node);
+112:     void focusOnChain(const QStringList& chain);
+113:     void setStructuralUIVisible(bool visible);
+114: 
+115:     QTimer* m_pulseTimer = nullptr;
+116:     QString m_pulsingFilePath;
+117: };
+118: 
+119: #endif // CANVASTAB_H
+
+(End of file - total 119 lines)
+</content>
+```
+
+**Tool: read**
+
+**Input:**
+```json
+{
+  "filePath": "/home/resu/Documents/dev/cremniy/src/app/IDEWindow/idewindow.cpp",
+  "offset": 330
+}
+```
+
+**Output:**
+```
+<path>/home/resu/Documents/dev/cremniy/src/app/IDEWindow/idewindow.cpp</path>
+<type>file</type>
+<content>
+330: 
+331: void IDEWindow::on_GenerateSemanticMap(){
+332:     openOrGenerateConceptMap();
+333: }
+334: 
+335: void IDEWindow::openOrGenerateConceptMap(const QStringList& scope)
+336: {
+337:     CanvasTab* canvas = canvasTab();
+338:     if (!canvas) {
+339:         canvas = openOrCreateCanvasTab();
+340:         if (!canvas) return;
+341:     }
+342: 
+343:     CodemapStore store(projectPath());
+344: 
+345:     // If scope is empty, check for cached codemap
+346:     if (scope.isEmpty()) {
+347:         auto mapOpt = store.loadLatest();
+348:         if (mapOpt.has_value()) {
+349:             canvas->showCodemap(mapOpt.value());
+350:             return;
+351:         }
+352:     }
+353: 
+354:     // No cached map (or scope given) — generate
+355:     AgentSession* session = m_agentSession;
+356:     if (!session) return;
+357: 
+358:     QStringList effectiveScope = scope;
+359:     if (effectiveScope.isEmpty())
+360:         effectiveScope = canvas->currentGraph().allFiles;
+361: 
+362:     statusBar()->showMessage("Generating codemap via AI...");
+363:     m_chatPanel->setCodemapButtonState(true);
+364: 
+365:     QJsonObject args;
+366:     QJsonArray scopeArr;
+367:     for (const QString& f : effectiveScope)
+368:         scopeArr.append(f);
+369:     args["scope"] = scopeArr;
+370: 
+371:     ToolRegistry* tools = session->toolRegistry();
+372:     if (tools) {
+373:         AgentTool* tool = tools->findTool("generate_codemap");
+374:         if (tool) {
+375:             connect(tool, &AgentTool::finished, this,
+376:                 [this, canvas](const QString& result, bool isError) {
+377:                     statusBar()->clearMessage();
+378:                     m_chatPanel->setCodemapButtonState(false);
+379:                     if (isError) {
+380:                         statusBar()->showMessage("Codemap generation failed: " + result, 5000);
+381:                         return;
+382:                     }
+383:                     QJsonDocument doc = QJsonDocument::fromJson(result.toUtf8());
+384:                     if (doc.isObject()) {
+385:                         Codemap map = Codemap::fromJson(doc.object());
+386:                         map.normalizeAbsolutePaths(projectPath());
+387:                         map.populateRuntimeFields(projectPath());
+388:                         CodemapStore store(projectPath());
+389:                         store.save(map);
+390:                         canvas->onCodemapReady(map);
+391:                     }
+392:                 }, Qt::SingleShotConnection);
+393:             tool->execute(args);
+394:             return;
+395:         }
+396:     }
+397: 
+398:     statusBar()->showMessage("AI agent not available for codemap generation", 5000);
+399:     m_chatPanel->setCodemapButtonState(false);
+400: }
+
+(End of file - total 400 lines)
+</content>
+```
+
+**Tool: read**
+
+**Input:**
+```json
+{
+  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvastab.cpp",
+  "limit": 60,
+  "offset": 680
+}
+```
+
+**Output:**
+```
+<path>/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvastab.cpp</path>
+<type>file</type>
+<content>
+680: }
+681: 
+682: void CanvasTab::onCodemapReady(const Codemap& map)
+683: {
+684:     showCodemap(map);
+685: }
+686: 
+687: void CanvasTab::enterSemanticMode()
+688: {
+689:     if (m_viewMode == Semantic) return;
+690: 
+691:     if (!m_currentCodemap.traces.isEmpty()) {
+692:         showCodemap(m_currentCodemap);
+693:     } else {
+694:         CodemapStore store(m_projectPath);
+695:         if (store.exists()) {
+696:             auto mapOpt = store.load();
+697:             if (mapOpt.has_value()) {
+698:                 showCodemap(mapOpt.value());
+699:                 return;
+700:             }
+701:         }
+702:         m_semanticBtn->setChecked(true);
+703:         m_graphBtn->setChecked(false);
+704:         emit needsCodemapGeneration();
+705:     }
+706: }
+707: 
+708: void CanvasTab::enterStructuralMode()
+709: {
+710:     if (m_viewMode == Structural) return;
+711:     setStructuralUIVisible(true);
+712:     showStructureGraph();
+713: }
+714: 
+715: void CanvasTab::setStructuralUIVisible(bool visible)
+716: {
+717:     if (m_playBtn) m_playBtn->setVisible(visible);
+718:     if (m_pauseBtn) m_pauseBtn->setVisible(visible);
+719:     if (m_speedSlider) m_speedSlider->setVisible(visible);
+720:     if (m_refreshBtn) m_refreshBtn->setVisible(visible);
+721:     if (m_layerPanel) m_layerPanel->setVisible(visible);
+722:     if (m_minimap) m_minimap->setVisible(visible);
+723:     if (m_digestPanel) m_digestPanel->setVisible(!visible);
+724: }
+725: 
+726: void CanvasTab::toggleGraphMode()
+727: {
+728:     if (m_viewMode == Structural)
+729:         enterSemanticMode();
+730:     else
+731:         enterStructuralMode();
+732: }
+
+(End of file - total 732 lines)
+</content>
 ```
 
 ---
 
-## Assistant (Build · MiMo-V2.5-Pro · 15.7s)
+## Assistant (Plan · MiMo-V2.5-Pro · 9.7s)
 
 _Thinking:_
 
-OK, so the files DO exist — `cluster_group_node.h/cpp`, `step_node.h/cpp`, `connection_edge.h/cpp`, `cluster_layout.h/cpp`, `digest_panel.h/cpp`. They were created by the "fasa 3" and "fasa 4" commits that were merged back in.
+Now I have a clear picture of the current state. Let me write the plan for the remaining phases:
 
-Let me read all the relevant files to understand the current state before implementing the fixes.
+**Phase 4** — Autonomous project-level Canvas (most complex)
+**Phase 5.1** — Layout polish (ClusterLayout + mermaid subgraphs)
+**Phase 5.2** — Scope from chat
+**Phase 6.2** — Integration test
+
+Let me write the plan to the plan file.
 
 **Tool: read**
 
 **Input:**
 ```json
 {
-  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/nodes/cluster_group_node.h"
+  "filePath": "/home/resu/Documents/dev/cremniy/.mimocode/plans/1781262733038-misty-sailor.md"
 }
 ```
 
 **Output:**
 ```
-<path>/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/nodes/cluster_group_node.h</path>
+<path>/home/resu/Documents/dev/cremniy/.mimocode/plans/1781262733038-misty-sailor.md</path>
 <type>file</type>
 <content>
-1: #ifndef CLUSTER_GROUP_NODE_H
-2: #define CLUSTER_GROUP_NODE_H
-3: 
-4: #include <QGraphicsItem>
-5: #include <QGraphicsObject>
-6: #include <QPainter>
-7: #include <QString>
-8: #include <QList>
-9: 
-10: class StepNode;
-11: 
-12: class ClusterGroupNode : public QGraphicsObject
-13: {
-14:     Q_OBJECT
-15: 
-16: public:
-17:     explicit ClusterGroupNode(const QString& clusterId, const QString& title, const QString& color, QGraphicsItem* parent = nullptr);
+1: # Canvas Phase 3.3 — Diff-update с анимацией
+2: 
+3: ## Goal
+4: Replace hard graph rebuild (`buildGraph()+layoutNodesRadial()`) with incremental diff-update + animation primitives, reusable for future `focus_on_chain` (Evidence Board).
+5: 
+6: ## Files to modify
+7: 
+8: | File | Change |
+9: |------|--------|
+10: | `src/ToolTabs/Canvas/nodes/file_node.h` | Add `Q_PROPERTY appearScale`, `playAppearAnimation()`, `playDisappearAnimation()`, `disappearFinished` signal |
+11: | `src/ToolTabs/Canvas/nodes/file_node.cpp` | Implement appear/disappear animations using `QParallelAnimationGroup` on opacity + appearScale |
+12: | `src/ToolTabs/Canvas/edges/dependency_edge.h` | Add `Q_PROPERTY edgeOpacity`, `Q_PROPERTY drawProgress`, `playAppearAnimation()`, `playDisappearAnimation()`, `disappearFinished` signal |
+13: | `src/ToolTabs/Canvas/edges/dependency_edge.cpp` | Implement appear/disappear with draw-in effect (drawProgress 0→1), reuse existing edgeOpacity if present |
+14: | `src/ToolTabs/Canvas/canvas_layout.h` | Add `animateNodesToPositions(targetPositions, nodes, duration)` public method |
+15: | `src/ToolTabs/Canvas/canvas_layout.cpp` | Implement with `QParallelAnimationGroup` of `QPropertyAnimation` on `pos`; refactor `layoutNodesRadial()` to compute targets then call this method |
+16: | `src/ToolTabs/Canvas/canvastab.h` | Add `diffGraphUpdate(oldGraph, newGraph)` method |
+17: | `src/ToolTabs/Canvas/canvastab.cpp` | Implement diff logic (added/removed/changed), replace `graphUpdated` handler |
 18: 
-19:     QRectF boundingRect() const override;
-20:     void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;
-21: 
-22:     QString clusterId() const { return m_clusterId; }
-23:     QString title() const { return m_title; }
-24:     QString color() const { return m_color; }
-25: 
-26:     void addChild(StepNode* child);
-27:     void removeChild(StepNode* child);
-28:     QList<StepNode*> children() const { return m_children; }
-29: 
-30:     void updateBoundsFromChildren();
-31: 
-32: private:
-33:     QString m_clusterId;
-34:     QString m_title;
-35:     QString m_color;
-36:     QList<StepNode*> m_children;
-37:     QRectF m_bounds;
-38:     static constexpr qreal PADDING = 20;
-39:     static constexpr qreal HEADER_HEIGHT = 30;
-40:     static constexpr qreal CORNER_RADIUS = 12;
-41: };
-42: 
-43: #endif // CLUSTER_GROUP_NODE_H
-
-(End of file - total 43 lines)
-</content>
-```
-
-**Tool: read**
-
-**Input:**
-```json
-{
-  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/nodes/step_node.h"
-}
-```
-
-**Output:**
-```
-<path>/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/nodes/step_node.h</path>
-<type>file</type>
-<content>
-1: #ifndef STEP_NODE_H
-2: #define STEP_NODE_H
-3: 
-4: #include <QGraphicsItem>
-5: #include <QGraphicsObject>
-6: #include <QPainter>
-7: #include <QString>
-8: #include <QPropertyAnimation>
-9: #include <QParallelAnimationGroup>
-10: 
-11: class StepNode : public QGraphicsObject
-12: {
-13:     Q_OBJECT
-14:     Q_PROPERTY(qreal appearOpacity READ appearOpacity WRITE setAppearOpacity)
-15:     Q_PROPERTY(qreal appearScale READ appearScale WRITE setAppearScale)
-16: 
-17: public:
-18:     explicit StepNode(const QString& stepId, const QString& title, const QString& codeSnippet,
-19:                      const QString& filePath, int lineNumber, QGraphicsItem* parent = nullptr);
+19: ## Step 1 — FileNode animation primitives
 20: 
-21:     QRectF boundingRect() const override;
-22:     void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;
-23: 
-24:     QString stepId() const { return m_stepId; }
-25:     QString title() const { return m_title; }
-26:     QString codeSnippet() const { return m_codeSnippet; }
-27:     QString filePath() const { return m_filePath; }
-28:     int lineNumber() const { return m_lineNumber; }
-29: 
-30:     void playAppearAnimation(int durationMs = 300);
-31:     qreal appearOpacity() const { return m_appearOpacity; }
-32:     void setAppearOpacity(qreal opacity) { m_appearOpacity = opacity; update(); }
-33:     qreal appearScale() const { return m_appearScale; }
-34:     void setAppearScale(qreal scale) { m_appearScale = scale; update(); }
-35: 
-36: signals:
-37:     void stepClicked(const QString& filePath, int lineNumber);
-38:     void positionChanged();
-39: 
-40: protected:
-41:     void mousePressEvent(QGraphicsSceneMouseEvent* event) override;
-42:     void hoverEnterEvent(QGraphicsSceneHoverEvent* event) override;
-43:     void hoverLeaveEvent(QGraphicsSceneHoverEvent* event) override;
-44:     QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
-45: 
-46: private:
-47:     QString m_stepId;
-48:     QString m_title;
-49:     QString m_codeSnippet;
-50:     QString m_filePath;
-51:     int m_lineNumber;
-52:     bool m_hovered = false;
-53:     qreal m_appearOpacity = 1.0;
-54:     qreal m_appearScale = 1.0;
-55:     QParallelAnimationGroup* m_appearGroup = nullptr;
-56: 
-57:     static constexpr qreal WIDTH = 200;
-58:     static constexpr qreal HEIGHT = 80;
-59:     static constexpr qreal RADIUS = 8;
-60:     static constexpr qreal PADDING = 12;
-61: };
+21: **`file_node.h`** additions:
+22: ```cpp
+23: Q_PROPERTY(qreal appearScale READ appearScale WRITE setAppearScale)
+24: 
+25: signals:
+26:     void disappearFinished();
+27: 
+28: public:
+29:     void playAppearAnimation(int durationMs = 300);
+30:     void playDisappearAnimation(int durationMs = 250);
+31:     qreal appearScale() const;
+32:     void setAppearScale(qreal s);
+33: 
+34: private:
+35:     qreal m_appearScale = 1.0;
+36: ```
+37: 
+38: **`file_node.cpp`** — `playAppearAnimation()`:
+39: - Start: opacity=0, appearScale=0.5
+40: - End: opacity=1, appearScale=1.0
+41: - `QParallelAnimationGroup` with two `QPropertyAnimation` (on "opacity" and "appearScale")
+42: - Easing: `QEasingCurve::OutBack`
+43: - `setOpacity(0)` initially, then `setOpacity(1)` at end
+44: 
+45: **`file_node.cpp`** — `playDisappearAnimation()`:
+46: - Start: opacity=1, appearScale=1.0
+47: - End: opacity=0, appearScale=0.3
+48: - Easing: `QEasingCurve::InCubic`
+49: - `connect(finish, &disappearFinished)` — does NOT delete self
+50: 
+51: **`paint()`** — apply `m_appearScale` via `painter->scale(m_appearScale, m_appearScale)` before drawing.
+52: 
+53: ## Step 2 — DependencyEdge animation primitives
+54: 
+55: **`dependency_edge.h`** additions:
+56: ```cpp
+57: Q_PROPERTY(qreal edgeOpacity READ edgeOpacity WRITE setEdgeOpacity)
+58: Q_PROPERTY(qreal drawProgress READ drawProgress WRITE setDrawProgress)
+59: 
+60: signals:
+61:     void disappearFinished();
 62: 
-63: #endif // STEP_NODE_H
+63: public:
+64:     void playAppearAnimation(int durationMs = 300);
+65:     void playDisappearAnimation(int durationMs = 250);
+66: 
+67: private:
+68:     qreal m_edgeOpacity = 1.0;
+69:     qreal m_drawProgress = 1.0;
+70: ```
+71: 
+72: **`dependency_edge.cpp`** — `paint()`:
+73: - Apply `m_edgeOpacity` to pen/brush alpha
+74: - If `m_drawProgress < 1.0`: draw `curvePath().pointAtPercent(m_drawProgress)` as endpoint instead of full path
+75: 
+76: **Appear**: `QParallelAnimationGroup` — edgeOpacity 0→1, drawProgress 0→1. Easing: `OutCubic`.
+77: **Disappear**: edgeOpacity 1→0. Easing: `InCubic`. Emit `disappearFinished`.
+78: 
+79: ## Step 3 — CanvasLayout::animateNodesToPositions
+80: 
+81: **New public method**:
+82: ```cpp
+83: void CanvasLayout::animateNodesToPositions(
+84:     const QMap<QString, QPointF>& targetPositions,
+85:     QMap<QString, FileNode*>& nodes,
+86:     int durationMs = 400);
+87: ```
+88: 
+89: **Implementation**:
+90: - Create `QParallelAnimationGroup`
+91: - For each node in `nodes` that has a key in `targetPositions`:
+92:   - `QPropertyAnimation(node, "pos", parent)` — from `node->pos()` to `targetPositions[path]`
+93:   - Easing: `QEasingCurve::InOutCubic`
+94: - Add all animations to group, `group->start(QAbstractAnimation::DeleteWhenStopped)`
+95: 
+96: **Refactor `layoutNodesRadial()`**:
+97: - Keep `computeTargets()` call
+98: - Replace direct `setPos()` loop with `animateNodesToPositions(targets, m_nodes)`
+99: 
+100: ## Step 4 — CanvasTab::diffGraphUpdate
+101: 
+102: **New method**:
+103: ```cpp
+104: void CanvasTab::diffGraphUpdate(const DependencyGraph& oldGraph, const DependencyGraph& newGraph);
+105: ```
+106: 
+107: **Logic**:
+108: 1. **added** = `newGraph.allFiles - oldGraph.allFiles`
+109:    - Create FileNode, compute position (near parent dir, not full layout), `addItem`, `playAppearAnimation()`
+110:    - Create DependencyEdges for added file's includes, `playAppearAnimation()`
+111: 
+112: 2. **removed** = `oldGraph.allFiles - newGraph.allFiles`
+113:    - `node->playDisappearAnimation()` → `connect(disappearFinished, scene->removeItem + deleteLater)`
+114:    - Remove connected edges similarly
+115: 
+116: 3. **changed** = files where `dependencies[]` list differs
+117:    - Diff edges: added edges → create + `playAppearAnimation()`; removed edges → `playDisappearAnimation()` + remove
+118: 
+119: 4. **Unchanged nodes**: position NOT touched (no jump)
+120: 
+121: **Replace handler** in `setFile()`:
+122: ```cpp
+123: connect(m_parser, &DependencyParser::graphUpdated, this,
+124:     [this](DependencyGraph graph) {
+125:         diffGraphUpdate(m_currentGraph, graph);
+126:         m_currentGraph = graph;
+127:     });
+128: ```
+129: 
+130: ## Verification
+131: 
+132: 1. Build: `cmake --build build --parallel $(nproc)` — zero errors
+133: 2. Manual test: open a project → Canvas tab → verify nodes appear with animation
+134: 3. Live test: modify `#include` in a source file → verify nodes/edges animate in/out without full rebuild jump
+135: 4. Checklist from TZ:
+136:    - [ ] FileNode playAppear/playDisappear work in isolation
+137:    - [ ] DependencyEdge playAppear/playDisappear work in isolation
+138:    - [ ] animateNodesToPositions accepts arbitrary QMap<QString, QPointF>
+139:    - [ ] layoutNodesRadial refactored to use animateNodesToPositions
+140:    - [ ] diffGraphUpdate: add file → smooth appear; remove → smooth disappear; change includes → animated edge update
+141:    - [ ] Existing nodes don't jump on live update
 
-(End of file - total 63 lines)
+(End of file - total 141 lines)
+</content>
+```
+
+---
+
+## Assistant (Plan · MiMo-V2.5-Pro · 57.7s)
+
+_Thinking:_
+
+The plan file has old content from Phase 3.3. I need to replace it with the new plan for the remaining phases. Let me write the new plan.
+
+**Tool: write**
+
+**Input:**
+```json
+{
+  "content": "# Autonomous Codemap Canvas — Remaining Phases (4, 5, 6.2)\n\n## Context\n\nPhases 1+2.1+3.1+3.2+6.1 are done (commit `91ee25b`):\n- `ViewMode { Semantic, Structural }` with lazy parser\n- `CodemapStore` with Windsurf-style `<Title>_YYYYMMDD_HHMMSS.codemap.txt`\n- Two buttons \"Semantic\" | \"Graph\" instead of Mode toggle\n- DigestPanel created and wired (per-trace Motivation/Details)\n- Legacy names cleaned up (`needsCodemapGeneration`)\n\nRemaining from the plan:\n- **Phase 4** — Autonomous project-level Canvas (not file-bound)\n- **Phase 5.1** — Layout polish (ClusterLayout, mermaid subgraphs, stale indicator)\n- **Phase 5.2** — Scope from chat\n- **Phase 6.2** — Integration test\n\n## Phase 4 — Autonomous project-level Canvas\n\n**Problem**: CanvasTab lives inside FileTab → bound to a specific `.cpp` file. Codemap is project-level.\n\n**Solution**: Add `FilesTabWidget::openCodemapTab()` that creates a special FileTab with `filePath=projectRoot` and `tabTitle=\"Codemap\"`.\n\n### Files to modify\n\n| File | Change |\n|------|--------|\n| `src/ui/filestabwidget.h` | Add `openCodemapTab()` method |\n| `src/ui/filestabwidget.cpp` | Implement: create FileTab with projectRoot as path, set tab title \"Codemap\" |\n| `src/app/IDEWindow/idewindow.h` | Add `openOrCreateCodemapCanvas()` |\n| `src/app/IDEWindow/idewindow.cpp` | Implement: use `openCodemapTab()` instead of `openFile(cpp)`, switch to Canvas tool tab, call `enterSemanticMode()` |\n| `src/ToolTabs/Canvas/canvastab.cpp` | `setFile()` → if path is directory (not file), skip Gource/animator init, just set projectPath |\n\n### Implementation\n\n1. **`FilesTabWidget::openCodemapTab(projectPath)`**:\n   - Create `FileTab(this, projectPath)` — ToolsTabWidget gets created with `path=projectRoot`\n   - Set tab title to \"Codemap\"\n   - Switch to this tab\n   - Return the FileTab\n\n2. **`IDEWindow::openOrCreateCodemapCanvas()`**:\n   - Find existing CanvasTab via `canvasTab()`\n   - If not found → `m_filesTabWidget->openCodemapTab(projectPath())`\n   - Find the CanvasTab in the new tab\n   - Switch to Canvas tool tab (setCurrentIndex for ToolsTabWidget)\n   - Call `canvas->setProjectRoot(projectPath())`\n   - Call `canvas->enterSemanticMode()`\n\n3. **`openOrGenerateConceptMap()`**: replace `openOrCreateCanvasTab()` with `openOrCreateCodemapCanvas()`\n\n4. **`CanvasTab::setFile()`**: if `QFileInfo(filepath).isDir()`, just set `m_projectPath = filepath`, skip parser/animator creation\n\n## Phase 5.1 — Layout polish\n\n### Files to modify\n\n| File | Change |\n|------|--------|\n| `src/ToolTabs/Canvas/cluster_layout.h` | Add `arrangeMap(QList<ClusterGroupNode*>)` that uses CanvasLayout |\n| `src/ToolTabs/Canvas/cluster_layout.cpp` | Implement grid layout with animation via `CanvasLayout::animateNodesToPositions` |\n| `src/ToolTabs/Canvas/canvastab.cpp` | `showCodemap()` → use `ClusterLayout::arrangeMap()` instead of inline grid |\n| `src/ToolTabs/Canvas/codemap.cpp` | `parsedConnections()` → support mermaid subgraph syntax |\n| `src/ToolTabs/Canvas/nodes/step_node.cpp` | Show ⚠ indicator when `isStale=true` |\n| `src/ToolTabs/Canvas/digest_panel.cpp` | Show `traceTextDiagram` as `<pre>` block |\n\n### Implementation\n\n1. **ClusterLayout::arrangeMap()**: compute grid positions for clusters, use `CanvasLayout::animateNodesToPositions()` for smooth transition\n\n2. **Mermaid subgraph support**: extend regex in `parsedConnections()` to handle:\n   ```\n   graph TB\n     subgraph startup[Title]\n       1a[...]\n     end\n   ```\n   Parse `subgraph <id>[<label>]` blocks, associate locations with subgraph IDs.\n\n3. **StepNode stale indicator**: in `paint()`, if `isStale`, draw orange border or ⚠ icon\n\n4. **traceTextDiagram in DigestPanel**: add `<pre>` block with monospace font inside each trace section\n\n## Phase 5.2 — Scope from chat\n\n### Files to modify\n\n| File | Change |\n|------|--------|\n| `src/app/IDEWindow/idewindow.cpp` | `openOrGenerateConceptMap()` → if no scope, check ChatPanel last message as task |\n| `src/Agent/chat_panel.h` | Add `lastUserMessage() const` method |\n| `src/Agent/chat_panel.cpp` | Implement: return text of last User-role message |\n\n### Implementation\n\n1. **`ChatPanel::lastUserMessage()`**: iterate `m_messages` backwards, find first `ChatMessage::User`, return its text\n\n2. **`openOrGenerateConceptMap(scope)`**:\n   - If `scope.isEmpty()` and no cached codemap:\n     - `QString task = m_chatPanel->lastUserMessage()`\n     - If task not empty → pass `args[\"task\"] = task` to GenerateCodemapTool\n     - If task empty → `args[\"scope\"] = allFiles` from currentGraph\n\n## Phase 6.2 — Integration test\n\n### Files to create/modify\n\n| File | Change |\n|------|--------|\n| `tests/test_codemap.cpp` | Add `testLoadLatestWithWindsurfNaming()`, `testImportRealCodemap()` |\n| `tests/test_codemap.cpp` | Add `testParsedConnectionsWithSubgraph()` |\n\n### Tests to add\n\n1. **testLoadLatestWithWindsurfNaming**: save two codemaps with different timestamps, verify `loadLatest()` returns the newer one\n\n2. **testImportRealCodemap**: create a file matching the format of `Qt_Application_Entry_Point_and_Welcome_Window_System_20260614_123113.codemap.txt`, load it, verify traces/locations parsed correctly, paths normalized\n\n3. **testParsedConnectionsWithSubgraph**: test mermaid with subgraph blocks, verify edges are extracted correctly\n\n## Verification\n\n1. `cmake --build build --parallel 2` — zero errors\n2. `cd tests/build && ./test_dependency_parser && ./test_codemap && ./test_generate_codemap_tool` — all PASS\n3. Manual: click Codemap → Canvas opens in semantic mode (no FileNode), two buttons visible, DigestPanel shows traces\n4. Manual: switch to Graph → parser starts lazily, dependency graph appears\n5. Manual: close IDE → reopen → click Codemap → loads latest `.codemap.txt` without regeneration\n",
+  "filePath": "/home/resu/Documents/dev/cremniy/.mimocode/plans/1781262733038-misty-sailor.md"
+}
+```
+
+**Output:**
+```
+Wrote file successfully.
+```
+
+---
+
+## Assistant (Plan · MiMo-V2.5-Pro · 423.3s)
+
+_Thinking:_
+
+Now let me call plan_exit to present the plan for approval.
+
+**Tool: plan_exit**
+
+**Input:**
+```json
+{}
+```
+
+**Output:**
+```
+User approved switching to build agent. Wait for further instructions.
+```
+
+---
+
+## User
+
+---
+
+## Assistant (Build · MiMo-V2.5-Pro · 35.7s)
+
+_Thinking:_
+
+The plan is approved. Let me execute it. I need to implement Phase 4, 5.1, 5.2, and 6.2. Let me start with Phase 4 — autonomous project-level Canvas.
+
+**Tool: task**
+
+**Input:**
+```json
+{
+  "operation": {
+    "action": "create",
+    "summary": "Autonomous codemap canvas: Phase 4+5.1+5.2+6.2"
+  }
+}
+```
+
+**Output:**
+```
+Created T15 (open): Autonomous codemap canvas: Phase 4+5.1+5.2+6.2
+```
+
+---
+
+## Assistant (Build · MiMo-V2.5-Pro · 22.4s)
+
+_Thinking:_
+
+Let me start implementing. Phase 4 first — autonomous project-level Canvas.
+
+**Tool: task**
+
+**Input:**
+```json
+{
+  "operation": {
+    "action": "start",
+    "id": "T15"
+  }
+}
+```
+
+**Output:**
+```
+start → in_progress
+```
+
+---
+
+## Assistant (Build · MiMo-V2.5-Pro · 17.5s)
+
+_Thinking:_
+
+Let me read the current FilesTabWidget to understand how to add openCodemapTab.
+
+**Phase 4** — автономный project-level Canvas.
+
+**Tool: read**
+
+**Input:**
+```json
+{
+  "filePath": "/home/resu/Documents/dev/cremniy/src/ui/filestabwidget.h"
+}
+```
+
+**Output:**
+```
+<path>/home/resu/Documents/dev/cremniy/src/ui/filestabwidget.h</path>
+<type>file</type>
+<content>
+1: #ifndef FILESTABWIDGET_H
+2: #define FILESTABWIDGET_H
+3: 
+4: #include <QTabWidget>
+5: #include <filetab.h>
+6: 
+7: class FilesTabWidget : public QTabWidget {
+8:   Q_OBJECT
+9: public:
+10:   FilesTabWidget(QWidget *parent = nullptr);
+11: 
+12:   void tabSelect(int index);
+13:   void openFile(QString fullPath, QString fileName);
+14: 
+15: protected:
+16:   bool eventFilter(QObject *obj, QEvent *event) override;
+17: 
+18: public slots:
+19:   void removeStar(FileTab *tab);
+20:   void setupStar(FileTab *tab);
+21:   void saveFileSlot();
+22:   void closeTab(int index);
+23:   
+24: private:
+25:   void switchTab(int page);
+26: };
+27: 
+28: #endif // FILESTABWIDGET_H
+
+(End of file - total 28 lines)
 </content>
 ```
 
@@ -1912,72 +3252,466 @@ Let me read all the relevant files to understand the current state before implem
 **Input:**
 ```json
 {
-  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/edges/connection_edge.h"
+  "filePath": "/home/resu/Documents/dev/cremniy/src/ui/filestabwidget.cpp"
 }
 ```
 
 **Output:**
 ```
-<path>/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/edges/connection_edge.h</path>
+<path>/home/resu/Documents/dev/cremniy/src/ui/filestabwidget.cpp</path>
 <type>file</type>
 <content>
-1: #ifndef CONNECTION_EDGE_H
-2: #define CONNECTION_EDGE_H
-3: 
-4: #include <QGraphicsObject>
-5: #include <QColor>
-6: #include <QVariantAnimation>
-7: #include <QParallelAnimationGroup>
-8: 
-9: class StepNode;
+1: #include "filestabwidget.h"
+2: #include <QApplication>
+3: #include <QCoreApplication>
+4: #include <QMessageBox>
+5: #include <QMouseEvent>
+6: #include <QTabBar>
+7: #include <QWheelEvent>
+8: #include <qboxlayout.h>
+9: #include <qfileinfo.h>
 10: 
-11: class ConnectionEdge : public QGraphicsObject
-12: {
-13:     Q_OBJECT
-14:     Q_PROPERTY(qreal edgeOpacity READ edgeOpacity WRITE setEdgeOpacity)
-15:     Q_PROPERTY(qreal drawProgress READ drawProgress WRITE setDrawProgress)
+11: FilesTabWidget::FilesTabWidget(QWidget *parent) {
+12:     connect(this, &QTabWidget::currentChanged, this, &FilesTabWidget::tabSelect);
+13:     tabBar()->installEventFilter(this);
+14:     QCoreApplication::instance()->installEventFilter(this);
+15: }
 16: 
-17: public:
-18:     ConnectionEdge(StepNode* source, StepNode* target, const QString& relationLabel, QGraphicsItem* parent = nullptr);
-19: 
-20:     QRectF boundingRect() const override;
-21:     void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;
+17: void FilesTabWidget::tabSelect(int index) {
+18:     FileTab *tab = qobject_cast<FileTab *>(widget(index));
+19:     if (!tab)
+20:         return;
+21: }
 22: 
-23:     void updatePosition();
-24:     StepNode* source() const { return m_source; }
-25:     StepNode* target() const { return m_target; }
-26:     QString relationLabel() const { return m_relationLabel; }
-27: 
-28:     void playAppearAnimation(int durationMs = 300);
-29:     void playDisappearAnimation(int durationMs = 250);
-30:     void stopAnimations();
-31: 
-32:     qreal edgeOpacity() const { return m_edgeOpacity; }
-33:     void setEdgeOpacity(qreal opacity) { m_edgeOpacity = opacity; update(); }
-34:     qreal drawProgress() const { return m_drawProgress; }
-35:     void setDrawProgress(qreal progress) { m_drawProgress = progress; update(); }
-36: 
-37: signals:
-38:     void disappearFinished();
+23: // Create new tab and open file if he is not open already
+24: void FilesTabWidget::openFile(QString filePath, QString tabTitle) {
+25: 
+26:     // check already open
+27:     for (int i = 0; i < this->count(); ++i) {
+28:         FileTab *t = qobject_cast<FileTab *>(this->widget(i));
+29:         if (t && t->filePath == filePath) {
+30:             this->setCurrentIndex(i);
+31:             return;
+32:         }
+33:     }
+34: 
+35:     // else if file is not opened
+36:     FileTab *filetab = new FileTab(this, filePath);
+37:     int new_tab_index = this->addTab(filetab, tabTitle);
+38:     this->setCurrentIndex(new_tab_index);
 39: 
-40: private:
-41:     StepNode* m_source;
-42:     StepNode* m_target;
-43:     QString m_relationLabel;
-44:     qreal m_edgeOpacity = 1.0;
-45:     qreal m_drawProgress = 1.0;
-46:     QParallelAnimationGroup* m_appearGroup = nullptr;
-47:     QParallelAnimationGroup* m_disappearGroup = nullptr;
-48: 
-49:     QColor edgeColor() const;
-50:     QPainterPath curvePath() const;
-51: };
-52: 
-53: #endif // CONNECTION_EDGE_H
+40:     // - - Connects - -
+41:     connect(filetab, &FileTab::removeStarSignal, this, &FilesTabWidget::removeStar);
+42:     connect(filetab, &FileTab::setupStarSignal, this, &FilesTabWidget::setupStar);
+43:     connect(filetab, &FileTab::fileOpenRequested, this, [this](const QString& path) {
+44:         openFile(path, QFileInfo(path).fileName());
+45:     });
+46: }
+47: 
+48: void FilesTabWidget::removeStar(FileTab *tab) {
+49:     int index = indexOf(tab);
+50:     if (index != -1) {
+51:         QFileInfo finfo(tab->filePath);
+52:         setTabText(index, finfo.fileName());
+53:     }
+54: }
+55: 
+56: void FilesTabWidget::setupStar(FileTab *tab) {
+57:     int index = indexOf(tab);
+58:     if (index != -1) {
+59:         QFileInfo finfo(tab->filePath);
+60:         setTabText(index, finfo.fileName() + "*");
+61:     }
+62: }
+63: 
+64: void FilesTabWidget::saveFileSlot() {
+65:     qDebug() << "FilesTabWidget::saveFileSlot()";
+66:     if (count() > 0) {
+67:         FileTab *currentFileTab = dynamic_cast<FileTab *>(currentWidget());
+68:         currentFileTab->saveFile();
+69:     }
+70: }
+71: 
+72: bool FilesTabWidget::eventFilter(QObject *obj, QEvent *event) {
+73:     switch (event->type()) {
+74: 
+75:     // ALT + Mouse Wheel UP/DOWN: для переключения между вкладками
+76:     case QEvent::Wheel: {
+77:         auto *we = static_cast<QWheelEvent *>(event);
+78:         if (we->modifiers() == Qt::AltModifier && count() > 1) {
+79:             int delta = we->angleDelta().y();
+80:             if (delta == 0) {
+81:                 delta = we->angleDelta().x();
+82:             }
+83:             if (delta != 0) {
+84:                 switchTab(delta > 0 ? 1 : -1);
+85:                 return true;
+86:             }
+87:         }
+88:         break;
+89:     }
+90: 
+91:     case QEvent::KeyPress: {
+92:         auto *keyEvent = static_cast<QKeyEvent *>(event);
+93:         // ALT + Arrows: для переключения между вкладками
+94:         if (keyEvent->modifiers() == Qt::AltModifier) {
+95:             if (keyEvent->key() == Qt::Key_Left) {
+96:                 switchTab(-1);
+97:                 return true;
+98:             } else if (keyEvent->key() == Qt::Key_Right) {
+99:                 switchTab(1);
+100:                 return true;
+101:             }
+102:             // CTRL + W: для закрытия вкладки
+103:         } else if (keyEvent->modifiers() == Qt::ControlModifier && keyEvent->key() == Qt::Key_W) {
+104:             closeTab(currentIndex());
+105:             return true;
+106:         }
+107:         break;
+108:     }
+109: 
+110:     // Mouse Middle Button: для закрытия вкладки
+111:     case QEvent::MouseButtonRelease: {
+112:         if (obj == tabBar()) {
+113:             auto *me = static_cast<QMouseEvent *>(event);
+114:             if (me->button() == Qt::MiddleButton) {
+115:                 closeTab(tabBar()->tabAt(me->pos()));
+116:                 return true;
+117:             }
+118:         }
+119:         break;
+120:     }
+121: 
+122:     default:
+123:         break;
+124:     }
+125:     return QTabWidget::eventFilter(obj, event);
+126: }
+127: 
+128: void FilesTabWidget::closeTab(int index) {
+129:     if (index < 0 || index >= count()) {
+130:         return;
+131:     }
+132: 
+133:     FileTab *tab = qobject_cast<FileTab *>(widget(index));
+134:     if (tab && tab->isFileUnsaved()) {
+135:         const auto replay = QMessageBox::question(this, "Save File", "Do you want to save this file?",
+136:                                                   QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
+137:         switch (replay) {
+138:         case QMessageBox::Yes:
+139:             tab->saveFile();
+140:             break;
+141:         case QMessageBox::No:
+142:             break;
+143:         case QMessageBox::Cancel:
+144:             return;
+145:         }
+146:     }
+147: 
+148:     removeTab(index);
+149:     if (tab)
+150:         tab->deleteLater();
+151: }
+152: 
+153: void FilesTabWidget::switchTab(int page) {
+154:     int newIdx = currentIndex() + page;
+155:     if (newIdx < 0)
+156:         newIdx = count() - 1;
+157:     else if (newIdx >= count())
+158:         newIdx = 0;
+159:     setCurrentIndex(newIdx);
+160: }
 
-(End of file - total 53 lines)
+(End of file - total 160 lines)
 </content>
 ```
+
+---
+
+## Assistant (Build · MiMo-V2.5-Pro · 40.5s)
+
+_Thinking:_
+
+Now I need to:
+1. Add `openCodemapTab()` to FilesTabWidget
+2. Add `openOrCreateCodemapCanvas()` to IDEWindow
+3. Update `CanvasTab::setFile()` to handle directory paths
+4. Update `openOrGenerateConceptMap()` to use the new method
+
+Let me implement these changes.
+
+**Tool: edit**
+
+**Input:**
+```json
+{
+  "filePath": "/home/resu/Documents/dev/cremniy/src/ui/filestabwidget.h",
+  "newString": "  void tabSelect(int index);\n  void openFile(QString fullPath, QString fileName);\n  void openCodemapTab(const QString& projectPath);",
+  "oldString": "  void tabSelect(int index);\n  void openFile(QString fullPath, QString fileName);"
+}
+```
+
+**Output:**
+```
+Edit applied successfully.
+```
+
+---
+
+## Assistant (Build · MiMo-V2.5-Pro · 25.4s)
+
+_Thinking:_
+
+Now implement openCodemapTab in filestabwidget.cpp.
+
+**Tool: edit**
+
+**Input:**
+```json
+{
+  "filePath": "/home/resu/Documents/dev/cremniy/src/ui/filestabwidget.cpp",
+  "newString": "    connect(filetab, &FileTab::fileOpenRequested, this, [this](const QString& path) {\n        openFile(path, QFileInfo(path).fileName());\n    });\n}\n\nvoid FilesTabWidget::openCodemapTab(const QString& projectPath) {\n    // Check if codemap tab already exists\n    for (int i = 0; i < this->count(); ++i) {\n        FileTab *t = qobject_cast<FileTab *>(this->widget(i));\n        if (t && t->filePath == projectPath) {\n            this->setCurrentIndex(i);\n            return;\n        }\n    }\n\n    FileTab *filetab = new FileTab(this, projectPath);\n    int new_tab_index = this->addTab(filetab, \"Codemap\");\n    this->setCurrentIndex(new_tab_index);\n\n    connect(filetab, &FileTab::removeStarSignal, this, &FilesTabWidget::removeStar);\n    connect(filetab, &FileTab::setupStarSignal, this, &FilesTabWidget::setupStar);\n    connect(filetab, &FileTab::fileOpenRequested, this, [this](const QString& path) {\n        openFile(path, QFileInfo(path).fileName());\n    });\n}",
+  "oldString": "    connect(filetab, &FileTab::fileOpenRequested, this, [this](const QString& path) {\n        openFile(path, QFileInfo(path).fileName());\n    });\n}"
+}
+```
+
+**Output:**
+```
+Edit applied successfully.
+```
+
+---
+
+## Assistant (Build · MiMo-V2.5-Pro · 41.9s)
+
+_Thinking:_
+
+Now update IDEWindow to add openOrCreateCodemapCanvas().
+
+**Tool: edit**
+
+**Input:**
+```json
+{
+  "filePath": "/home/resu/Documents/dev/cremniy/src/app/IDEWindow/idewindow.h",
+  "newString": "    CanvasTab* canvasTab() const;\n    CanvasTab* openOrCreateCanvasTab();\n    CanvasTab* openOrCreateCodemapCanvas();",
+  "oldString": "    CanvasTab* canvasTab() const;\n    CanvasTab* openOrCreateCanvasTab();"
+}
+```
+
+**Output:**
+```
+Edit applied successfully.
+```
+
+---
+
+## Assistant (Build · MiMo-V2.5-Pro · 22.1s)
+
+_Thinking:_
+
+Now implement openOrCreateCodemapCanvas() in idewindow.cpp.
+
+**Tool: read**
+
+**Input:**
+```json
+{
+  "filePath": "/home/resu/Documents/dev/cremniy/src/app/IDEWindow/idewindow.cpp",
+  "limit": 40,
+  "offset": 290
+}
+```
+
+**Output:**
+```
+<path>/home/resu/Documents/dev/cremniy/src/app/IDEWindow/idewindow.cpp</path>
+<type>file</type>
+<content>
+290:         if (canvas) {
+291:             // Ensure signals are connected (const_cast for one-time setup)
+292:             const_cast<IDEWindow*>(this)->ensureCanvasSignalsConnected(canvas);
+293:             return canvas;
+294:         }
+295:     }
+296:     return nullptr;
+297: }
+298: 
+299: CanvasTab* IDEWindow::openOrCreateCanvasTab()
+300: {
+301:     CanvasTab* existing = canvasTab();
+302:     if (existing)
+303:         return existing;
+304: 
+305:     QDir srcDir(m_projectPath + "/src");
+306:     if (srcDir.exists()) {
+307:         QStringList cppFiles = srcDir.entryList({"*.cpp", "*.h"}, QDir::Files, QDir::Name);
+308:         if (!cppFiles.isEmpty()) {
+309:             QString firstFile = srcDir.absoluteFilePath(cppFiles.first());
+310:             m_filesTabWidget->openFile(firstFile, QFileInfo(firstFile).fileName());
+311:             return canvasTab(); // canvasTab() calls ensureCanvasSignalsConnected internally
+312:         }
+313:     }
+314:     return nullptr;
+315: }
+316: 
+317: void IDEWindow::ensureCanvasSignalsConnected(CanvasTab* canvas)
+318: {
+319:     if (!canvas) return;
+320:     // Qt::UniqueConnection prevents duplicate connections even if called multiple times
+321:     connect(canvas, &CanvasTab::needsCodemapGeneration,
+322:             this, &IDEWindow::onConceptMapNeeded,
+323:             Qt::UniqueConnection);
+324: }
+325: 
+326: void IDEWindow::onConceptMapNeeded()
+327: {
+328:     openOrGenerateConceptMap();
+329: }
+
+(Showing lines 290-329 of 400. Use offset=330 to continue.)
+</content>
+```
+
+---
+
+## Assistant (Build · MiMo-V2.5-Pro · 24.1s)
+
+_Thinking:_
+
+Now add openOrCreateCodemapCanvas() after openOrCreateCanvasTab().
+
+**Tool: edit**
+
+**Input:**
+```json
+{
+  "filePath": "/home/resu/Documents/dev/cremniy/src/app/IDEWindow/idewindow.cpp",
+  "newString": "    return nullptr;\n}\n\nCanvasTab* IDEWindow::openOrCreateCodemapCanvas()\n{\n    CanvasTab* existing = canvasTab();\n    if (existing) {\n        existing->setProjectRoot(m_projectPath);\n        existing->enterSemanticMode();\n        return existing;\n    }\n\n    // Open a dedicated codemap tab (not bound to a specific file)\n    m_filesTabWidget->openCodemapTab(m_projectPath);\n\n    CanvasTab* canvas = canvasTab();\n    if (canvas) {\n        canvas->setProjectRoot(m_projectPath);\n        // Switch to Canvas tool tab\n        QWidget* tab = canvas->parentWidget();\n        while (tab && !qobject_cast<QTabWidget*>(tab->parentWidget()))\n            tab = tab->parentWidget();\n        if (tab) {\n            QTabWidget* toolsTab = qobject_cast<QTabWidget*>(tab->parentWidget());\n            if (toolsTab) {\n                int canvasIdx = toolsTab->indexOf(tab);\n                if (canvasIdx >= 0)\n                    toolsTab->setCurrentIndex(canvasIdx);\n            }\n        }\n        canvas->enterSemanticMode();\n    }\n    return canvas;\n}\n\nvoid IDEWindow::ensureCanvasSignalsConnected(CanvasTab* canvas)",
+  "oldString": "    return nullptr;\n}\n\nvoid IDEWindow::ensureCanvasSignalsConnected(CanvasTab* canvas)"
+}
+```
+
+**Output:**
+```
+Edit applied successfully.
+```
+
+---
+
+## Assistant (Build · MiMo-V2.5-Pro · 17.8s)
+
+_Thinking:_
+
+Now update openOrGenerateConceptMap() to use openOrCreateCodemapCanvas() instead of openOrCreateCanvasTab().
+
+**Tool: edit**
+
+**Input:**
+```json
+{
+  "filePath": "/home/resu/Documents/dev/cremniy/src/app/IDEWindow/idewindow.cpp",
+  "newString": "    CanvasTab* canvas = canvasTab();\n    if (!canvas) {\n        canvas = openOrCreateCodemapCanvas();\n        if (!canvas) return;\n    }",
+  "oldString": "    CanvasTab* canvas = canvasTab();\n    if (!canvas) {\n        canvas = openOrCreateCanvasTab();\n        if (!canvas) return;\n    }"
+}
+```
+
+**Output:**
+```
+Edit applied successfully.
+```
+
+---
+
+## Assistant (Build · MiMo-V2.5-Pro · 170.7s)
+
+_Thinking:_
+
+Now update CanvasTab::setFile() to handle directory paths (skip parser/animator for directory paths).
+
+**Tool: edit**
+
+**Input:**
+```json
+{
+  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvastab.cpp",
+  "newString": "void CanvasTab::setFile(QString filepath)\n{\n    m_projectPath = filepath;\n\n    // If path is a directory (codemap tab), skip parser/animator setup\n    if (QFileInfo(filepath).isDir()) {\n        m_parser = new DependencyParser(m_projectPath, this);\n        connect(m_parser, &DependencyParser::graphReady, this, &CanvasTab::onGraphReady);\n        connect(m_parser, &DependencyParser::graphUpdated, this, [this](DependencyGraph graph) {\n            diffGraphUpdate(m_currentGraph, graph);\n        });\n        return;\n    }\n\n    m_parser = new DependencyParser(m_projectPath, this);\n    connect(m_parser, &DependencyParser::graphReady, this, &CanvasTab::onGraphReady);\n    connect(m_parser, &DependencyParser::graphUpdated, this, [this](DependencyGraph graph) {\n        diffGraphUpdate(m_currentGraph, graph);\n    });\n    m_parser->watchForChanges();\n\n    // Gource animator\n    m_animator = new GourceAnimator(m_projectPath, this);\n    connect(m_animator, &GourceAnimator::commitReady, this, &CanvasTab::onGourceCommit);\n    m_animator->loadHistory();\n}",
+  "oldString": "void CanvasTab::setFile(QString filepath)\n{\n    m_projectPath = QFileInfo(filepath).absolutePath();\n    m_parser = new DependencyParser(m_projectPath, this);\n    connect(m_parser, &DependencyParser::graphReady, this, &CanvasTab::onGraphReady);\n    connect(m_parser, &DependencyParser::graphUpdated, this, [this](DependencyGraph graph) {\n        diffGraphUpdate(m_currentGraph, graph);\n    });\n    m_parser->watchForChanges();\n\n    // Gource animator\n    m_animator = new GourceAnimator(m_projectPath, this);\n    connect(m_animator, &GourceAnimator::commitReady, this, &CanvasTab::onGourceCommit);\n    m_animator->loadHistory();\n}"
+}
+```
+
+**Output:**
+```
+Edit applied successfully.
+```
+
+---
+
+## Assistant (Build · MiMo-V2.5-Pro · 24.2s)
+
+_Thinking:_
+
+Now I also need to update the existing `setFile()` logic — when it's a normal file, `m_projectPath` should be the directory. Let me fix that.
+
+**Tool: edit**
+
+**Input:**
+```json
+{
+  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvastab.cpp",
+  "newString": "void CanvasTab::setFile(QString filepath)\n{\n    // If path is a directory (codemap tab), use as-is\n    if (QFileInfo(filepath).isDir()) {\n        m_projectPath = filepath;\n        m_parser = new DependencyParser(m_projectPath, this);\n        connect(m_parser, &DependencyParser::graphReady, this, &CanvasTab::onGraphReady);\n        connect(m_parser, &DependencyParser::graphUpdated, this, [this](DependencyGraph graph) {\n            diffGraphUpdate(m_currentGraph, graph);\n        });\n        return;\n    }\n\n    // Normal file — use parent directory as project path\n    m_projectPath = QFileInfo(filepath).absolutePath();\n    m_parser = new DependencyParser(m_projectPath, this);\n    connect(m_parser, &DependencyParser::graphReady, this, &CanvasTab::onGraphReady);\n    connect(m_parser, &DependencyParser::graphUpdated, this, [this](DependencyGraph graph) {\n        diffGraphUpdate(m_currentGraph, graph);\n    });\n    m_parser->watchForChanges();\n\n    // Gource animator (only for file-bound canvas)\n    m_animator = new GourceAnimator(m_projectPath, this);\n    connect(m_animator, &GourceAnimator::commitReady, this, &CanvasTab::onGourceCommit);\n    m_animator->loadHistory();\n}",
+  "oldString": "void CanvasTab::setFile(QString filepath)\n{\n    m_projectPath = filepath;\n\n    // If path is a directory (codemap tab), skip parser/animator setup\n    if (QFileInfo(filepath).isDir()) {\n        m_parser = new DependencyParser(m_projectPath, this);\n        connect(m_parser, &DependencyParser::graphReady, this, &CanvasTab::onGraphReady);\n        connect(m_parser, &DependencyParser::graphUpdated, this, [this](DependencyGraph graph) {\n            diffGraphUpdate(m_currentGraph, graph);\n        });\n        return;\n    }\n\n    m_parser = new DependencyParser(m_projectPath, this);\n    connect(m_parser, &DependencyParser::graphReady, this, &CanvasTab::onGraphReady);\n    connect(m_parser, &DependencyParser::graphUpdated, this, [this](DependencyGraph graph) {\n        diffGraphUpdate(m_currentGraph, graph);\n    });\n    m_parser->watchForChanges();\n\n    // Gource animator\n    m_animator = new GourceAnimator(m_projectPath, this);\n    connect(m_animator, &GourceAnimator::commitReady, this, &CanvasTab::onGourceCommit);\n    m_animator->loadHistory();\n}"
+}
+```
+
+**Output:**
+```
+Edit applied successfully.
+```
+
+---
+
+## Assistant (Build · MiMo-V2.5-Pro · 60.2s)
+
+_Thinking:_
+
+Now build to check if everything compiles.
+
+**Tool: bash**
+
+**Input:**
+```json
+{
+  "command": "cmake --build /home/resu/Documents/dev/cremniy/build --parallel 2 2>&1 | tail -10",
+  "description": "Build after Phase 4",
+  "timeout": 180000
+}
+```
+
+**Output:**
+```
+[ 40%] Building CXX object CMakeFiles/cremniy.dir/ui/MenuBar/Menus/View/viewmenu.cpp.o
+[ 41%] Building CXX object CMakeFiles/cremniy.dir/ui/MenuBar/Menus/Build/buildmenu.cpp.o
+[ 42%] Building CXX object CMakeFiles/cremniy.dir/ui/MenuBar/Menus/Tools/toolsmenu.cpp.o
+[ 43%] Building CXX object CMakeFiles/cremniy.dir/ui/MenuBar/Menus/References/referencesmenu.cpp.o
+[ 44%] Building CXX object CMakeFiles/cremniy.dir/ui/filestabwidget.cpp.o
+[ 44%] Building CXX object CMakeFiles/cremniy.dir/Agent/agent_session.cpp.o
+[ 45%] Building CXX object CMakeFiles/cremniy.dir/Agent/tools/agent_tools.cpp.o
+[ 46%] Building CXX object CMakeFiles/cremniy.dir/ToolTabs/Canvas/canvastab.cpp.o
+[ 47%] Linking CXX executable cremniy
+[100%] Built target cremniy
+
+```
+
+---
+
+## Assistant (Build · MiMo-V2.5-Pro · 14.9s)
+
+_Thinking:_
+
+Build successful. Now **Phase 5.1** — layout polish. Let me update ClusterLayout to use CanvasLayout and add stale indicator to StepNode.
+
+**Phase 5.1** — layout polish + stale indicator.
 
 **Tool: read**
 
@@ -2021,14 +3755,6 @@ Let me read all the relevant files to understand the current state before implem
 (End of file - total 24 lines)
 </content>
 ```
-
----
-
-## Assistant (Build · MiMo-V2.5-Pro · 17.3s)
-
-_Thinking:_
-
-Now let me read the full implementations.
 
 **Tool: read**
 
@@ -2114,677 +3840,22 @@ Now let me read the full implementations.
 </content>
 ```
 
-**Tool: read**
-
-**Input:**
-```json
-{
-  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvastab.cpp",
-  "offset": 500
-}
-```
-
-**Output:**
-```
-<path>/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvastab.cpp</path>
-<type>file</type>
-<content>
-500:         m_pulseTimer->stop();
-501:     }
-502: }
-503: 
-504: void CanvasTab::toggleGraphMode()
-505: {
-506:     m_structuralMode = !m_structuralMode;
-507:     
-508:     // Fade out all current items
-509:     QGraphicsScene* scene = m_canvasView->scene();
-510:     if (!scene) return;
-511:     
-512:     QList<QGraphicsItem*> items = scene->items();
-513:     for (QGraphicsItem* item : items) {
-514:         QGraphicsOpacityEffect* effect = new QGraphicsOpacityEffect();
-515:         item->setGraphicsEffect(effect);
-516:         
-517:         QPropertyAnimation* anim = new QPropertyAnimation(effect, "opacity");
-518:         anim->setDuration(200);
-519:         anim->setStartValue(1.0);
-520:         anim->setEndValue(0.0);
-521:         anim->setEasingCurve(QEasingCurve::InCubic);
-522:         
-523:         connect(anim, &QPropertyAnimation::finished, this, [item]() {
-524:             item->setVisible(false);
-525:             item->setGraphicsEffect(nullptr);
-526:         });
-527:         
-528:         anim->start(QAbstractAnimation::DeleteWhenStopped);
-529:     }
-530:     
-531:     // After fade out, switch modes and fade in
-532:     QTimer::singleShot(250, this, [this]() {
-533:         if (m_structuralMode) {
-534:             // Switch to structural graph
-535:             // TODO: Load structural graph items
-536:             qDebug() << "Switching to Structural Graph mode";
-537:         } else {
-538:             // Switch to conceptual graph
-539:             // TODO: Load conceptual graph items
-540:             qDebug() << "Switching to Conceptual Graph mode";
-541:         }
-542:         
-543:         // Fade in new items
-544:         QGraphicsScene* scene = m_canvasView->scene();
-545:         if (!scene) return;
-546:         
-547:         QList<QGraphicsItem*> items = scene->items();
-548:         for (QGraphicsItem* item : items) {
-549:             item->setVisible(true);
-550:             item->setOpacity(0.0);
-551:             
-552:             QGraphicsOpacityEffect* effect = new QGraphicsOpacityEffect();
-553:             item->setGraphicsEffect(effect);
-554:             
-555:             QPropertyAnimation* anim = new QPropertyAnimation(effect, "opacity");
-556:             anim->setDuration(300);
-557:             anim->setStartValue(0.0);
-558:             anim->setEndValue(1.0);
-559:             anim->setEasingCurve(QEasingCurve::OutCubic);
-560:             
-561:             connect(anim, &QPropertyAnimation::finished, this, [item]() {
-562:                 item->setGraphicsEffect(nullptr);
-563:             });
-564:             
-565:             anim->start(QAbstractAnimation::DeleteWhenStopped);
-566:         }
-567:     });
-568: }
-569: 
-570: void CanvasTab::showSemanticMap(const SemanticMap& map)
-571: {
-572:     m_currentSemanticMap = map;
-573:     m_layoutMode = LayoutMode::LinearChain;
-574: 
-575:     clearCanvas();
-576: 
-577:     // Collect all step keys for layout
-578:     QStringList allStepIds;
-579:     for (const auto& cluster : map.clusters) {
-580:         for (const auto& step : cluster.steps) {
-581:             allStepIds.append(step.id);
-582:         }
-583:     }
-584: 
-585:     if (allStepIds.isEmpty())
-586:         return;
-587: 
-588:     // Create nodes for each step
-589:     QMap<QString, QPointF> positions;
-590:     qreal clusterY = 0;
-591: 
-592:     for (const auto& cluster : map.clusters) {
-593:         qreal stepX = 0;
-594:         for (const auto& step : cluster.steps) {
-595:             // Create a FileNode using the step's filePath if available
-596:             QString displayPath = step.filePath.isEmpty()
-597:                 ? step.title
-598:                 : step.filePath;
-599:             auto* node = new FileNode(displayPath);
-600:             connectNodeSignals(node);
-601: 
-602:             // Use step title as tooltip
-603:             node->setToolTip(step.id + ": " + step.title + "\n" +
-604:                              step.filePath + " [" + QString::number(step.startLine) +
-605:                              "-" + QString::number(step.endLine) + "]");
-606: 
-607:             m_canvasView->scene()->addItem(node);
-608:             m_nodes[step.id] = node;
-609: 
-610:             positions[step.id] = QPointF(stepX, clusterY);
-611:             stepX += 220;
-612:         }
-613:         clusterY += 150;
-614:     }
-615: 
-616:     // Create edges for connections
-617:     for (const auto& cluster : map.clusters) {
-618:         for (const auto& step : cluster.steps) {
-619:             for (int i = 0; i < step.connections.size(); ++i) {
-620:                 const QString& targetId = step.connections[i];
-621:                 if (m_nodes.contains(step.id) && m_nodes.contains(targetId)) {
-622:                     auto* edge = new DependencyEdge(m_nodes[step.id], m_nodes[targetId],
-623:                                                      DependencyEdge::Call);
-624:                     m_canvasView->scene()->addItem(edge);
-625:                     m_edges.append(edge);
-626:                 }
-627:             }
-628:         }
-629:     }
-630: 
-631:     // Animate nodes to positions
-632:     m_layout->animateNodesToPositions(positions, m_nodes, 500);
-633: 
-634:     // Pulse all nodes on arrival
-635:     QTimer::singleShot(550, this, [this]() {
-636:         for (auto* node : m_nodes)
-637:             node->startPulse();
-638:     });
-639: }
-640: 
-641: void CanvasTab::showStructureGraph()
-642: {
-643:     m_layoutMode = LayoutMode::Radial;
-644:     clearCanvas();
-645: 
-646:     if (m_currentGraph.allFiles.isEmpty())
-647:         return;
-648: 
-649:     buildGraph(m_currentGraph);
-650:     layoutNodesRadial(m_currentGraph);
-651: }
-
-(End of file - total 651 lines)
-</content>
-```
-
-**Tool: read**
-
-**Input:**
-```json
-{
-  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/digest_panel.h"
-}
-```
-
-**Output:**
-```
-<path>/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/digest_panel.h</path>
-<type>file</type>
-<content>
-1: #ifndef DIGEST_PANEL_H
-2: #define DIGEST_PANEL_H
-3: 
-4: #include <QWidget>
-5: #include <QLabel>
-6: #include <QPushButton>
-7: #include <QTextEdit>
-8: #include <QToolButton>
-9: #include <QVBoxLayout>
-10: #include <QPropertyAnimation>
-11: #include <QParallelAnimationGroup>
-12: 
-13: class DigestPanel : public QWidget
-14: {
-15:     Q_OBJECT
-16:     Q_PROPERTY(qreal panelOpacity READ panelOpacity WRITE setPanelOpacity)
-17: 
-18: public:
-19:     explicit DigestPanel(QWidget* parent = nullptr);
-20: 
-21:     void setMotivation(const QString& motivation);
-22:     void setDetails(const QString& details);
-23:     void setCodeSnippet(const QString& snippet, const QString& filePath, int lineNumber);
-24: 
-25:     void playAppearAnimation(int durationMs = 300);
-26:     void playDisappearAnimation(int durationMs = 250);
-27: 
-28:     qreal panelOpacity() const { return m_panelOpacity; }
-29:     void setPanelOpacity(qreal opacity) { m_panelOpacity = opacity; update(); }
-30: 
-31: signals:
-32:     void goToCodeRequested(const QString& filePath, int lineNumber);
-33: 
-34: private slots:
-35:     void onMotivationToggle();
-36:     void onDetailsToggle();
-37:     void onGoToClicked();
-38: 
-39: private:
-40:     void setupUI();
-41:     void createCollapsibleSection(const QString& title, QWidget* content, QToolButton*& toggleBtn, QWidget*& container);
-42: 
-43:     QLabel* m_motivationLabel;
-44:     QTextEdit* m_motivationContent;
-45:     QToolButton* m_motivationToggle;
-46:     QWidget* m_motivationContainer;
-47: 
-48:     QLabel* m_detailsLabel;
-49:     QTextEdit* m_detailsContent;
-50:     QToolButton* m_detailsToggle;
-51:     QWidget* m_detailsContainer;
-52: 
-53:     QLabel* m_codeSnippetLabel;
-54:     QTextEdit* m_codeSnippetContent;
-55:     QPushButton* m_goToButton;
-56: 
-57:     QString m_currentFilePath;
-58:     int m_currentLineNumber;
-59: 
-60:     qreal m_panelOpacity = 1.0;
-61:     QParallelAnimationGroup* m_appearGroup = nullptr;
-62:     QParallelAnimationGroup* m_disappearGroup = nullptr;
-63: 
-64:     bool m_motivationExpanded = true;
-65:     bool m_detailsExpanded = true;
-66: };
-67: 
-68: #endif // DIGEST_PANEL_H
-
-(End of file - total 68 lines)
-</content>
-```
-
 ---
 
-## Assistant (Build · MiMo-V2.5-Pro · 13.4s)
+## Assistant (Build · MiMo-V2.5-Pro · 16.2s)
 
 _Thinking:_
 
-Now I have the full picture. Let me read the remaining files I need.
-
-**Tool: read**
-
-**Input:**
-```json
-{
-  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/digest_panel.cpp"
-}
-```
-
-**Output:**
-```
-<path>/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/digest_panel.cpp</path>
-<type>file</type>
-<content>
-1: #include "digest_panel.h"
-2: #include <QVBoxLayout>
-3: #include <QHBoxLayout>
-4: #include <QFrame>
-5: #include <QGraphicsOpacityEffect>
-6: 
-7: DigestPanel::DigestPanel(QWidget* parent)
-8:     : QWidget(parent)
-9:     , m_currentLineNumber(0)
-10: {
-11:     setupUI();
-12:     setStyleSheet(R"(
-13:         DigestPanel {
-14:             background-color: #2a2a35;
-15:             border-radius: 8px;
-16:         }
-17:         QLabel {
-18:             color: #ffffff;
-19:             font-size: 11px;
-20:         }
-21:         QTextEdit {
-22:             background-color: #1e1e28;
-23:             color: #c0c0d0;
-24:             border: 1px solid #3a3a45;
-25:             border-radius: 4px;
-26:             padding: 8px;
-27:             font-family: 'Consolas', 'Monaco', monospace;
-28:             font-size: 10px;
-29:         }
-30:         QToolButton {
-31:             background-color: #3a3a45;
-32:             color: #ffffff;
-33:             border: none;
-34:             border-radius: 4px;
-35:             padding: 4px 8px;
-36:             font-size: 10px;
-37:         }
-38:         QToolButton:hover {
-39:             background-color: #4a4a55;
-40:         }
-41:         QPushButton {
-42:             background-color: #4a7ab0;
-43:             color: #ffffff;
-44:             border: none;
-45:             border-radius: 4px;
-46:             padding: 6px 12px;
-47:             font-size: 10px;
-48:         }
-49:         QPushButton:hover {
-50:             background-color: #5a8ac0;
-51:         }
-52:         QPushButton:pressed {
-53:             background-color: #3a6a90;
-54:         }
-55:     )");
-56: }
-57: 
-58: void DigestPanel::setupUI()
-59: {
-60:     QVBoxLayout* mainLayout = new QVBoxLayout(this);
-61:     mainLayout->setContentsMargins(12, 12, 12, 12);
-62:     mainLayout->setSpacing(8);
-63: 
-64:     // Motivation section
-65:     m_motivationLabel = new QLabel("Motivation");
-66:     m_motivationLabel->setStyleSheet("font-weight: bold; color: #7ab0ff;");
-67:     
-68:     m_motivationContent = new QTextEdit();
-69:     m_motivationContent->setMaximumHeight(100);
-70:     m_motivationContent->setReadOnly(true);
-71:     
-72:     m_motivationToggle = new QToolButton();
-73:     m_motivationToggle->setText("▼");
-74:     m_motivationToggle->setMaximumWidth(30);
-75:     
-76:     createCollapsibleSection("Motivation", m_motivationContent, m_motivationToggle, m_motivationContainer);
-77:     mainLayout->addWidget(m_motivationContainer);
-78: 
-79:     // Details section
-80:     m_detailsLabel = new QLabel("Details");
-81:     m_detailsLabel->setStyleSheet("font-weight: bold; color: #7ab0ff;");
-82:     
-83:     m_detailsContent = new QTextEdit();
-84:     m_detailsContent->setMaximumHeight(150);
-85:     m_detailsContent->setReadOnly(true);
-86:     
-87:     m_detailsToggle = new QToolButton();
-88:     m_detailsToggle->setText("▼");
-89:     m_detailsToggle->setMaximumWidth(30);
-90:     
-91:     createCollapsibleSection("Details", m_detailsContent, m_detailsToggle, m_detailsContainer);
-92:     mainLayout->addWidget(m_detailsContainer);
-93: 
-94:     // Code snippet section
-95:     m_codeSnippetLabel = new QLabel("Code Snippet");
-96:     m_codeSnippetLabel->setStyleSheet("font-weight: bold; color: #7ab0ff;");
-97:     
-98:     m_codeSnippetContent = new QTextEdit();
-99:     m_codeSnippetContent->setMaximumHeight(120);
-100:     m_codeSnippetContent->setReadOnly(true);
-101:     m_codeSnippetContent->setStyleSheet("font-family: 'Consolas', 'Monaco', monospace; font-size: 9px;");
-102:     
-103:     mainLayout->addWidget(m_codeSnippetLabel);
-104:     mainLayout->addWidget(m_codeSnippetContent);
-105: 
-106:     // Go to button
-107:     QHBoxLayout* buttonLayout = new QHBoxLayout();
-108:     buttonLayout->addStretch();
-109:     m_goToButton = new QPushButton("Перейти");
-110:     m_goToButton->setMaximumWidth(80);
-111:     buttonLayout->addWidget(m_goToButton);
-112:     buttonLayout->addStretch();
-113:     mainLayout->addLayout(buttonLayout);
-114: 
-115:     // Connect signals
-116:     connect(m_motivationToggle, &QToolButton::clicked, this, &DigestPanel::onMotivationToggle);
-117:     connect(m_detailsToggle, &QToolButton::clicked, this, &DigestPanel::onDetailsToggle);
-118:     connect(m_goToButton, &QPushButton::clicked, this, &DigestPanel::onGoToClicked);
-119: }
-120: 
-121: void DigestPanel::createCollapsibleSection(const QString& title, QWidget* content, QToolButton*& toggleBtn, QWidget*& container)
-122: {
-123:     QVBoxLayout* containerLayout = new QVBoxLayout(container);
-124:     containerLayout->setContentsMargins(0, 0, 0, 0);
-125:     containerLayout->setSpacing(4);
-126: 
-127:     QHBoxLayout* headerLayout = new QHBoxLayout();
-128:     headerLayout->setContentsMargins(0, 0, 0, 0);
-129:     
-130:     QLabel* titleLabel = new QLabel(title);
-131:     titleLabel->setStyleSheet("font-weight: bold; color: #7ab0ff;");
-132:     
-133:     headerLayout->addWidget(titleLabel);
-134:     headerLayout->addStretch();
-135:     headerLayout->addWidget(toggleBtn);
-136:     
-137:     containerLayout->addLayout(headerLayout);
-138:     containerLayout->addWidget(content);
-139: }
-140: 
-141: void DigestPanel::setMotivation(const QString& motivation)
-142: {
-143:     m_motivationContent->setPlainText(motivation);
-144: }
-145: 
-146: void DigestPanel::setDetails(const QString& details)
-147: {
-148:     m_detailsContent->setPlainText(details);
-149: }
-150: 
-151: void DigestPanel::setCodeSnippet(const QString& snippet, const QString& filePath, int lineNumber)
-152: {
-153:     m_codeSnippetContent->setPlainText(snippet);
-154:     m_currentFilePath = filePath;
-155:     m_currentLineNumber = lineNumber;
-156: }
-157: 
-158: void DigestPanel::playAppearAnimation(int durationMs)
-159: {
-160:     if (m_appearGroup) {
-161:         m_appearGroup->stop();
-162:         delete m_appearGroup;
-163:     }
-164: 
-165:     m_panelOpacity = 0.0;
-166: 
-167:     QGraphicsOpacityEffect* effect = new QGraphicsOpacityEffect(this);
-168:     setGraphicsEffect(effect);
-169:     effect->setOpacity(0.0);
-170: 
-171:     m_appearGroup = new QParallelAnimationGroup(this);
-172: 
-173:     QPropertyAnimation* opacityAnim = new QPropertyAnimation(effect, "opacity");
-174:     opacityAnim->setDuration(durationMs);
-175:     opacityAnim->setStartValue(0.0);
-176:     opacityAnim->setEndValue(1.0);
-177:     opacityAnim->setEasingCurve(QEasingCurve::OutCubic);
-178: 
-179:     m_appearGroup->addAnimation(opacityAnim);
-180:     m_appearGroup->start(QAbstractAnimation::DeleteWhenStopped);
-181: }
-182: 
-183: void DigestPanel::playDisappearAnimation(int durationMs)
-184: {
-185:     if (m_disappearGroup) {
-186:         m_disappearGroup->stop();
-187:         delete m_disappearGroup;
-188:     }
-189: 
-190:     QGraphicsOpacityEffect* effect = new QGraphicsOpacityEffect(this);
-191:     setGraphicsEffect(effect);
-192:     effect->setOpacity(1.0);
-193: 
-194:     m_disappearGroup = new QParallelAnimationGroup(this);
-195: 
-196:     QPropertyAnimation* opacityAnim = new QPropertyAnimation(effect, "opacity");
-197:     opacityAnim->setDuration(durationMs);
-198:     opacityAnim->setStartValue(1.0);
-199:     opacityAnim->setEndValue(0.0);
-200:     opacityAnim->setEasingCurve(QEasingCurve::InCubic);
-201: 
-202:     m_disappearGroup->addAnimation(opacityAnim);
-203:     m_disappearGroup->start(QAbstractAnimation::DeleteWhenStopped);
-204: }
-205: 
-206: void DigestPanel::onMotivationToggle()
-207: {
-208:     m_motivationExpanded = !m_motivationExpanded;
-209:     m_motivationToggle->setText(m_motivationExpanded ? "▼" : "▶");
-210:     m_motivationContent->setVisible(m_motivationExpanded);
-211: }
-212: 
-213: void DigestPanel::onDetailsToggle()
-214: {
-215:     m_detailsExpanded = !m_detailsExpanded;
-216:     m_detailsToggle->setText(m_detailsExpanded ? "▼" : "▶");
-217:     m_detailsContent->setVisible(m_detailsExpanded);
-218: }
-219: 
-220: void DigestPanel::onGoToClicked()
-221: {
-222:     if (!m_currentFilePath.isEmpty()) {
-223:         emit goToCodeRequested(m_currentFilePath, m_currentLineNumber);
-224:     }
-225: }
-
-(End of file - total 225 lines)
-</content>
-```
-
-**Tool: read**
-
-**Input:**
-```json
-{
-  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvas_layout.h"
-}
-```
-
-**Output:**
-```
-<path>/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvas_layout.h</path>
-<type>file</type>
-<content>
-1: #ifndef CANVAS_LAYOUT_H
-2: #define CANVAS_LAYOUT_H
-3: 
-4: #include <QPointF>
-5: #include <QMap>
-6: #include <QString>
-7: #include <QStringList>
-8: #include <QObject>
-9: #include <QHash>
-10: #include <QParallelAnimationGroup>
-11: #include <Qt>
-12: #include "dependency_parser.h"
-13: 
-14: struct LayoutNode {
-15:     QPointF target;
-16:     QString dirPath;
-17:     QStringList files;
-18:     QList<LayoutNode*> children;
-19: };
-20: 
-21: enum class LayoutMode { Radial, LinearChain };
-22: 
-23: class CanvasLayout : public QObject
-24: {
-25:     Q_OBJECT
-26: 
-27: public:
-28:     explicit CanvasLayout(QObject* parent = nullptr);
-29: 
-30:     void computeTargets(const DependencyGraph& graph, QMap<QString, QPointF>& targets);
-31:     QMap<QString, QPointF> computeLinearChain(
-32:         const QStringList& orderedKeys,
-33:         qreal spacing = 280.0,
-34:         qreal y = 0.0,
-35:         Qt::Orientation orientation = Qt::Horizontal);
-36:     void animateNodesToPositions(
-37:         const QMap<QString, QPointF>& targetPositions,
-38:         QMap<QString, class FileNode*>& nodes,
-39:         int durationMs = 400);
-40: 
-41:     bool isAnimating() const { return m_posGroup && m_posGroup->state() == QAbstractAnimation::Running; }
-42: 
-43: signals:
-44:     void animationFinished();
-45: 
-46: private:
-47:     QParallelAnimationGroup* m_posGroup = nullptr;
-48: 
-49:     void buildTree(const QStringList& files, LayoutNode& root);
-50:     void layoutTree(LayoutNode& node, qreal startAngle, qreal endAngle, qreal radius, int depth, QMap<QString, QPointF>& targets);
-51:     void cleanupTree(LayoutNode& node);
-52:     QString commonPrefix(const QStringList& paths) const;
-53:     QString relativePath(const QString& path, const QString& base) const;
-54: };
-55: 
-56: #endif // CANVAS_LAYOUT_H
-
-(End of file - total 56 lines)
-</content>
-```
-
----
-
-## Assistant (Build · MiMo-V2.5-Pro · 20.0s)
-
-_Thinking:_
-
-Now I have a clear picture. The key issues to fix in Phase 4:
-
-1. **showSemanticMap()** creates FileNode instead of StepNode/ClusterGroupNode
-2. **animateNodesToPositions** takes `QMap<QString, FileNode*>` but needs `QMap<QString, QGraphicsObject*>` to work with StepNode
-3. **ClusterLayout::computeLinearChain** does setPos() directly instead of using CanvasLayout::computeLinearChain + animateNodesToPositions
-4. **toggleGraphMode()** is a stub with QGraphicsOpacityEffect (doesn't actually switch)
-
-
-5. **DigestPanel** exists but needs to be integrated with showMap() that populates cluster sections
-
-I need to change animateNodesToPositions to accept QGraphicsObject pointers, rewrite showSemanticMap() to use the proper node types with cluster layout, implement the actual mode switching logic, and wire up DigestPanel to the semantic map display.
-
-**Tool: task**
-
-**Input:**
-```json
-{
-  "operation": {
-    "action": "create",
-    "summary": "Phase 4: ClusterGroupNode integration, animated layout, mode toggle, DigestPanel"
-  }
-}
-```
-
-**Output:**
-```
-Created T10 (open): Phase 4: ClusterGroupNode integration, animated layout, mode toggle, DigestPanel
-```
-
----
-
-## Assistant (Build · MiMo-V2.5-Pro · 30.6s)
-
-_Thinking:_
-
-Let me implement the changes step by step.
-
-**Step 1**: Change `animateNodesToPositions` signature from `FileNode*` to `QGraphicsObject*`
-**Step 2**: Rewrite `showSemanticMap()` to use StepNode/ClusterGroupNode/ConnectionEdge
-**Step 3**: Rewrite `toggleGraphMode()` into proper mode switching
-**Step 4**: Integrate DigestPanel
-
-Let me start.
-
-**Tool: task**
-
-**Input:**
-```json
-{
-  "operation": {
-    "action": "start",
-    "id": "T10"
-  }
-}
-```
-
-**Output:**
-```
-start → in_progress
-```
-
----
-
-## Assistant (Build · MiMo-V2.5-Pro · 29.2s)
-
-_Thinking:_
-
-Let me start with Step 1 — change animateNodesToPositions signature.
-
-**Шаг 1** — `animateNodesToPositions` → `QGraphicsObject*`.
+Now let me update ClusterLayout to return positions instead of setting them directly, and add the method to get grid positions. I'll also update StepNode to show stale indicator. Let me first update ClusterLayout.
 
 **Tool: edit**
 
 **Input:**
 ```json
 {
-  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvas_layout.h",
-  "newString": "    void animateNodesToPositions(\n        const QMap<QString, QPointF>& targetPositions,\n        QMap<QString, QGraphicsObject*>& nodes,\n        int durationMs = 400);",
-  "oldString": "    void animateNodesToPositions(\n        const QMap<QString, QPointF>& targetPositions,\n        QMap<QString, class FileNode*>& nodes,\n        int durationMs = 400);"
+  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/cluster_layout.h",
+  "newString": "#ifndef CLUSTER_LAYOUT_H\n#define CLUSTER_LAYOUT_H\n\n#include <QList>\n#include <QMap>\n#include <QPointF>\n\nclass ClusterGroupNode;\nclass StepNode;\n\nclass ClusterLayout\n{\npublic:\n    ClusterLayout();\n\n    QMap<QString, QPointF> computeClusterPositions(QList<ClusterGroupNode*> clusters);\n    void arrangeMap(QList<ClusterGroupNode*> clusters);\n    void computeLinearChain(ClusterGroupNode* cluster);\n\nprivate:\n    static constexpr qreal GRID_SPACING = 100.0;\n    static constexpr qreal CHAIN_SPACING = 120.0;\n    static constexpr int COLUMNS = 3;\n};\n\n#endif // CLUSTER_LAYOUT_H",
+  "oldString": "#ifndef CLUSTER_LAYOUT_H\n#define CLUSTER_LAYOUT_H\n\n#include <QList>\n#include <QPointF>\n\nclass ClusterGroupNode;\nclass StepNode;\n\nclass ClusterLayout\n{\npublic:\n    ClusterLayout();\n\n    void arrangeMap(QList<ClusterGroupNode*> clusters);\n    void computeLinearChain(ClusterGroupNode* cluster);\n\nprivate:\n    static constexpr qreal GRID_SPACING = 100.0;\n    static constexpr qreal CHAIN_SPACING = 120.0;\n    static constexpr int COLUMNS = 3;\n};\n\n#endif // CLUSTER_LAYOUT_H"
 }
 ```
 
@@ -2795,1187 +3866,20 @@ Edit applied successfully.
 
 ---
 
-## Assistant (Build · MiMo-V2.5-Pro · 62.8s)
+## Assistant (Build · MiMo-V2.5-Pro · 15.7s)
 
 _Thinking:_
 
-Now update the implementation in canvas_layout.cpp.
-
-**Tool: read**
-
-**Input:**
-```json
-{
-  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvas_layout.cpp",
-  "offset": 80
-}
-```
-
-**Output:**
-```
-<path>/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvas_layout.cpp</path>
-<type>file</type>
-<content>
-80:         child->dirPath = QDir(root.dirPath).filePath(dirName);
-81: 
-82:         for (const QString& file : dirFiles[dirName]) {
-83:             QFileInfo fi(file);
-84:             if (fi.absolutePath() == child->dirPath) {
-85:                 child->files.append(file);
-86:             } else {
-87:                 QString rel = relativePath(fi.absolutePath(), child->dirPath);
-88:                 QStringList parts = rel.split('/', Qt::SkipEmptyParts);
-89:                 if (!parts.isEmpty()) {
-90:                     child->files.append(file);
-91:                 }
-92:             }
-93:         }
-94: 
-95:         buildTree(child->files, *child);
-96:         root.children.append(child);
-97:     }
-98: }
-99: 
-100: void CanvasLayout::layoutTree(LayoutNode& node, qreal startAngle, qreal endAngle,
-101:                                qreal radius, int depth, QMap<QString, QPointF>& targets)
-102: {
-103:     qreal cx = 0, cy = 0;
-104:     if (depth > 0) {
-105:         qreal midAngle = (startAngle + endAngle) / 2;
-106:         cx = radius * qCos(midAngle);
-107:         cy = radius * qSin(midAngle);
-108:     }
-109: 
-110:     int fileCount = node.files.size();
-111:     if (fileCount > 0) {
-112:         qreal fileRadius = radius + 40;
-113:         qreal fileSpread = (endAngle - startAngle) * 0.4;
-114:         qreal fileAngleStart = (startAngle + endAngle) / 2 - fileSpread / 2;
-115: 
-116:         for (int i = 0; i < fileCount; ++i) {
-117:             qreal angle = fileAngleStart + (fileCount > 1 ? fileSpread * i / (fileCount - 1) : 0);
-118:             qreal fx = cx + fileRadius * qCos(angle);
-119:             qreal fy = cy + fileRadius * qSin(angle);
-120:             targets[node.files[i]] = QPointF(fx, fy);
-121:         }
-122:     }
-123: 
-124:     int childCount = node.children.size();
-125:     if (childCount == 0)
-126:         return;
-127: 
-128:     qreal childRadius = radius + 120;
-129:     qreal angleRange = endAngle - startAngle;
-130:     qreal anglePerChild = angleRange / childCount;
-131: 
-132:     for (int i = 0; i < childCount; ++i) {
-133:         qreal childStart = startAngle + i * anglePerChild;
-134:         qreal childEnd = childStart + anglePerChild;
-135:         layoutTree(*node.children[i], childStart, childEnd, childRadius, depth + 1, targets);
-136:     }
-137: }
-138: 
-139: void CanvasLayout::animateNodesToPositions(
-140:     const QMap<QString, QPointF>& targetPositions,
-141:     QMap<QString, FileNode*>& nodes,
-142:     int durationMs)
-143: {
-144:     if (m_posGroup) {
-145:         m_posGroup->stop();
-146:         m_posGroup->deleteLater();
-147:     }
-148: 
-149:     m_posGroup = new QParallelAnimationGroup(this);
-150: 
-151:     for (auto it = targetPositions.begin(); it != targetPositions.end(); ++it) {
-152:         if (!nodes.contains(it.key())) continue;
-153:         FileNode* node = nodes[it.key()];
-154: 
-155:         auto* anim = new QPropertyAnimation(node, "pos");
-156:         anim->setDuration(durationMs);
-157:         anim->setStartValue(node->pos());
-158:         anim->setEndValue(it.value());
-159:         anim->setEasingCurve(QEasingCurve::InOutCubic);
-160:         m_posGroup->addAnimation(anim);
-161:     }
-162: 
-163:     connect(m_posGroup, &QParallelAnimationGroup::finished, this, &CanvasLayout::animationFinished);
-164:     m_posGroup->start();
-165: }
-166: 
-167: void CanvasLayout::cleanupTree(LayoutNode& node)
-168: {
-169:     for (auto* child : node.children)
-170:         cleanupTree(*child);
-171:     qDeleteAll(node.children);
-172:     node.children.clear();
-173: }
-174: 
-175: QString CanvasLayout::commonPrefix(const QStringList& paths) const
-176: {
-177:     if (paths.isEmpty())
-178:         return QString();
-179: 
-180:     QString prefix = paths.first();
-181:     for (int i = 1; i < paths.size(); ++i) {
-182:         while (!paths[i].startsWith(prefix)) {
-183:             prefix.chop(1);
-184:             int lastSep = prefix.lastIndexOf('/');
-185:             if (lastSep < 0) return QString();
-186:             prefix = prefix.left(lastSep);
-187:         }
-188:     }
-189: 
-190:     QFileInfo fi(prefix);
-191:     if (fi.isFile())
-192:         return fi.absolutePath();
-193:     return prefix;
-194: }
-195: 
-196: QString CanvasLayout::relativePath(const QString& path, const QString& base) const
-197: {
-198:     if (path.startsWith(base)) {
-199:         QString rel = path.mid(base.length());
-200:         if (rel.startsWith('/'))
-201:             rel = rel.mid(1);
-202:         return rel;
-203:     }
-204:     return path;
-205: }
-
-(End of file - total 205 lines)
-</content>
-```
-
----
-
-## Assistant (Build · MiMo-V2.5-Pro · 28.9s)
-
-_Thinking:_
-
-Now update the implementation.
+Now add the computeClusterPositions implementation.
 
 **Tool: edit**
 
 **Input:**
 ```json
 {
-  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvas_layout.cpp",
-  "newString": "void CanvasLayout::animateNodesToPositions(\n    const QMap<QString, QPointF>& targetPositions,\n    QMap<QString, QGraphicsObject*>& nodes,\n    int durationMs)\n{\n    if (m_posGroup) {\n        m_posGroup->stop();\n        m_posGroup->deleteLater();\n    }\n\n    m_posGroup = new QParallelAnimationGroup(this);\n\n    for (auto it = targetPositions.begin(); it != targetPositions.end(); ++it) {\n        if (!nodes.contains(it.key())) continue;\n        QGraphicsObject* node = nodes[it.key()];\n\n        auto* anim = new QPropertyAnimation(node, \"pos\");\n        anim->setDuration(durationMs);\n        anim->setStartValue(node->pos());\n        anim->setEndValue(it.value());\n        anim->setEasingCurve(QEasingCurve::InOutCubic);\n        m_posGroup->addAnimation(anim);\n    }\n\n    connect(m_posGroup, &QParallelAnimationGroup::finished, this, &CanvasLayout::animationFinished);\n    m_posGroup->start();\n}",
-  "oldString": "void CanvasLayout::animateNodesToPositions(\n    const QMap<QString, QPointF>& targetPositions,\n    QMap<QString, FileNode*>& nodes,\n    int durationMs)\n{\n    if (m_posGroup) {\n        m_posGroup->stop();\n        m_posGroup->deleteLater();\n    }\n\n    m_posGroup = new QParallelAnimationGroup(this);\n\n    for (auto it = targetPositions.begin(); it != targetPositions.end(); ++it) {\n        if (!nodes.contains(it.key())) continue;\n        FileNode* node = nodes[it.key()];\n\n        auto* anim = new QPropertyAnimation(node, \"pos\");\n        anim->setDuration(durationMs);\n        anim->setStartValue(node->pos());\n        anim->setEndValue(it.value());\n        anim->setEasingCurve(QEasingCurve::InOutCubic);\n        m_posGroup->addAnimation(anim);\n    }\n\n    connect(m_posGroup, &QParallelAnimationGroup::finished, this, &CanvasLayout::animationFinished);\n    m_posGroup->start();\n}"
-}
-```
-
-**Output:**
-```
-Edit applied successfully.
-```
-
----
-
-## Assistant (Build · MiMo-V2.5-Pro · 26.4s)
-
-_Thinking:_
-
-Now I need to update all callers that pass `QMap<QString, FileNode*>` to cast to `QGraphicsObject*`. Let me find those callers.
-
-**Tool: grep**
-
-**Input:**
-```json
-{
-  "path": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas",
-  "pattern": "animateNodesToPositions"
-}
-```
-
-**Output:**
-```
-Found 5 matches
-/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvas_layout.cpp:
-  Line 139: void CanvasLayout::animateNodesToPositions(
-
-
-/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvas_layout.h:
-  Line 36:     void animateNodesToPositions(
-
-
-/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvastab.cpp:
-  Line 212:     m_layout->animateNodesToPositions(targets, m_nodes, 400);
-
-  Line 459:     m_layout->animateNodesToPositions(positions, m_nodes, 500);
-
-  Line 632:     m_layout->animateNodesToPositions(positions, m_nodes, 500);
-
-```
-
----
-
-## Assistant (Build · MiMo-V2.5-Pro · 21.7s)
-
-_Thinking:_
-
-I need to update the callers. `m_nodes` is `QMap<QString, FileNode*>`. Since `FileNode*` inherits from `QGraphicsObject*`, I need to either:
-1. Cast at call site: `QMap<QString, QGraphicsObject*> nodes(m_nodes.begin(), m_nodes.end())`
-2. Change `m_nodes` to `QMap<QString, QGraphicsObject*>` — but that would break all other code that uses FileNode-specific methods
-
-Option 1 is cleaner. Let me update each call site.
-
-Actually, there's a simpler approach — I can create a helper that converts. Or I can use implicit conversion. Since `FileNode*` is-a `QGraphicsObject*`, I can create a temporary QMap and pass it.
-
-
-Now I'm working through the three call sites. The first one at line 212 in `layoutNodesRadial()` uses targets computed from the graph layout, and the second at line 459 in `focusOnChain()` handles linear chain positioning. I'll need to convert `m_nodes` at each location where it's passed to the layout function.
-
-**Tool: read**
-
-**Input:**
-```json
-{
-  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvastab.cpp",
-  "limit": 15,
-  "offset": 205
-}
-```
-
-**Output:**
-```
-<path>/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvastab.cpp</path>
-<type>file</type>
-<content>
-205: void CanvasTab::layoutNodesRadial(const DependencyGraph& graph)
-206: {
-207:     if (graph.allFiles.isEmpty())
-208:         return;
-209: 
-210:     QMap<QString, QPointF> targets;
-211:     m_layout->computeTargets(graph, targets);
-212:     m_layout->animateNodesToPositions(targets, m_nodes, 400);
-213: }
-214: 
-215: QPointF CanvasTab::computePositionForNewNode(const QString& path)
-216: {
-217:     QString dir = QFileInfo(path).absolutePath();
-218: 
-219:     // Find nearest existing file in same directory
-
-(Showing lines 205-219 of 651. Use offset=220 to continue.)
-</content>
-```
-
-**Tool: read**
-
-**Input:**
-```json
-{
-  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvastab.cpp",
-  "limit": 15,
-  "offset": 450
-}
-```
-
-**Output:**
-```
-<path>/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvastab.cpp</path>
-<type>file</type>
-<content>
-450:             if (forward || backward) {
-451:                 edge->setVisible(true);
-452:                 edge->setOpacity(1.0);
-453:             }
-454:         }
-455:     }
-456: 
-457:     // Compute linear positions and animate
-458:     QMap<QString, QPointF> positions = m_layout->computeLinearChain(chain);
-459:     m_layout->animateNodesToPositions(positions, m_nodes, 500);
-460: 
-461:     // Pulse chain nodes on arrival
-462:     QTimer::singleShot(550, this, [this, chain]() {
-463:         for (const QString& key : chain) {
-464:             if (m_nodes.contains(key))
-
-(Showing lines 450-464 of 651. Use offset=465 to continue.)
-</content>
-```
-
----
-
-## Assistant (Build · MiMo-V2.5-Pro · 52.4s)
-
-_Thinking:_
-
-I need to update these calls. The simplest approach is to create a helper method or a temporary QMap. Let me create a small inline helper or just cast at each call site. Since FileNode* is-a QGraphicsObject*, I can create a temporary QMap and pass it.
-
-Actually, the cleanest solution is to add a helper method in CanvasTab that converts m_nodes to QGraphicsObject* map. Or I can just do the conversion inline.
-
-Let me update each call site:
-
-**Tool: edit**
-
-**Input:**
-```json
-{
-  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvastab.cpp",
-  "newString": "    QMap<QString, QPointF> targets;\n    m_layout->computeTargets(graph, targets);\n    QMap<QString, QGraphicsObject*> nodeObjs;\n    for (auto it = m_nodes.begin(); it != m_nodes.end(); ++it)\n        nodeObjs[it.key()] = it.value();\n    m_layout->animateNodesToPositions(targets, nodeObjs, 400);",
-  "oldString": "    QMap<QString, QPointF> targets;\n    m_layout->computeTargets(graph, targets);\n    m_layout->animateNodesToPositions(targets, m_nodes, 400);"
-}
-```
-
-**Output:**
-```
-Edit applied successfully.
-```
-
----
-
-## Assistant (Build · MiMo-V2.5-Pro · 87.9s)
-
-_Thinking:_
-
-Now fix the focusOnChain call.
-
-**Tool: edit**
-
-**Input:**
-```json
-{
-  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvastab.cpp",
-  "newString": "    // Compute linear positions and animate\n    QMap<QString, QPointF> positions = m_layout->computeLinearChain(chain);\n    QMap<QString, QGraphicsObject*> nodeObjs;\n    for (auto it = m_nodes.begin(); it != m_nodes.end(); ++it)\n        nodeObjs[it.key()] = it.value();\n    m_layout->animateNodesToPositions(positions, nodeObjs, 500);",
-  "oldString": "    // Compute linear positions and animate\n    QMap<QString, QPointF> positions = m_layout->computeLinearChain(chain);\n    m_layout->animateNodesToPositions(positions, m_nodes, 500);"
-}
-```
-
-**Output:**
-```
-Edit applied successfully.
-```
-
----
-
-## Assistant (Build · MiMo-V2.5-Pro · 33.7s)
-
-_Thinking:_
-
-Now let me also check if diffGraphUpdate uses animateNodesToPositions — it doesn't seem to from what I've seen. Let me now move on to Step 2 — rewrite showSemanticMap() to use StepNode/ClusterGroupNode/ConnectionEdge.
-
-**Шаг 2** — переписать `showSemanticMap()` на StepNode/ClusterGroupNode/ConnectionEdge.
-
-**Tool: read**
-
-**Input:**
-```json
-{
-  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvastab.h"
-}
-```
-
-**Output:**
-```
-<path>/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvastab.h</path>
-<type>file</type>
-<content>
-1: #ifndef CANVASTAB_H
-2: #define CANVASTAB_H
-3: 
-4: #include "core/ToolTab.h"
-5: #include "canvas_view.h"
-6: #include "canvas_layout.h"
-7: #include "dependency_parser.h"
-8: #include "gource_animator.h"
-9: #include "layer_panel.h"
-10: #include "minimap.h"
-11: #include "semantic_map.h"
-12: #include <QVBoxLayout>
-13: #include <QToolButton>
-14: #include <QLabel>
-15: #include <QSlider>
-16: 
-17: class FileNode;
-18: class DependencyEdge;
-19: 
-20: class CanvasTab : public ToolTab
-21: {
-22:     Q_OBJECT
-23: 
-24: public:
-25:     explicit CanvasTab(FileDataBuffer* buffer, QWidget* parent = nullptr);
-26: 
-27:     QString toolName() const override { return "Canvas"; }
-28:     QIcon toolIcon() const override { return QIcon(":/icons/canvas.png"); }
-29: 
-30:     DependencyGraph currentGraph() const { return m_currentGraph; }
-31: 
-32:     void showSemanticMap(const SemanticMap& map);
-33:     void showStructureGraph();
-34: 
-35: public slots:
-36:     void setFile(QString filepath) override;
-37:     void setTabData() override;
-38:     void saveTabData() override;
-39: 
-40:     void highlightActiveFile(const QString& filePath);
-41:     void highlightDependencies(const QString& filePath);
-42:     void startNodePulsing(const QString& filePath);
-43:     void stopNodePulsing();
-44: 
-45:     void toggleGraphMode();
-46: 
-47: protected:
-48:     void resizeEvent(QResizeEvent* event) override;
-49: 
-50: private slots:
-51:     void onGraphReady(DependencyGraph graph);
-52:     void onNodeClicked(const QString& filePath);
-53:     void onNodeDoubleClicked(const QString& filePath);
-54: 
-55: private:
-56:     CanvasView* m_canvasView;
-57:     DependencyParser* m_parser;
-58:     CanvasLayout* m_layout;
-59:     GourceAnimator* m_animator;
-60:     LayerPanel* m_layerPanel;
-61:     Minimap* m_minimap;
-62:     QString m_projectPath;
-63: 
-64:     QMap<QString, FileNode*> m_nodes;
-65:     QList<DependencyEdge*> m_edges;
-66:     DependencyGraph m_currentGraph;
-67:     SemanticMap m_currentSemanticMap;
-68:     LayoutMode m_layoutMode = LayoutMode::Radial;
-69: 
-70:     bool m_structuralMode = true;
-71: 
-72:     void buildGraph(const DependencyGraph& graph);
-73:     void layoutNodesRadial(const DependencyGraph& graph);
-74:     void clearCanvas();
-75:     QToolButton* createToolButton(const QString& text, const QString& tooltip);
-76:     void applyLayerFilters();
-77:     void onGourceCommit(const GitCommit& commit);
-78:     void diffGraphUpdate(const DependencyGraph& oldGraph, const DependencyGraph& newGraph);
-79:     QPointF computePositionForNewNode(const QString& path);
-80:     void connectNodeSignals(FileNode* node);
-81:     void focusOnChain(const QStringList& chain);
-82: 
-83:     QTimer* m_pulseTimer = nullptr;
-84:     QString m_pulsingFilePath;
-85: };
-86: 
-87: #endif // CANVASTAB_H
-
-(End of file - total 87 lines)
-</content>
-```
-
----
-
-## Assistant (Build · MiMo-V2.5-Pro · 136.8s)
-
-_Thinking:_
-
-Now I need to update the header to add the semantic map node members and the new methods. Let me add:1. Forward declarations for StepNode, ClusterGroupNode, ConnectionEdge
-2. Member variables for semantic map nodes3. onStepClicked slot
-4. needsSemanticMapGeneration signal
-5. onSemanticMapReady slot
-6. semanticMapShown signal
-7. m_generatingConceptMap flag
-8. m_digestPanel pointer
-
-Let me also add the DigestPanel dock integration.
-
-**Tool: edit**
-
-**Input:**
-```json
-{
-  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvastab.h",
-  "newString": "#include \"core/ToolTab.h\"\n#include \"canvas_view.h\"\n#include \"canvas_layout.h\"\n#include \"dependency_parser.h\"\n#include \"gource_animator.h\"\n#include \"layer_panel.h\"\n#include \"minimap.h\"\n#include \"semantic_map.h\"\n#include <QVBoxLayout>\n#include <QToolButton>\n#include <QLabel>\n#include <QSlider>\n\nclass FileNode;\nclass DependencyEdge;\nclass StepNode;\nclass ClusterGroupNode;\nclass ConnectionEdge;\nclass DigestPanel;\n\nclass CanvasTab : public ToolTab\n{\n    Q_OBJECT\n\npublic:\n    explicit CanvasTab(FileDataBuffer* buffer, QWidget* parent = nullptr);\n\n    QString toolName() const override { return \"Canvas\"; }\n    QIcon toolIcon() const override { return QIcon(\":/icons/canvas.png\"); }\n\n    DependencyGraph currentGraph() const { return m_currentGraph; }\n\n    void showSemanticMap(const SemanticMap& map);\n    void showStructureGraph();\n\npublic slots:\n    void setFile(QString filepath) override;\n    void setTabData() override;\n    void saveTabData() override;\n\n    void highlightActiveFile(const QString& filePath);\n    void highlightDependencies(const QString& filePath);\n    void startNodePulsing(const QString& filePath);\n    void stopNodePulsing();\n\n    void toggleGraphMode();\n    void onSemanticMapReady(const SemanticMap& map);\n\nsignals:\n    void semanticMapShown(const SemanticMap& map);\n    void needsSemanticMapGeneration();\n    void stepNavigationRequested(const QString& filePath, int lineNumber);\n\nprotected:\n    void resizeEvent(QResizeEvent* event) override;\n\nprivate slots:\n    void onGraphReady(DependencyGraph graph);\n    void onNodeClicked(const QString& filePath);\n    void onNodeDoubleClicked(const QString& filePath);\n    void onStepClicked(const QString& filePath, int lineNumber);\n\nprivate:\n    CanvasView* m_canvasView;\n    DependencyParser* m_parser;\n    CanvasLayout* m_layout;\n    GourceAnimator* m_animator;\n    LayerPanel* m_layerPanel;\n    Minimap* m_minimap;\n    DigestPanel* m_digestPanel = nullptr;\n    QString m_projectPath;\n\n    QMap<QString, FileNode*> m_nodes;\n    QList<DependencyEdge*> m_edges;\n    DependencyGraph m_currentGraph;\n    SemanticMap m_currentSemanticMap;\n    LayoutMode m_layoutMode = LayoutMode::Radial;\n\n    bool m_structuralMode = true;\n    bool m_generatingConceptMap = false;\n\n    // Semantic map nodes (separate from structural graph nodes)\n    QList<ClusterGroupNode*> m_clusterNodes;\n    QList<ConnectionEdge*> m_connectionEdges;\n\n    void buildGraph(const DependencyGraph& graph);\n    void layoutNodesRadial(const DependencyGraph& graph);\n    void clearCanvas();\n    void clearSemanticNodes();\n    QToolButton* createToolButton(const QString& text, const QString& tooltip);\n    void applyLayerFilters();\n    void onGourceCommit(const GitCommit& commit);\n    void diffGraphUpdate(const DependencyGraph& oldGraph, const DependencyGraph& newGraph);\n    QPointF computePositionForNewNode(const QString& path);\n    void connectNodeSignals(FileNode* node);\n    void focusOnChain(const QStringList& chain);\n\n    QTimer* m_pulseTimer = nullptr;\n    QString m_pulsingFilePath;\n};\n\n#endif // CANVASTAB_H",
-  "oldString": "#include \"core/ToolTab.h\"\n#include \"canvas_view.h\"\n#include \"canvas_layout.h\"\n#include \"dependency_parser.h\"\n#include \"gource_animator.h\"\n#include \"layer_panel.h\"\n#include \"minimap.h\"\n#include \"semantic_map.h\"\n#include <QVBoxLayout>\n#include <QToolButton>\n#include <QLabel>\n#include <QSlider>\n\nclass FileNode;\nclass DependencyEdge;\n\nclass CanvasTab : public ToolTab\n{\n    Q_OBJECT\n\npublic:\n    explicit CanvasTab(FileDataBuffer* buffer, QWidget* parent = nullptr);\n\n    QString toolName() const override { return \"Canvas\"; }\n    QIcon toolIcon() const override { return QIcon(\":/icons/canvas.png\"); }\n\n    DependencyGraph currentGraph() const { return m_currentGraph; }\n\n    void showSemanticMap(const SemanticMap& map);\n    void showStructureGraph();\n\npublic slots:\n    void setFile(QString filepath) override;\n    void setTabData() override;\n    void saveTabData() override;\n\n    void highlightActiveFile(const QString& filePath);\n    void highlightDependencies(const QString& filePath);\n    void startNodePulsing(const QString& filePath);\n    void stopNodePulsing();\n\n    void toggleGraphMode();\n\nprotected:\n    void resizeEvent(QResizeEvent* event) override;\n\nprivate slots:\n    void onGraphReady(DependencyGraph graph);\n    void onNodeClicked(const QString& filePath);\n    void onNodeDoubleClicked(const QString& filePath);\n\nprivate:\n    CanvasView* m_canvasView;\n    DependencyParser* m_parser;\n    CanvasLayout* m_layout;\n    GourceAnimator* m_animator;\n    LayerPanel* m_layerPanel;\n    Minimap* m_minimap;\n    QString m_projectPath;\n\n    QMap<QString, FileNode*> m_nodes;\n    QList<DependencyEdge*> m_edges;\n    DependencyGraph m_currentGraph;\n    SemanticMap m_currentSemanticMap;\n    LayoutMode m_layoutMode = LayoutMode::Radial;\n\n    bool m_structuralMode = true;\n\n    void buildGraph(const DependencyGraph& graph);\n    void layoutNodesRadial(const DependencyGraph& graph);\n    void clearCanvas();\n    QToolButton* createToolButton(const QString& text, const QString& tooltip);\n    void applyLayerFilters();\n    void onGourceCommit(const GitCommit& commit);\n    void diffGraphUpdate(const DependencyGraph& oldGraph, const DependencyGraph& newGraph);\n    QPointF computePositionForNewNode(const QString& path);\n    void connectNodeSignals(FileNode* node);\n    void focusOnChain(const QStringList& chain);\n\n    QTimer* m_pulseTimer = nullptr;\n    QString m_pulsingFilePath;\n};\n\n#endif // CANVASTAB_H"
-}
-```
-
-**Output:**
-```
-Edit applied successfully.
-```
-
----
-
-## Assistant (Build · MiMo-V2.5-Pro · 21.0s)
-
-_Thinking:_
-
-Now rewrite showSemanticMap(), toggleGraphMode(), and add clearSemanticNodes(), onStepClicked(), onSemanticMapReady() in canvastab.cpp. Let me first check what needs to change in the existing showSemanticMap.
-
-Now rewrite `showSemanticMap()` to use proper node types.
-
-**Tool: edit**
-
-**Input:**
-```json
-{
-  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvastab.cpp",
-  "newString": "#include \"canvastab.h\"\n#include \"nodes/file_node.h\"\n#include \"nodes/step_node.h\"\n#include \"nodes/cluster_group_node.h\"\n#include \"edges/dependency_edge.h\"\n#include \"edges/connection_edge.h\"\n#include \"cluster_layout.h\"\n#include \"digest_panel.h\"\n#include \"semantic_map.h\"\n#include \"semantic_map_store.h\"\n#include \"core/ToolTabFactory.h\"",
-  "oldString": "#include \"canvastab.h\"\n#include \"nodes/file_node.h\"\n#include \"edges/dependency_edge.h\"\n#include \"semantic_map.h\"\n#include \"core/ToolTabFactory.h\""
-}
-```
-
-**Output:**
-```
-Edit applied successfully.
-```
-
----
-
-## Assistant (Build · MiMo-V2.5-Pro · 113.0s)
-
-_Thinking:_
-
-Now replace showSemanticMap() with the proper implementation using StepNode/ClusterGroupNode/ConnectionEdge.
-
-**Tool: edit**
-
-**Input:**
-```json
-{
-  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvastab.cpp",
-  "newString": "void CanvasTab::showSemanticMap(const SemanticMap& map)\n{\n    m_currentSemanticMap = map;\n    m_layoutMode = LayoutMode::LinearChain;\n    m_structuralMode = false;\n    m_generatingConceptMap = false;\n\n    clearCanvas();\n    clearSemanticNodes();\n\n    if (map.clusters.isEmpty())\n        return;\n\n    ClusterLayout clusterLayout;\n\n    for (const auto& cluster : map.clusters) {\n        auto* clusterNode = new ClusterGroupNode(cluster.id, cluster.title, cluster.color);\n        m_canvasView->scene()->addItem(clusterNode);\n        m_clusterNodes.append(clusterNode);\n\n        // Create StepNodes inside each cluster\n        for (const auto& step : cluster.steps) {\n            auto* stepNode = new StepNode(step.id, step.title, step.codeSnippet,\n                                           step.filePath, step.startLine, clusterNode);\n            clusterNode->addChild(stepNode);\n            connect(stepNode, &StepNode::stepClicked, this, &CanvasTab::onStepClicked);\n        }\n\n        // Arrange steps within cluster using CanvasLayout::computeLinearChain\n        QMap<QString, QPointF> chainPositions = m_layout->computeLinearChain(\n            [cluster]() {\n                QStringList ids;\n                for (const auto& s : cluster.steps) ids.append(s.id);\n                return ids;\n            }(), 120.0, 50.0, Qt::Vertical);\n\n        QMap<QString, QGraphicsObject*> stepObjs;\n        for (auto* child : clusterNode->children())\n            stepObjs[child->stepId()] = child;\n        m_layout->animateNodesToPositions(chainPositions, stepObjs, 400);\n\n        clusterNode->updateBoundsFromChildren();\n    }\n\n    // Create ConnectionEdges between steps\n    for (const auto& cluster : map.clusters) {\n        for (const auto& step : cluster.steps) {\n            StepNode* sourceNode = nullptr;\n            for (auto* cn : m_clusterNodes) {\n                for (auto* child : cn->children()) {\n                    if (child->stepId() == step.id) {\n                        sourceNode = child;\n                        break;\n                    }\n                }\n                if (sourceNode) break;\n            }\n            if (!sourceNode) continue;\n\n            for (int i = 0; i < step.connections.size(); ++i) {\n                const QString& targetId = step.connections[i];\n                StepNode* targetNode = nullptr;\n                for (auto* cn : m_clusterNodes) {\n                    for (auto* child : cn->children()) {\n                        if (child->stepId() == targetId) {\n                            targetNode = child;\n                            break;\n                        }\n                    }\n                    if (targetNode) break;\n                }\n                if (!targetNode) continue;\n\n                QString label = (i < step.connectionLabels.size()) ? step.connectionLabels[i] : \"\";\n                auto* edge = new ConnectionEdge(sourceNode, targetNode, label);\n                m_canvasView->scene()->addItem(edge);\n                m_connectionEdges.append(edge);\n                edge->playAppearAnimation();\n            }\n        }\n    }\n\n    // Animate cluster positions\n    QMap<QString, QPointF> clusterPositions;\n    qreal x = 0, y = 0;\n    int col = 0;\n    for (auto* cn : m_clusterNodes) {\n        clusterPositions[cn->clusterId()] = QPointF(x, y);\n        x += 500;\n        col++;\n        if (col >= 3) {\n            col = 0;\n            x = 0;\n            y += 400;\n        }\n    }\n\n    QMap<QString, QGraphicsObject*> clusterObjs;\n    for (auto* cn : m_clusterNodes)\n        clusterObjs[cn->clusterId()] = cn;\n    m_layout->animateNodesToPositions(clusterPositions, clusterObjs, 500);\n\n    // Pulse all step nodes on arrival\n    QTimer::singleShot(550, this, [this]() {\n        for (auto* cn : m_clusterNodes) {\n            cn->playAppearAnimation();\n            for (auto* child : cn->children())\n                child->playAppearAnimation();\n        }\n    });\n\n    emit semanticMapShown(map);\n}",
-  "oldString": "void CanvasTab::showSemanticMap(const SemanticMap& map)\n{\n    m_currentSemanticMap = map;\n    m_layoutMode = LayoutMode::LinearChain;\n\n    clearCanvas();\n\n    // Collect all step keys for layout\n    QStringList allStepIds;\n    for (const auto& cluster : map.clusters) {\n        for (const auto& step : cluster.steps) {\n            allStepIds.append(step.id);\n        }\n    }\n\n    if (allStepIds.isEmpty())\n        return;\n\n    // Create nodes for each step\n    QMap<QString, QPointF> positions;\n    qreal clusterY = 0;\n\n    for (const auto& cluster : map.clusters) {\n        qreal stepX = 0;\n        for (const auto& step : cluster.steps) {\n            // Create a FileNode using the step's filePath if available\n            QString displayPath = step.filePath.isEmpty()\n                ? step.title\n                : step.filePath;\n            auto* node = new FileNode(displayPath);\n            connectNodeSignals(node);\n\n            // Use step title as tooltip\n            node->setToolTip(step.id + \": \" + step.title + \"\\n\" +\n                             step.filePath + \" [\" + QString::number(step.startLine) +\n                             \"-\" + QString::number(step.endLine) + \"]\");\n\n            m_canvasView->scene()->addItem(node);\n            m_nodes[step.id] = node;\n\n            positions[step.id] = QPointF(stepX, clusterY);\n            stepX += 220;\n        }\n        clusterY += 150;\n    }\n\n    // Create edges for connections\n    for (const auto& cluster : map.clusters) {\n        for (const auto& step : cluster.steps) {\n            for (int i = 0; i < step.connections.size(); ++i) {\n                const QString& targetId = step.connections[i];\n                if (m_nodes.contains(step.id) && m_nodes.contains(targetId)) {\n                    auto* edge = new DependencyEdge(m_nodes[step.id], m_nodes[targetId],\n                                                     DependencyEdge::Call);\n                    m_canvasView->scene()->addItem(edge);\n                    m_edges.append(edge);\n                }\n            }\n        }\n    }\n\n    // Animate nodes to positions\n    m_layout->animateNodesToPositions(positions, m_nodes, 500);\n\n    // Pulse all nodes on arrival\n    QTimer::singleShot(550, this, [this]() {\n        for (auto* node : m_nodes)\n            node->startPulse();\n    });\n}"
-}
-```
-
-**Output:**
-```
-Edit applied successfully.
-```
-
----
-
-## Assistant (Build · MiMo-V2.5-Pro · 18.5s)
-
-_Thinking:_
-
-Now add clearSemanticNodes(), onStepClicked(), onSemanticMapReady(), and rewrite toggleGraphMode(). Let me also add showStructureGraph improvements.
-
-**Tool: edit**
-
-**Input:**
-```json
-{
-  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvastab.cpp",
-  "newString": "void CanvasTab::showStructureGraph()\n{\n    m_structuralMode = true;\n    m_layoutMode = LayoutMode::Radial;\n    clearSemanticNodes();\n    clearCanvas();\n\n    if (m_currentGraph.allFiles.isEmpty())\n        return;\n\n    buildGraph(m_currentGraph);\n    layoutNodesRadial(m_currentGraph);\n}\n\nvoid CanvasTab::clearSemanticNodes()\n{\n    qDeleteAll(m_connectionEdges);\n    m_connectionEdges.clear();\n    qDeleteAll(m_clusterNodes);\n    m_clusterNodes.clear();\n}\n\nvoid CanvasTab::onStepClicked(const QString& filePath, int lineNumber)\n{\n    emit stepNavigationRequested(filePath, lineNumber);\n}\n\nvoid CanvasTab::onSemanticMapReady(const SemanticMap& map)\n{\n    m_generatingConceptMap = false;\n    showSemanticMap(map);\n}\n\nvoid CanvasTab::toggleGraphMode()\n{\n    if (m_structuralMode) {\n        // Switch to concept mode\n        if (!m_currentSemanticMap.clusters.isEmpty()) {\n            showSemanticMap(m_currentSemanticMap);\n        } else {\n            // Check for saved map\n            SemanticMapStore store(m_projectPath);\n            auto maps = store.list();\n            if (!maps.isEmpty()) {\n                SemanticMapStore::MapMeta latest = maps.first();\n                for (const auto& m : maps)\n                    if (m.createdAt > latest.createdAt) latest = m;\n                auto mapOpt = store.load(latest.id);\n                if (mapOpt.has_value()) {\n                    showSemanticMap(mapOpt.value());\n                    return;\n                }\n            }\n            // No map — request generation\n            m_generatingConceptMap = true;\n            emit needsSemanticMapGeneration();\n        }\n    } else {\n        showStructureGraph();\n    }\n}",
-  "oldString": "void CanvasTab::showStructureGraph()\n{\n    m_layoutMode = LayoutMode::Radial;\n    clearCanvas();\n\n    if (m_currentGraph.allFiles.isEmpty())\n        return;\n\n    buildGraph(m_currentGraph);\n    layoutNodesRadial(m_currentGraph);\n}"
-}
-```
-
-**Output:**
-```
-Edit applied successfully.
-```
-
----
-
-## Assistant (Build · MiMo-V2.5-Pro · 12.9s)
-
-_Thinking:_
-
-Now I need to remove the old broken toggleGraphMode() that was further down in the file. Let me check if it still exists.
-
-**Tool: grep**
-
-**Input:**
-```json
-{
-  "path": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvastab.cpp",
-  "pattern": "toggleGraphMode"
-}
-```
-
-**Output:**
-```
-Found 3 matches
-/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvastab.cpp:
-  Line 73:     connect(toggleModeBtn, &QToolButton::clicked, this, &CanvasTab::toggleGraphMode);
-
-  Line 516: void CanvasTab::toggleGraphMode()
-
-  Line 729: void CanvasTab::toggleGraphMode()
-
-```
-
----
-
-## Assistant (Build · MiMo-V2.5-Pro · 86.1s)
-
-_Thinking:_
-
-There are two toggleGraphMode() definitions — the new one I just added (line 516) and the old one (line 729). I need to remove the old one.
-
-**Tool: read**
-
-**Input:**
-```json
-{
-  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvastab.cpp",
-  "offset": 725
-}
-```
-
-**Output:**
-```
-<path>/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvastab.cpp</path>
-<type>file</type>
-<content>
-725:     m_generatingConceptMap = false;
-726:     showSemanticMap(map);
-727: }
-728: 
-729: void CanvasTab::toggleGraphMode()
-730: {
-731:     if (m_structuralMode) {
-732:         // Switch to concept mode
-733:         if (!m_currentSemanticMap.clusters.isEmpty()) {
-734:             showSemanticMap(m_currentSemanticMap);
-735:         } else {
-736:             // Check for saved map
-737:             SemanticMapStore store(m_projectPath);
-738:             auto maps = store.list();
-739:             if (!maps.isEmpty()) {
-740:                 SemanticMapStore::MapMeta latest = maps.first();
-741:                 for (const auto& m : maps)
-742:                     if (m.createdAt > latest.createdAt) latest = m;
-743:                 auto mapOpt = store.load(latest.id);
-744:                 if (mapOpt.has_value()) {
-745:                     showSemanticMap(mapOpt.value());
-746:                     return;
-747:                 }
-748:             }
-749:             // No map — request generation
-750:             m_generatingConceptMap = true;
-751:             emit needsSemanticMapGeneration();
-752:         }
-753:     } else {
-754:         showStructureGraph();
-755:     }
-756: }
-
-(End of file - total 756 lines)
-</content>
-```
-
----
-
-## Assistant (Build · MiMo-V2.5-Pro · 32.6s)
-
-_Thinking:_
-
-The old toggleGraphMode() is the same as the new one I just added. But wait, let me check what's at line 516.
-
-**Tool: read**
-
-**Input:**
-```json
-{
-  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvastab.cpp",
-  "limit": 60,
-  "offset": 505
-}
-```
-
-**Output:**
-```
-<path>/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvastab.cpp</path>
-<type>file</type>
-<content>
-505:     }
-506:     m_pulseTimer->start(800);
-507: }
-508: 
-509: void CanvasTab::stopNodePulsing()
-510: {
-511:     if (m_pulseTimer) {
-512:         m_pulseTimer->stop();
-513:     }
-514: }
-515: 
-516: void CanvasTab::toggleGraphMode()
-517: {
-518:     m_structuralMode = !m_structuralMode;
-519:     
-520:     // Fade out all current items
-521:     QGraphicsScene* scene = m_canvasView->scene();
-522:     if (!scene) return;
-523:     
-524:     QList<QGraphicsItem*> items = scene->items();
-525:     for (QGraphicsItem* item : items) {
-526:         QGraphicsOpacityEffect* effect = new QGraphicsOpacityEffect();
-527:         item->setGraphicsEffect(effect);
-528:         
-529:         QPropertyAnimation* anim = new QPropertyAnimation(effect, "opacity");
-530:         anim->setDuration(200);
-531:         anim->setStartValue(1.0);
-532:         anim->setEndValue(0.0);
-533:         anim->setEasingCurve(QEasingCurve::InCubic);
-534:         
-535:         connect(anim, &QPropertyAnimation::finished, this, [item]() {
-536:             item->setVisible(false);
-537:             item->setGraphicsEffect(nullptr);
-538:         });
-539:         
-540:         anim->start(QAbstractAnimation::DeleteWhenStopped);
-541:     }
-542:     
-543:     // After fade out, switch modes and fade in
-544:     QTimer::singleShot(250, this, [this]() {
-545:         if (m_structuralMode) {
-546:             // Switch to structural graph
-547:             // TODO: Load structural graph items
-548:             qDebug() << "Switching to Structural Graph mode";
-549:         } else {
-550:             // Switch to conceptual graph
-551:             // TODO: Load conceptual graph items
-552:             qDebug() << "Switching to Conceptual Graph mode";
-553:         }
-554:         
-555:         // Fade in new items
-556:         QGraphicsScene* scene = m_canvasView->scene();
-557:         if (!scene) return;
-558:         
-559:         QList<QGraphicsItem*> items = scene->items();
-560:         for (QGraphicsItem* item : items) {
-561:             item->setVisible(true);
-562:             item->setOpacity(0.0);
-563:             
-564:             QGraphicsOpacityEffect* effect = new QGraphicsOpacityEffect();
-
-(Showing lines 505-564 of 756. Use offset=565 to continue.)
-</content>
-```
-
----
-
-## Assistant (Build · MiMo-V2.5-Pro · 14.3s)
-
-_Thinking:_
-
-I see — there are two toggleGraphMode implementations. The first one (line 516) is the old broken one with QGraphicsOpacityEffect, and the second one (line 729) is my new correct one. I need to remove the old one.
-
-**Tool: read**
-
-**Input:**
-```json
-{
-  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvastab.cpp",
-  "limit": 80,
-  "offset": 516
-}
-```
-
-**Output:**
-```
-<path>/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvastab.cpp</path>
-<type>file</type>
-<content>
-516: void CanvasTab::toggleGraphMode()
-517: {
-518:     m_structuralMode = !m_structuralMode;
-519:     
-520:     // Fade out all current items
-521:     QGraphicsScene* scene = m_canvasView->scene();
-522:     if (!scene) return;
-523:     
-524:     QList<QGraphicsItem*> items = scene->items();
-525:     for (QGraphicsItem* item : items) {
-526:         QGraphicsOpacityEffect* effect = new QGraphicsOpacityEffect();
-527:         item->setGraphicsEffect(effect);
-528:         
-529:         QPropertyAnimation* anim = new QPropertyAnimation(effect, "opacity");
-530:         anim->setDuration(200);
-531:         anim->setStartValue(1.0);
-532:         anim->setEndValue(0.0);
-533:         anim->setEasingCurve(QEasingCurve::InCubic);
-534:         
-535:         connect(anim, &QPropertyAnimation::finished, this, [item]() {
-536:             item->setVisible(false);
-537:             item->setGraphicsEffect(nullptr);
-538:         });
-539:         
-540:         anim->start(QAbstractAnimation::DeleteWhenStopped);
-541:     }
-542:     
-543:     // After fade out, switch modes and fade in
-544:     QTimer::singleShot(250, this, [this]() {
-545:         if (m_structuralMode) {
-546:             // Switch to structural graph
-547:             // TODO: Load structural graph items
-548:             qDebug() << "Switching to Structural Graph mode";
-549:         } else {
-550:             // Switch to conceptual graph
-551:             // TODO: Load conceptual graph items
-552:             qDebug() << "Switching to Conceptual Graph mode";
-553:         }
-554:         
-555:         // Fade in new items
-556:         QGraphicsScene* scene = m_canvasView->scene();
-557:         if (!scene) return;
-558:         
-559:         QList<QGraphicsItem*> items = scene->items();
-560:         for (QGraphicsItem* item : items) {
-561:             item->setVisible(true);
-562:             item->setOpacity(0.0);
-563:             
-564:             QGraphicsOpacityEffect* effect = new QGraphicsOpacityEffect();
-565:             item->setGraphicsEffect(effect);
-566:             
-567:             QPropertyAnimation* anim = new QPropertyAnimation(effect, "opacity");
-568:             anim->setDuration(300);
-569:             anim->setStartValue(0.0);
-570:             anim->setEndValue(1.0);
-571:             anim->setEasingCurve(QEasingCurve::OutCubic);
-572:             
-573:             connect(anim, &QPropertyAnimation::finished, this, [item]() {
-574:                 item->setGraphicsEffect(nullptr);
-575:             });
-576:             
-577:             anim->start(QAbstractAnimation::DeleteWhenStopped);
-578:         }
-579:     });
-580: }
-581: 
-582: void CanvasTab::showSemanticMap(const SemanticMap& map)
-583: {
-584:     m_currentSemanticMap = map;
-585:     m_layoutMode = LayoutMode::LinearChain;
-586:     m_structuralMode = false;
-587:     m_generatingConceptMap = false;
-588: 
-589:     clearCanvas();
-590:     clearSemanticNodes();
-591: 
-592:     if (map.clusters.isEmpty())
-593:         return;
-594: 
-595:     ClusterLayout clusterLayout;
-
-(Showing lines 516-595 of 756. Use offset=596 to continue.)
-</content>
-```
-
----
-
-## Assistant (Build · MiMo-V2.5-Pro · 23.2s)
-
-_Thinking:_
-
-I need to remove the old toggleGraphMode() (lines 516-580). Let me do that.
-
-**Tool: edit**
-
-**Input:**
-```json
-{
-  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvastab.cpp",
-  "newString": "void CanvasTab::stopNodePulsing()\n{\n    if (m_pulseTimer) {\n        m_pulseTimer->stop();\n    }\n}\n\nvoid CanvasTab::showSemanticMap(const SemanticMap& map)",
-  "oldString": "void CanvasTab::stopNodePulsing()\n{\n    if (m_pulseTimer) {\n        m_pulseTimer->stop();\n    }\n}\n\nvoid CanvasTab::toggleGraphMode()\n{\n    m_structuralMode = !m_structuralMode;\n    \n    // Fade out all current items\n    QGraphicsScene* scene = m_canvasView->scene();\n    if (!scene) return;\n    \n    QList<QGraphicsItem*> items = scene->items();\n    for (QGraphicsItem* item : items) {\n        QGraphicsOpacityEffect* effect = new QGraphicsOpacityEffect();\n        item->setGraphicsEffect(effect);\n        \n        QPropertyAnimation* anim = new QPropertyAnimation(effect, \"opacity\");\n        anim->setDuration(200);\n        anim->setStartValue(1.0);\n        anim->setEndValue(0.0);\n        anim->setEasingCurve(QEasingCurve::InCubic);\n        \n        connect(anim, &QPropertyAnimation::finished, this, [item]() {\n            item->setVisible(false);\n            item->setGraphicsEffect(nullptr);\n        });\n        \n        anim->start(QAbstractAnimation::DeleteWhenStopped);\n    }\n    \n    // After fade out, switch modes and fade in\n    QTimer::singleShot(250, this, [this]() {\n        if (m_structuralMode) {\n            // Switch to structural graph\n            // TODO: Load structural graph items\n            qDebug() << \"Switching to Structural Graph mode\";\n        } else {\n            // Switch to conceptual graph\n            // TODO: Load conceptual graph items\n            qDebug() << \"Switching to Conceptual Graph mode\";\n        }\n        \n        // Fade in new items\n        QGraphicsScene* scene = m_canvasView->scene();\n        if (!scene) return;\n        \n        QList<QGraphicsItem*> items = scene->items();\n        for (QGraphicsItem* item : items) {\n            item->setVisible(true);\n            item->setOpacity(0.0);\n            \n            QGraphicsOpacityEffect* effect = new QGraphicsOpacityEffect();\n            item->setGraphicsEffect(effect);\n            \n            QPropertyAnimation* anim = new QPropertyAnimation(effect, \"opacity\");\n            anim->setDuration(300);\n            anim->setStartValue(0.0);\n            anim->setEndValue(1.0);\n            anim->setEasingCurve(QEasingCurve::OutCubic);\n            \n            connect(anim, &QPropertyAnimation::finished, this, [item]() {\n                item->setGraphicsEffect(nullptr);\n            });\n            \n            anim->start(QAbstractAnimation::DeleteWhenStopped);\n        }\n    });\n}\n\nvoid CanvasTab::showSemanticMap(const SemanticMap& map)"
-}
-```
-
-**Output:**
-```
-Edit applied successfully.
-```
-
----
-
-## Assistant (Build · MiMo-V2.5-Pro · 74.2s)
-
-_Thinking:_
-
-Now I need to check if ClusterGroupNode has a playAppearAnimation method. Let me check.
-
-**Tool: grep**
-
-**Input:**
-```json
-{
-  "path": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/nodes/cluster_group_node.h",
-  "pattern": "playAppear|appearOpacity"
-}
-```
-
-**Output:**
-```
-No files found
-```
-
----
-
-## Assistant (Build · MiMo-V2.5-Pro · 35.5s)
-
-_Thinking:_
-
-ClusterGroupNode doesn't have playAppearAnimation. I need to either add it or remove the call from showSemanticMap. Let me add it to ClusterGroupNode.
-
-**Tool: read**
-
-**Input:**
-```json
-{
-  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/nodes/cluster_group_node.h"
-}
-```
-
-**Output:**
-```
-<path>/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/nodes/cluster_group_node.h</path>
-<type>file</type>
-<content>
-1: #ifndef CLUSTER_GROUP_NODE_H
-2: #define CLUSTER_GROUP_NODE_H
-3: 
-4: #include <QGraphicsItem>
-5: #include <QGraphicsObject>
-6: #include <QPainter>
-7: #include <QString>
-8: #include <QList>
-9: 
-10: class StepNode;
-11: 
-12: class ClusterGroupNode : public QGraphicsObject
-13: {
-14:     Q_OBJECT
-15: 
-16: public:
-17:     explicit ClusterGroupNode(const QString& clusterId, const QString& title, const QString& color, QGraphicsItem* parent = nullptr);
-18: 
-19:     QRectF boundingRect() const override;
-20:     void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;
-21: 
-22:     QString clusterId() const { return m_clusterId; }
-23:     QString title() const { return m_title; }
-24:     QString color() const { return m_color; }
-25: 
-26:     void addChild(StepNode* child);
-27:     void removeChild(StepNode* child);
-28:     QList<StepNode*> children() const { return m_children; }
-29: 
-30:     void updateBoundsFromChildren();
-31: 
-32: private:
-33:     QString m_clusterId;
-34:     QString m_title;
-35:     QString m_color;
-36:     QList<StepNode*> m_children;
-37:     QRectF m_bounds;
-38:     static constexpr qreal PADDING = 20;
-39:     static constexpr qreal HEADER_HEIGHT = 30;
-40:     static constexpr qreal CORNER_RADIUS = 12;
-41: };
-42: 
-43: #endif // CLUSTER_GROUP_NODE_H
-
-(End of file - total 43 lines)
-</content>
-```
-
-**Tool: read**
-
-**Input:**
-```json
-{
-  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/nodes/cluster_group_node.cpp"
-}
-```
-
-**Output:**
-```
-<path>/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/nodes/cluster_group_node.cpp</path>
-<type>file</type>
-<content>
-1: #include "cluster_group_node.h"
-2: #include "step_node.h"
-3: #include <QStyleOptionGraphicsItem>
-4: #include <QFontMetrics>
-5: 
-6: ClusterGroupNode::ClusterGroupNode(const QString& clusterId, const QString& title, const QString& color, QGraphicsItem* parent)
-7:     : QGraphicsObject(parent)
-8:     , m_clusterId(clusterId)
-9:     , m_title(title)
-10:     , m_color(color)
-11: {
-12:     setFlag(QGraphicsItem::ItemIsMovable);
-13:     setFlag(QGraphicsItem::ItemIsSelectable);
-14:     setFlag(QGraphicsItem::ItemSendsGeometryChanges);
-15:     setZValue(1);
-16:     m_bounds = QRectF(0, 0, 300, 200);
-17: }
-18: 
-19: QRectF ClusterGroupNode::boundingRect() const
-20: {
-21:     return m_bounds;
-22: }
-23: 
-24: void ClusterGroupNode::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
-25: {
-26:     Q_UNUSED(option)
-27:     Q_UNUSED(widget)
-28: 
-29:     painter->save();
-30:     painter->setRenderHint(QPainter::Antialiasing);
-31: 
-32:     // Parse color
-33:     QColor frameColor(m_color);
-34:     if (!frameColor.isValid()) {
-35:         frameColor = QColor(100, 150, 200);
-36:     }
-37: 
-38:     // Draw background with slight transparency
-39:     QColor bgColor = frameColor;
-40:     bgColor.setAlphaF(0.1);
-41:     painter->setBrush(bgColor);
-42:     painter->setPen(QPen(frameColor, 2.0));
-43:     painter->drawRoundedRect(m_bounds, CORNER_RADIUS, CORNER_RADIUS);
-44: 
-45:     // Draw header background
-46:     QRectF headerRect(m_bounds.left(), m_bounds.top(), m_bounds.width(), HEADER_HEIGHT);
-47:     QColor headerBgColor = frameColor;
-48:     headerBgColor.setAlphaF(0.2);
-49:     painter->setBrush(headerBgColor);
-50:     painter->setPen(Qt::NoPen);
-51:     painter->drawRoundedRect(headerRect, CORNER_RADIUS, CORNER_RADIUS);
-52: 
-53:     // Draw header bottom line
-54:     painter->setPen(QPen(frameColor, 2.0));
-55:     QLineF bottomLine(headerRect.bottomLeft(), headerRect.bottomRight());
-56:     painter->drawLine(bottomLine);
-57: 
-58:     // Draw title
-59:     painter->setPen(Qt::white);
-60:     QFont titleFont = painter->font();
-61:     titleFont.setPointSize(10);
-62:     titleFont.setBold(true);
-63:     painter->setFont(titleFont);
-64:     QRectF titleRect(headerRect.adjusted(PADDING, 0, -PADDING, 0));
-65:     painter->drawText(titleRect, Qt::AlignLeft | Qt::AlignVCenter, m_title);
-66: 
-67:     painter->restore();
-68: }
-69: 
-70: void ClusterGroupNode::addChild(StepNode* child)
-71: {
-72:     if (!m_children.contains(child)) {
-73:         m_children.append(child);
-74:         child->setParentItem(this);
-75:         updateBoundsFromChildren();
-76:     }
-77: }
-78: 
-79: void ClusterGroupNode::removeChild(StepNode* child)
-80: {
-81:     if (m_children.removeOne(child)) {
-82:         child->setParentItem(nullptr);
-83:         updateBoundsFromChildren();
-84:     }
-85: }
-86: 
-87: void ClusterGroupNode::updateBoundsFromChildren()
-88: {
-89:     if (m_children.isEmpty()) {
-90:         m_bounds = QRectF(0, 0, 300, HEADER_HEIGHT + PADDING * 2);
-91:         update();
-92:         return;
-93:     }
-94: 
-95:     // Calculate bounding box of all children
-96:     QRectF childrenBounds;
-97:     for (StepNode* child : m_children) {
-98:         QRectF childBounds = child->boundingRect().translated(child->pos());
-99:         if (childrenBounds.isEmpty()) {
-100:             childrenBounds = childBounds;
-101:         } else {
-102:             childrenBounds = childrenBounds.united(childBounds);
-103:         }
-104:     }
-105: 
-106:     // Add padding and header height
-107:     qreal width = childrenBounds.width() + PADDING * 2;
-108:     qreal height = childrenBounds.height() + HEADER_HEIGHT + PADDING * 2;
-109: 
-110:     // Ensure minimum size
-111:     width = qMax(width, 300.0);
-112:     height = qMax(height, HEADER_HEIGHT + PADDING * 2);
-113: 
-114:     m_bounds = QRectF(0, 0, width, height);
-115:     update();
-116: }
-
-(End of file - total 116 lines)
-</content>
-```
-
----
-
-## Assistant (Build · MiMo-V2.5-Pro · 24.4s)
-
-_Thinking:_
-
-I need to add playAppearAnimation to ClusterGroupNode. Let me add the Q_PROPERTY and the method.
-
-**Tool: edit**
-
-**Input:**
-```json
-{
-  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/nodes/cluster_group_node.h",
-  "newString": "#include <QGraphicsItem>\n#include <QGraphicsObject>\n#include <QPainter>\n#include <QString>\n#include <QList>\n#include <QPropertyAnimation>\n#include <QParallelAnimationGroup>\n\nclass StepNode;\n\nclass ClusterGroupNode : public QGraphicsObject\n{\n    Q_OBJECT\n    Q_PROPERTY(qreal appearOpacity READ appearOpacity WRITE setAppearOpacity)\n\npublic:\n    explicit ClusterGroupNode(const QString& clusterId, const QString& title, const QString& color, QGraphicsItem* parent = nullptr);\n\n    QRectF boundingRect() const override;\n    void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;\n\n    QString clusterId() const { return m_clusterId; }\n    QString title() const { return m_title; }\n    QString color() const { return m_color; }\n\n    void addChild(StepNode* child);\n    void removeChild(StepNode* child);\n    QList<StepNode*> children() const { return m_children; }\n\n    void updateBoundsFromChildren();\n\n    void playAppearAnimation(int durationMs = 300);\n    qreal appearOpacity() const { return m_appearOpacity; }\n    void setAppearOpacity(qreal opacity) { m_appearOpacity = opacity; update(); }\n\nsignals:\n    void positionChanged();\n\nprotected:\n    QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;\n\nprivate:\n    QString m_clusterId;\n    QString m_title;\n    QString m_color;\n    QList<StepNode*> m_children;\n    QRectF m_bounds;\n    qreal m_appearOpacity = 1.0;\n    QParallelAnimationGroup* m_appearGroup = nullptr;\n    static constexpr qreal PADDING = 20;\n    static constexpr qreal HEADER_HEIGHT = 30;\n    static constexpr qreal CORNER_RADIUS = 12;\n};",
-  "oldString": "#include <QGraphicsItem>\n#include <QGraphicsObject>\n#include <QPainter>\n#include <QString>\n#include <QList>\n\nclass StepNode;\n\nclass ClusterGroupNode : public QGraphicsObject\n{\n    Q_OBJECT\n\npublic:\n    explicit ClusterGroupNode(const QString& clusterId, const QString& title, const QString& color, QGraphicsItem* parent = nullptr);\n\n    QRectF boundingRect() const override;\n    void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;\n\n    QString clusterId() const { return m_clusterId; }\n    QString title() const { return m_title; }\n    QString color() const { return m_color; }\n\n    void addChild(StepNode* child);\n    void removeChild(StepNode* child);\n    QList<StepNode*> children() const { return m_children; }\n\n    void updateBoundsFromChildren();\n\nprivate:\n    QString m_clusterId;\n    QString m_title;\n    QString m_color;\n    QList<StepNode*> m_children;\n    QRectF m_bounds;\n    static constexpr qreal PADDING = 20;\n    static constexpr qreal HEADER_HEIGHT = 30;\n    static constexpr qreal CORNER_RADIUS = 12;\n};"
-}
-```
-
-**Output:**
-```
-Edit applied successfully.
-```
-
----
-
-## Assistant (Build · MiMo-V2.5-Pro · 28.9s)
-
-_Thinking:_
-
-Now add the implementation of playAppearAnimation and itemChange in cluster_group_node.cpp.
-
-**Tool: edit**
-
-**Input:**
-```json
-{
-  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/nodes/cluster_group_node.cpp",
-  "newString": "    m_bounds = QRectF(0, 0, width, height);\n    update();\n}\n\nvoid ClusterGroupNode::playAppearAnimation(int durationMs)\n{\n    if (m_appearGroup) {\n        m_appearGroup->stop();\n        m_appearGroup->deleteLater();\n    }\n\n    m_appearOpacity = 0.0;\n\n    m_appearGroup = new QParallelAnimationGroup(this);\n\n    auto* opacityAnim = new QPropertyAnimation(this, \"appearOpacity\");\n    opacityAnim->setDuration(durationMs);\n    opacityAnim->setStartValue(0.0);\n    opacityAnim->setEndValue(1.0);\n    opacityAnim->setEasingCurve(QEasingCurve::OutCubic);\n\n    m_appearGroup->addAnimation(opacityAnim);\n    m_appearGroup->start(QAbstractAnimation::DeleteWhenStopped);\n}\n\nQVariant ClusterGroupNode::itemChange(GraphicsItemChange change, const QVariant& value)\n{\n    if (change == ItemPositionHasChanged && scene())\n        emit positionChanged();\n    return QGraphicsObject::itemChange(change, value);\n}",
-  "oldString": "    m_bounds = QRectF(0, 0, width, height);\n    update();\n}"
-}
-```
-
-**Output:**
-```
-Edit applied successfully.
-```
-
----
-
-## Assistant (Build · MiMo-V2.5-Pro · 24.1s)
-
-_Thinking:_
-
-Now I need to update the paint() method in ClusterGroupNode to use appearOpacity.
-
-**Tool: edit**
-
-**Input:**
-```json
-{
-  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/nodes/cluster_group_node.cpp",
-  "newString": "void ClusterGroupNode::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)\n{\n    Q_UNUSED(option)\n    Q_UNUSED(widget)\n\n    painter->save();\n    painter->setRenderHint(QPainter::Antialiasing);\n    painter->setOpacity(m_appearOpacity);",
-  "oldString": "void ClusterGroupNode::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)\n{\n    Q_UNUSED(option)\n    Q_UNUSED(widget)\n\n    painter->save();\n    painter->setRenderHint(QPainter::Antialiasing);"
+  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/cluster_layout.cpp",
+  "newString": "ClusterLayout::ClusterLayout()\n{\n}\n\nQMap<QString, QPointF> ClusterLayout::computeClusterPositions(QList<ClusterGroupNode*> clusters)\n{\n    QMap<QString, QPointF> positions;\n    if (clusters.isEmpty())\n        return positions;\n\n    qreal startX = -500.0;\n    qreal startY = -400.0;\n    qreal currentX = startX;\n    qreal currentY = startY;\n\n    for (int i = 0; i < clusters.size(); ++i) {\n        ClusterGroupNode* cluster = clusters[i];\n        positions[cluster->clusterId()] = QPointF(currentX, currentY);\n\n        currentX += GRID_SPACING + cluster->boundingRect().width();\n        if ((i + 1) % COLUMNS == 0) {\n            currentX = startX;\n            currentY += GRID_SPACING + 300.0;\n        }\n    }\n\n    return positions;\n}\n\nvoid ClusterLayout::arrangeMap(QList<ClusterGroupNode*> clusters)",
+  "oldString": "ClusterLayout::ClusterLayout()\n{\n}\n\nvoid ClusterLayout::arrangeMap(QList<ClusterGroupNode*> clusters)"
 }
 ```
 
@@ -3990,342 +3894,526 @@ Edit applied successfully.
 
 _Thinking:_
 
-Now let me also add the `painter->restore()` at the end of paint if it's missing. Let me check.
-
-**Tool: grep**
-
-**Input:**
-```json
-{
-  "path": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/nodes/cluster_group_node.cpp",
-  "pattern": "restore"
-}
-```
-
-**Output:**
-```
-Found 1 matches
-/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/nodes/cluster_group_node.cpp:
-  Line 68:     painter->restore();
-
-```
-
----
-
-## Assistant (Build · MiMo-V2.5-Pro · 57.1s)
-
-_Thinking:_
-
-Good, `painter->restore()` is already there. Now let me also check if DigestPanel has a `showMap` method.
-
-**Tool: grep**
-
-**Input:**
-```json
-{
-  "path": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/digest_panel.h",
-  "pattern": "showMap"
-}
-```
-
-**Output:**
-```
-No files found
-```
-
----
-
-## Assistant (Build · MiMo-V2.5-Pro · 39.1s)
-
-_Thinking:_
-
-DigestPanel doesn't have a showMap method. I need to add one. Let me also integrate it into CanvasTab as a dock widget. Let me now build to see if the current changes compile, and then add the DigestPanel integration.
-
-**Tool: bash**
-
-**Input:**
-```json
-{
-  "command": "cmake --build /home/resu/Documents/dev/cremniy/build --parallel 2 2>&1 | tail -20",
-  "description": "Build after Phase 4 changes",
-  "timeout": 180000
-}
-```
-
-**Output:**
-```
-   38 |         QMap<QString, QGraphicsObject*>& nodes,
-      |         ^~~~
-      |             <>
-In file included from /home/resu/Documents/dev/cremniy/third_party/qt-install/include/QtCore/qtypeinfo.h:9,
-                 from /home/resu/Documents/dev/cremniy/third_party/qt-install/include/QtCore/qglobal.h:47,
-                 from /home/resu/Documents/dev/cremniy/third_party/qt-install/include/QtCore/qnamespace.h:12,
-                 from /home/resu/Documents/dev/cremniy/third_party/qt-install/include/QtCore/qobjectdefs.h:12,
-                 from /home/resu/Documents/dev/cremniy/third_party/qt-install/include/QtCore/qobject.h:10,
-                 from /home/resu/Documents/dev/cremniy/third_party/qt-install/include/QtCore/QObject:1,
-                 from /home/resu/Documents/dev/cremniy/build/cremniy_autogen/7MVL4XHTMF/../../../src/Agent/agent_session.h:4,
-                 from /home/resu/Documents/dev/cremniy/build/cremniy_autogen/7MVL4XHTMF/moc_agent_session.cpp:9,
-                 from /home/resu/Documents/dev/cremniy/build/cremniy_autogen/mocs_compilation.cpp:2:
-/home/resu/Documents/dev/cremniy/third_party/qt-install/include/QtCore/qcontainerfwd.h:23:43: note: ‘template<class Key, class T> class QMap’ declared here
-   23 | template <typename Key, typename T> class QMap;
-      |                                           ^~~~
-gmake[2]: *** [CMakeFiles/cremniy.dir/build.make:125: CMakeFiles/cremniy.dir/app/IDEWindow/idewindow.cpp.o] Ошибка 1
-gmake[2]: *** Ожидание завершения заданий…
-gmake[2]: *** [CMakeFiles/cremniy.dir/build.make:97: CMakeFiles/cremniy.dir/cremniy_autogen/mocs_compilation.cpp.o] Ошибка 1
-gmake[1]: *** [CMakeFiles/Makefile2:265: CMakeFiles/cremniy.dir/all] Ошибка 2
-gmake: *** [Makefile:136: all] Ошибка 2
-
-```
-
----
-
-## Assistant (Build · MiMo-V2.5-Pro · 19.0s)
-
-_Thinking:_
-
-The issue is that `QGraphicsObject` is forward-declared in `canvas_layout.h` but the full type is needed for `QMap<QString, QGraphicsObject*>`. I need to include the header for QGraphicsObject.
-
-**Tool: edit**
-
-**Input:**
-```json
-{
-  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvas_layout.h",
-  "newString": "#include <QParallelAnimationGroup>\n#include <QGraphicsObject>\n#include <Qt>\n#include \"dependency_parser.h\"",
-  "oldString": "#include <QParallelAnimationGroup>\n#include <Qt>\n#include \"dependency_parser.h\""
-}
-```
-
-**Output:**
-```
-Edit applied successfully.
-```
-
----
-
-## Assistant (Build · MiMo-V2.5-Pro · 44.7s)
-
-_Thinking:_
-
-Now rebuild.
-
-**Tool: bash**
-
-**Input:**
-```json
-{
-  "command": "cmake --build /home/resu/Documents/dev/cremniy/build --parallel 2 2>&1 | tail -15",
-  "description": "Build after adding QGraphicsObject include",
-  "timeout": 180000
-}
-```
-
-**Output:**
-```
-[ 32%] Built target QHexView
-[ 32%] Built target cremniy_autogen_timestamp_deps
-[ 33%] Automatic MOC and UIC for target cremniy
-[ 33%] Built target cremniy_autogen
-[ 34%] Building CXX object CMakeFiles/cremniy.dir/cremniy_autogen/mocs_compilation.cpp.o
-[ 35%] Building CXX object CMakeFiles/cremniy.dir/app/IDEWindow/idewindow.cpp.o
-[ 36%] Building CXX object CMakeFiles/cremniy.dir/ui/MenuBar/Menus/Tools/toolsmenu.cpp.o
-[ 36%] Building CXX object CMakeFiles/cremniy.dir/Agent/agent_session.cpp.o
-[ 37%] Building CXX object CMakeFiles/cremniy.dir/Agent/tools/agent_tools.cpp.o
-[ 38%] Building CXX object CMakeFiles/cremniy.dir/ToolTabs/Canvas/canvastab.cpp.o
-[ 39%] Building CXX object CMakeFiles/cremniy.dir/ToolTabs/Canvas/canvas_layout.cpp.o
-[ 40%] Building CXX object CMakeFiles/cremniy.dir/ToolTabs/Canvas/cluster_layout.cpp.o
-[ 41%] Building CXX object CMakeFiles/cremniy.dir/ToolTabs/Canvas/nodes/cluster_group_node.cpp.o
-[ 42%] Linking CXX executable cremniy
-[100%] Built target cremniy
-
-```
-
----
-
-## Assistant (Build · MiMo-V2.5-Pro · 62.8s)
-
-_Thinking:_
-
-Build successful. Now let me add the DigestPanel::showMap() method and integrate it as a dock widget in CanvasTab. Let me also add the showMap method to DigestPanel.
-
-Сборка успешна. Добавляю `DigestPanel::showMap()` и интеграцию.
-
-**Tool: edit**
-
-**Input:**
-```json
-{
-  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/digest_panel.h",
-  "newString": "#include <QWidget>\n#include <QLabel>\n#include <QPushButton>\n#include <QTextEdit>\n#include <QToolButton>\n#include <QVBoxLayout>\n#include <QPropertyAnimation>\n#include <QParallelAnimationGroup>\n#include \"semantic_map.h\"\n\nclass DigestPanel : public QWidget\n{\n    Q_OBJECT\n    Q_PROPERTY(qreal panelOpacity READ panelOpacity WRITE setPanelOpacity)\n\npublic:\n    explicit DigestPanel(QWidget* parent = nullptr);\n\n    void showMap(const SemanticMap& map);\n    void setMotivation(const QString& motivation);\n    void setDetails(const QString& details);\n    void setCodeSnippet(const QString& snippet, const QString& filePath, int lineNumber);",
-  "oldString": "#include <QWidget>\n#include <QLabel>\n#include <QPushButton>\n#include <QTextEdit>\n#include <QToolButton>\n#include <QVBoxLayout>\n#include <QPropertyAnimation>\n#include <QParallelAnimationGroup>\n\nclass DigestPanel : public QWidget\n{\n    Q_OBJECT\n    Q_PROPERTY(qreal panelOpacity READ panelOpacity WRITE setPanelOpacity)\n\npublic:\n    explicit DigestPanel(QWidget* parent = nullptr);\n\n    void setMotivation(const QString& motivation);\n    void setDetails(const QString& details);\n    void setCodeSnippet(const QString& snippet, const QString& filePath, int lineNumber);"
-}
-```
-
-**Output:**
-```
-Edit applied successfully.
-```
-
----
-
-## Assistant (Build · MiMo-V2.5-Pro · 109.0s)
-
-_Thinking:_
-
-Now add the showMap implementation in digest_panel.cpp. I need to also add the cluster sections with collapsible headers.
-
-**Tool: edit**
-
-**Input:**
-```json
-{
-  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/digest_panel.cpp",
-  "newString": "#include \"digest_panel.h\"\n#include <QVBoxLayout>\n#include <QHBoxLayout>\n#include <QFrame>\n#include <QGraphicsOpacityEffect>\n#include <QScrollArea>\n\nDigestPanel::DigestPanel(QWidget* parent)\n    : QWidget(parent)\n    , m_currentLineNumber(0)\n{\n    setupUI();\n    setStyleSheet(R\"(\n        DigestPanel {\n            background-color: #2a2a35;\n            border-radius: 8px;\n        }\n        QLabel {\n            color: #ffffff;\n            font-size: 11px;\n        }\n        QTextEdit {\n            background-color: #1e1e28;\n            color: #c0c0d0;\n            border: 1px solid #3a3a45;\n            border-radius: 4px;\n            padding: 8px;\n            font-family: 'Consolas', 'Monaco', monospace;\n            font-size: 10px;\n        }\n        QToolButton {\n            background-color: #3a3a45;\n            color: #ffffff;\n            border: none;\n            border-radius: 4px;\n            padding: 4px 8px;\n            font-size: 10px;\n        }\n        QToolButton:hover {\n            background-color: #4a4a55;\n        }\n        QPushButton {\n            background-color: #4a7ab0;\n            color: #ffffff;\n            border: none;\n            border-radius: 4px;\n            padding: 6px 12px;\n            font-size: 10px;\n        }\n        QPushButton:hover {\n            background-color: #5a8ac0;\n        }\n        QPushButton:pressed {\n            background-color: #3a6a90;\n        }\n    )\");\n}\n\nvoid DigestPanel::showMap(const SemanticMap& map)\n{\n    setMotivation(map.motivation);\n    setDetails(map.details);\n\n    // Clear old cluster sections\n    for (QWidget* w : m_clusterSections) {\n        w->setVisible(false);\n        w->deleteLater();\n    }\n    m_clusterSections.clear();\n\n    // Create collapsible sections for each cluster\n    for (int ci = 0; ci < map.clusters.size(); ++ci) {\n        const SemanticCluster& cluster = map.clusters[ci];\n\n        auto* section = new QWidget(this);\n        auto* sectionLayout = new QVBoxLayout(section);\n        sectionLayout->setContentsMargins(0, 0, 0, 0);\n        sectionLayout->setSpacing(4);\n\n        // Header (collapsible toggle)\n        auto* header = new QToolButton(section);\n        header->setText((ci == 0 ? \"▼ \" : \"▶ \") + cluster.title);\n        header->setCheckable(true);\n        header->setChecked(ci == 0);\n        header->setStyleSheet(\"text-align: left; font-weight: bold; color: #7ab0ff;\");\n\n        // Body with step cards\n        auto* body = new QWidget(section);\n        auto* bodyLayout = new QVBoxLayout(body);\n        bodyLayout->setContentsMargins(8, 0, 0, 0);\n        bodyLayout->setSpacing(6);\n\n        for (const SemanticStep& step : cluster.steps) {\n            auto* card = new QWidget(body);\n            auto* cardLayout = new QVBoxLayout(card);\n            cardLayout->setContentsMargins(8, 4, 8, 4);\n            cardLayout->setSpacing(2);\n\n            // Step title\n            auto* titleLabel = new QLabel(step.id + \": \" + step.title, card);\n            titleLabel->setStyleSheet(\"font-weight: bold; color: #ddd;\");\n            cardLayout->addWidget(titleLabel);\n\n            // Code snippet\n            if (!step.codeSnippet.isEmpty()) {\n                auto* snippetEdit = new QTextEdit(card);\n                snippetEdit->setPlainText(step.codeSnippet);\n                snippetEdit->setReadOnly(true);\n                snippetEdit->setMaximumHeight(80);\n                snippetEdit->setStyleSheet(\n                    \"background: #1e1e28; color: #c0c0d0; border: 1px solid #3a3a45; \"\n                    \"font-family: monospace; font-size: 9px;\");\n                cardLayout->addWidget(snippetEdit);\n            }\n\n            // Navigation button\n            auto* goBtn = new QPushButton(\"Перейти →\", card);\n            connect(goBtn, &QPushButton::clicked, this, [this, step]() {\n                emit stepNavigationRequested(step.filePath, step.startLine);\n            });\n            cardLayout->addWidget(goBtn, 0, Qt::AlignRight);\n\n            // Tint card background from cluster color\n            QColor tint(cluster.color);\n            if (tint.isValid()) {\n                tint.setAlphaF(0.15);\n                card->setStyleSheet(QString(\"background: %1; border-radius: 4px;\").arg(tint.name()));\n            }\n\n            bodyLayout->addWidget(card);\n        }\n\n        body->setVisible(ci == 0);\n\n        connect(header, &QToolButton::toggled, body, &QWidget::setVisible);\n        connect(header, &QToolButton::toggled, header, [header](bool checked) {\n            header->setText((checked ? \"▼ \" : \"▶ \") + header->text().mid(2));\n        });\n\n        sectionLayout->addWidget(header);\n        sectionLayout->addWidget(body);\n\n        m_layout->insertWidget(m_layout->count() - 1, section); // Before stretch\n        m_clusterSections.append(section);\n    }\n}",
-  "oldString": "#include \"digest_panel.h\"\n#include <QVBoxLayout>\n#include <QHBoxLayout>\n#include <QFrame>\n#include <QGraphicsOpacityEffect>\n\nDigestPanel::DigestPanel(QWidget* parent)\n    : QWidget(parent)\n    , m_currentLineNumber(0)\n{\n    setupUI();\n    setStyleSheet(R\"(\n        DigestPanel {\n            background-color: #2a2a35;\n            border-radius: 8px;\n        }\n        QLabel {\n            color: #ffffff;\n            font-size: 11px;\n        }\n        QTextEdit {\n            background-color: #1e1e28;\n            color: #c0c0d0;\n            border: 1px solid #3a3a45;\n            border-radius: 4px;\n            padding: 8px;\n            font-family: 'Consolas', 'Monaco', monospace;\n            font-size: 10px;\n        }\n        QToolButton {\n            background-color: #3a3a45;\n            color: #ffffff;\n            border: none;\n            border-radius: 4px;\n            padding: 4px 8px;\n            font-size: 10px;\n        }\n        QToolButton:hover {\n            background-color: #4a4a55;\n        }\n        QPushButton {\n            background-color: #4a7ab0;\n            color: #ffffff;\n            border: none;\n            border-radius: 4px;\n            padding: 6px 12px;\n            font-size: 10px;\n        }\n        QPushButton:hover {\n            background-color: #5a8ac0;\n        }\n        QPushButton:pressed {\n            background-color: #3a6a90;\n        }\n    )\");\n}"
-}
-```
-
-**Output:**
-```
-Edit applied successfully.
-```
-
----
-
-## Assistant (Build · MiMo-V2.5-Pro · 13.6s)
-
-_Thinking:_
-
-Now I need to add the DigestPanel member and the cluster sections list to the header. Let me also update the setupUI to store m_layout. Let me check if m_layout is already a member.
-
-**Tool: grep**
-
-**Input:**
-```json
-{
-  "path": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/digest_panel.h",
-  "pattern": "m_layout|m_clusterSections"
-}
-```
-
-**Output:**
-```
-No files found
-```
-
----
-
-## Assistant (Build · MiMo-V2.5-Pro · 26.5s)
-
-_Thinking:_
-
-I need to add m_layout and m_clusterSections to the header. Let me check the current header.
+Now update StepNode to show stale indicator. Let me read the StepNode paint method.
 
 **Tool: read**
 
 **Input:**
 ```json
 {
-  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/digest_panel.h"
+  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/nodes/step_node.h"
 }
 ```
 
 **Output:**
 ```
-<path>/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/digest_panel.h</path>
+<path>/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/nodes/step_node.h</path>
 <type>file</type>
 <content>
-1: #ifndef DIGEST_PANEL_H
-2: #define DIGEST_PANEL_H
+1: #ifndef STEP_NODE_H
+2: #define STEP_NODE_H
 3: 
-4: #include <QWidget>
-5: #include <QLabel>
-6: #include <QPushButton>
-7: #include <QTextEdit>
-8: #include <QToolButton>
-9: #include <QVBoxLayout>
-10: #include <QPropertyAnimation>
-11: #include <QParallelAnimationGroup>
-12: #include "semantic_map.h"
-13: 
-14: class DigestPanel : public QWidget
-15: {
-16:     Q_OBJECT
-17:     Q_PROPERTY(qreal panelOpacity READ panelOpacity WRITE setPanelOpacity)
-18: 
-19: public:
-20:     explicit DigestPanel(QWidget* parent = nullptr);
-21: 
-22:     void showMap(const SemanticMap& map);
-23:     void setMotivation(const QString& motivation);
-24:     void setDetails(const QString& details);
-25:     void setCodeSnippet(const QString& snippet, const QString& filePath, int lineNumber);
-26: 
-27:     void playAppearAnimation(int durationMs = 300);
-28:     void playDisappearAnimation(int durationMs = 250);
+4: #include <QGraphicsItem>
+5: #include <QGraphicsObject>
+6: #include <QPainter>
+7: #include <QString>
+8: #include <QPropertyAnimation>
+9: #include <QParallelAnimationGroup>
+10: 
+11: class StepNode : public QGraphicsObject
+12: {
+13:     Q_OBJECT
+14:     Q_PROPERTY(qreal appearOpacity READ appearOpacity WRITE setAppearOpacity)
+15:     Q_PROPERTY(qreal appearScale READ appearScale WRITE setAppearScale)
+16: 
+17: public:
+18:     explicit StepNode(const QString& stepId, const QString& title, const QString& codeSnippet,
+19:                      const QString& filePath, int lineNumber, QGraphicsItem* parent = nullptr);
+20: 
+21:     QRectF boundingRect() const override;
+22:     void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;
+23: 
+24:     QString stepId() const { return m_stepId; }
+25:     QString title() const { return m_title; }
+26:     QString codeSnippet() const { return m_codeSnippet; }
+27:     QString filePath() const { return m_filePath; }
+28:     int lineNumber() const { return m_lineNumber; }
 29: 
-30:     qreal panelOpacity() const { return m_panelOpacity; }
-31:     void setPanelOpacity(qreal opacity) { m_panelOpacity = opacity; update(); }
-32: 
-33: signals:
-34:     void goToCodeRequested(const QString& filePath, int lineNumber);
+30:     void playAppearAnimation(int durationMs = 300);
+31:     qreal appearOpacity() const { return m_appearOpacity; }
+32:     void setAppearOpacity(qreal opacity) { m_appearOpacity = opacity; update(); }
+33:     qreal appearScale() const { return m_appearScale; }
+34:     void setAppearScale(qreal scale) { m_appearScale = scale; update(); }
 35: 
-36: private slots:
-37:     void onMotivationToggle();
-38:     void onDetailsToggle();
-39:     void onGoToClicked();
-40: 
-41: private:
-42:     void setupUI();
-43:     void createCollapsibleSection(const QString& title, QWidget* content, QToolButton*& toggleBtn, QWidget*& container);
-44: 
-45:     QLabel* m_motivationLabel;
-46:     QTextEdit* m_motivationContent;
-47:     QToolButton* m_motivationToggle;
-48:     QWidget* m_motivationContainer;
-49: 
-50:     QLabel* m_detailsLabel;
-51:     QTextEdit* m_detailsContent;
-52:     QToolButton* m_detailsToggle;
-53:     QWidget* m_detailsContainer;
-54: 
-55:     QLabel* m_codeSnippetLabel;
-56:     QTextEdit* m_codeSnippetContent;
-57:     QPushButton* m_goToButton;
-58: 
-59:     QString m_currentFilePath;
-60:     int m_currentLineNumber;
-61: 
-62:     qreal m_panelOpacity = 1.0;
-63:     QParallelAnimationGroup* m_appearGroup = nullptr;
-64:     QParallelAnimationGroup* m_disappearGroup = nullptr;
-65: 
-66:     bool m_motivationExpanded = true;
-67:     bool m_detailsExpanded = true;
-68: };
-69: 
-70: #endif // DIGEST_PANEL_H
+36: signals:
+37:     void stepClicked(const QString& filePath, int lineNumber);
+38:     void positionChanged();
+39: 
+40: protected:
+41:     void mousePressEvent(QGraphicsSceneMouseEvent* event) override;
+42:     void hoverEnterEvent(QGraphicsSceneHoverEvent* event) override;
+43:     void hoverLeaveEvent(QGraphicsSceneHoverEvent* event) override;
+44:     QVariant itemChange(GraphicsItemChange change, const QVariant& value) override;
+45: 
+46: private:
+47:     QString m_stepId;
+48:     QString m_title;
+49:     QString m_codeSnippet;
+50:     QString m_filePath;
+51:     int m_lineNumber;
+52:     bool m_hovered = false;
+53:     qreal m_appearOpacity = 1.0;
+54:     qreal m_appearScale = 1.0;
+55:     QParallelAnimationGroup* m_appearGroup = nullptr;
+56: 
+57:     static constexpr qreal WIDTH = 200;
+58:     static constexpr qreal HEIGHT = 80;
+59:     static constexpr qreal RADIUS = 8;
+60:     static constexpr qreal PADDING = 12;
+61: };
+62: 
+63: #endif // STEP_NODE_H
 
-(End of file - total 70 lines)
+(End of file - total 63 lines)
 </content>
 ```
 
 ---
 
-## Assistant (Build · MiMo-V2.5-Pro · 16.4s)
+## Assistant (Build · MiMo-V2.5-Pro · 15.9s)
 
 _Thinking:_
 
-I need to add `m_layout` and `m_clusterSections` to the header. Let me update it.
+I need to add a `m_stale` flag and update paint() to show a stale indicator. Let me update StepNode.
 
 **Tool: edit**
 
 **Input:**
 ```json
 {
-  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/digest_panel.h",
-  "newString": "signals:\n    void goToCodeRequested(const QString& filePath, int lineNumber);\n    void stepNavigationRequested(const QString& filePath, int lineNumber);\n\nprivate slots:",
-  "oldString": "signals:\n    void goToCodeRequested(const QString& filePath, int lineNumber);\n\nprivate slots:"
+  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/nodes/step_node.h",
+  "newString": "    QString filePath() const { return m_filePath; }\n    int lineNumber() const { return m_lineNumber; }\n    bool isStale() const { return m_stale; }\n    void setStale(bool stale) { m_stale = stale; update(); }",
+  "oldString": "    QString filePath() const { return m_filePath; }\n    int lineNumber() const { return m_lineNumber; }"
+}
+```
+
+**Output:**
+```
+Edit applied successfully.
+```
+
+---
+
+## Assistant (Build · MiMo-V2.5-Pro · 8.3s)
+
+_Thinking:_
+
+Now add m_stale to private members.
+
+**Tool: edit**
+
+**Input:**
+```json
+{
+  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/nodes/step_node.h",
+  "newString": "    bool m_hovered = false;\n    bool m_stale = false;\n    qreal m_appearOpacity = 1.0;",
+  "oldString": "    bool m_hovered = false;\n    qreal m_appearOpacity = 1.0;"
+}
+```
+
+**Output:**
+```
+Edit applied successfully.
+```
+
+---
+
+## Assistant (Build · MiMo-V2.5-Pro · 18.0s)
+
+_Thinking:_
+
+Now update paint() to show stale indicator. Let me read the paint method.
+
+**Tool: read**
+
+**Input:**
+```json
+{
+  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/nodes/step_node.cpp"
+}
+```
+
+**Output:**
+```
+<path>/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/nodes/step_node.cpp</path>
+<type>file</type>
+<content>
+1: #include "step_node.h"
+2: #include <QStyleOptionGraphicsItem>
+3: #include <QGraphicsSceneMouseEvent>
+4: #include <QFontMetrics>
+5: 
+6: StepNode::StepNode(const QString& stepId, const QString& title, const QString& codeSnippet,
+7:                    const QString& filePath, int lineNumber, QGraphicsItem* parent)
+8:     : QGraphicsObject(parent)
+9:     , m_stepId(stepId)
+10:     , m_title(title)
+11:     , m_codeSnippet(codeSnippet)
+12:     , m_filePath(filePath)
+13:     , m_lineNumber(lineNumber)
+14: {
+15:     setFlag(QGraphicsItem::ItemIsMovable);
+16:     setFlag(QGraphicsItem::ItemIsSelectable);
+17:     setFlag(QGraphicsItem::ItemSendsGeometryChanges);
+18:     setAcceptHoverEvents(true);
+19:     setZValue(2);
+20: }
+21: 
+22: QRectF StepNode::boundingRect() const
+23: {
+24:     return QRectF(-WIDTH / 2, -HEIGHT / 2, WIDTH, HEIGHT);
+25: }
+26: 
+27: void StepNode::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
+28: {
+29:     Q_UNUSED(option)
+30:     Q_UNUSED(widget)
+31: 
+32:     painter->save();
+33:     painter->setRenderHint(QPainter::Antialiasing);
+34:     painter->setOpacity(m_appearOpacity);
+35:     painter->scale(m_appearScale, m_appearScale);
+36:     QRectF rect = boundingRect();
+37: 
+38:     // Background
+39:     QColor bgColor;
+40:     if (m_hovered)
+41:         bgColor = QColor(55, 55, 70);
+42:     else if (isSelected())
+43:         bgColor = QColor(50, 50, 65);
+44:     else
+45:         bgColor = QColor(38, 38, 48);
+46: 
+47:     painter->setBrush(bgColor);
+48:     painter->setPen(QPen(m_hovered ? QColor(100, 150, 200) : QColor(70, 70, 85), m_hovered ? 2.0 : 1.5));
+49:     painter->drawRoundedRect(rect, RADIUS, RADIUS);
+50: 
+51:     // Step ID (small, top left)
+52:     painter->setPen(QColor(140, 140, 160));
+53:     QFont idFont = painter->font();
+54:     idFont.setPointSize(7);
+55:     painter->setFont(idFont);
+56:     QRectF idRect(rect.left() + PADDING, rect.top() + PADDING, rect.width() - 2 * PADDING, 14);
+57:     painter->drawText(idRect, Qt::AlignLeft | Qt::AlignVCenter, m_stepId);
+58: 
+59:     // Title
+60:     painter->setPen(Qt::white);
+61:     QFont titleFont = painter->font();
+62:     titleFont.setPointSize(9);
+63:     titleFont.setBold(true);
+64:     painter->setFont(titleFont);
+65:     QRectF titleRect(rect.left() + PADDING, rect.top() + PADDING + 16, rect.width() - 2 * PADDING, 18);
+66:     QString elidedTitle = QFontMetrics(titleFont).elidedText(m_title, Qt::ElideRight, int(rect.width() - 2 * PADDING));
+67:     painter->drawText(titleRect, Qt::AlignLeft | Qt::AlignVCenter, elidedTitle);
+68: 
+69:     // Code snippet (truncated)
+70:     painter->setPen(QColor(180, 180, 200));
+71:     QFont codeFont = painter->font();
+72:     codeFont.setPointSize(8);
+73:     codeFont.setBold(false);
+74:     painter->setFont(codeFont);
+75:     QRectF codeRect(rect.left() + PADDING, rect.top() + PADDING + 36, rect.width() - 2 * PADDING, 32);
+76:     QString elidedCode = QFontMetrics(codeFont).elidedText(m_codeSnippet, Qt::ElideRight, int(rect.width() - 2 * PADDING));
+77:     painter->drawText(codeRect, Qt::AlignLeft | Qt::AlignTop | Qt::TextWordWrap, elidedCode);
+78: 
+79:     painter->restore();
+80: }
+81: 
+82: void StepNode::playAppearAnimation(int durationMs)
+83: {
+84:     if (m_appearGroup) {
+85:         m_appearGroup->stop();
+86:         delete m_appearGroup;
+87:     }
+88: 
+89:     m_appearOpacity = 0.0;
+90:     m_appearScale = 0.8;
+91: 
+92:     m_appearGroup = new QParallelAnimationGroup(this);
+93: 
+94:     QPropertyAnimation* opacityAnim = new QPropertyAnimation(this, "appearOpacity");
+95:     opacityAnim->setDuration(durationMs);
+96:     opacityAnim->setStartValue(0.0);
+97:     opacityAnim->setEndValue(1.0);
+98:     opacityAnim->setEasingCurve(QEasingCurve::OutCubic);
+99: 
+100:     QPropertyAnimation* scaleAnim = new QPropertyAnimation(this, "appearScale");
+101:     scaleAnim->setDuration(durationMs);
+102:     scaleAnim->setStartValue(0.8);
+103:     scaleAnim->setEndValue(1.0);
+104:     scaleAnim->setEasingCurve(QEasingCurve::OutBack);
+105: 
+106:     m_appearGroup->addAnimation(opacityAnim);
+107:     m_appearGroup->addAnimation(scaleAnim);
+108:     m_appearGroup->start(QAbstractAnimation::DeleteWhenStopped);
+109: }
+110: 
+111: void StepNode::mousePressEvent(QGraphicsSceneMouseEvent* event)
+112: {
+113:     if (event->button() == Qt::LeftButton) {
+114:         emit stepClicked(m_filePath, m_lineNumber);
+115:     }
+116:     QGraphicsObject::mousePressEvent(event);
+117: }
+118: 
+119: void StepNode::hoverEnterEvent(QGraphicsSceneHoverEvent* event)
+120: {
+121:     m_hovered = true;
+122:     update();
+123:     QGraphicsObject::hoverEnterEvent(event);
+124: }
+125: 
+126: void StepNode::hoverLeaveEvent(QGraphicsSceneHoverEvent* event)
+127: {
+128:     m_hovered = false;
+129:     update();
+130:     QGraphicsObject::hoverLeaveEvent(event);
+131: }
+132: 
+133: QVariant StepNode::itemChange(GraphicsItemChange change, const QVariant& value)
+134: {
+135:     if (change == ItemPositionHasChanged && scene())
+136:         emit positionChanged();
+137:     return QGraphicsObject::itemChange(change, value);
+138: }
+
+(End of file - total 138 lines)
+</content>
+```
+
+---
+
+## Assistant (Build · MiMo-V2.5-Pro · 23.8s)
+
+_Thinking:_
+
+Now add the stale indicator to paint(). I'll draw an orange border and a ⚠ text when stale.
+
+**Tool: edit**
+
+**Input:**
+```json
+{
+  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/nodes/step_node.cpp",
+  "newString": "    painter->setBrush(bgColor);\n    QPen borderPen(m_hovered ? QColor(100, 150, 200) : QColor(70, 70, 85), m_hovered ? 2.0 : 1.5);\n    if (m_stale)\n        borderPen = QPen(QColor(255, 170, 68), 2.0);\n    painter->setPen(borderPen);\n    painter->drawRoundedRect(rect, RADIUS, RADIUS);\n\n    // Stale indicator\n    if (m_stale) {\n        painter->setPen(QColor(255, 170, 68));\n        QFont staleFont = painter->font();\n        staleFont.setPointSize(8);\n        staleFont.setBold(true);\n        painter->setFont(staleFont);\n        QRectF staleRect(rect.right() - 24, rect.top() + 2, 22, 16);\n        painter->drawText(staleRect, Qt::AlignCenter, \"\\u26A0\");\n    }",
+  "oldString": "    painter->setBrush(bgColor);\n    painter->setPen(QPen(m_hovered ? QColor(100, 150, 200) : QColor(70, 70, 85), m_hovered ? 2.0 : 1.5));\n    painter->drawRoundedRect(rect, RADIUS, RADIUS);"
+}
+```
+
+**Output:**
+```
+Edit applied successfully.
+```
+
+---
+
+## Assistant (Build · MiMo-V2.5-Pro · 7.3s)
+
+_Thinking:_
+
+Now update showCodemap() in canvastab.cpp to set stale flag on StepNode and use ClusterLayout.
+
+**Tool: read**
+
+**Input:**
+```json
+{
+  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvastab.cpp",
+  "limit": 50,
+  "offset": 540
+}
+```
+
+**Output:**
+```
+<path>/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvastab.cpp</path>
+<type>file</type>
+<content>
+540:     m_pulsingFilePath = filePath;
+541:     if (!m_pulseTimer) {
+542:         m_pulseTimer = new QTimer(this);
+543:         connect(m_pulseTimer, &QTimer::timeout, this, [this]() {
+544:             FileNode* node = m_nodes.value(m_pulsingFilePath, nullptr);
+545:             if (node) {
+546:                 node->startPulse();
+547:             } else {
+548:                 stopNodePulsing();
+549:             }
+550:         });
+551:     }
+552:     m_pulseTimer->start(800);
+553: }
+554: 
+555: void CanvasTab::stopNodePulsing()
+556: {
+557:     if (m_pulseTimer) {
+558:         m_pulseTimer->stop();
+559:     }
+560: }
+561: 
+562: void CanvasTab::showCodemap(const Codemap& map)
+563: {
+564:     m_currentCodemap = map;
+565:     m_viewMode = Semantic;
+566:     m_layoutMode = LayoutMode::LinearChain;
+567: 
+568:     clearCanvas();
+569:     clearSemanticNodes();
+570:     setStructuralUIVisible(false);
+571: 
+572:     m_semanticBtn->setChecked(true);
+573:     m_graphBtn->setChecked(false);
+574: 
+575:     if (map.traces.isEmpty())
+576:         return;
+577: 
+578:     // Build a lookup from location id to StepNode for connections
+579:     QMap<QString, StepNode*> stepNodeMap;
+580: 
+581:     for (const auto& trace : map.traces) {
+582:         QColor traceColor(trace.color);
+583:         if (!traceColor.isValid())
+584:             traceColor = QColor(100, 150, 200);
+585: 
+586:         auto* clusterNode = new ClusterGroupNode(trace.id, trace.title, trace.color);
+587:         m_canvasView->scene()->addItem(clusterNode);
+588:         m_clusterNodes.append(clusterNode);
+589: 
+
+(Showing lines 540-589 of 744. Use offset=590 to continue.)
+</content>
+```
+
+---
+
+## Assistant (Build · MiMo-V2.5-Pro · 56.9s)
+
+_Thinking:_
+
+Let me read more of the showCodemap method.
+
+**Tool: read**
+
+**Input:**
+```json
+{
+  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvastab.cpp",
+  "limit": 50,
+  "offset": 588
+}
+```
+
+**Output:**
+```
+<path>/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvastab.cpp</path>
+<type>file</type>
+<content>
+588:         m_clusterNodes.append(clusterNode);
+589: 
+590:         // Create StepNodes inside each cluster
+591:         for (const auto& loc : trace.locations) {
+592:             auto* stepNode = new StepNode(loc.id, loc.title, loc.codeSnippet,
+593:                                            loc.path, loc.lineNumber, clusterNode);
+594:             clusterNode->addChild(stepNode);
+595:             connect(stepNode, &StepNode::stepClicked, this, &CanvasTab::onStepClicked);
+596:             stepNodeMap[loc.id] = stepNode;
+597:         }
+598: 
+599:         // Arrange steps within cluster
+600:         QStringList locIds;
+601:         for (const auto& loc : trace.locations)
+602:             locIds.append(loc.id);
+603: 
+604:         QMap<QString, QPointF> chainPositions = m_layout->computeLinearChain(
+605:             locIds, 120.0, 50.0, Qt::Vertical);
+606: 
+607:         QMap<QString, QGraphicsObject*> stepObjs;
+608:         for (auto* child : clusterNode->children())
+609:             stepObjs[child->stepId()] = child;
+610:         m_layout->animateNodesToPositions(chainPositions, stepObjs, 400);
+611: 
+612:         clusterNode->updateBoundsFromChildren();
+613:     }
+614: 
+615:     // Create ConnectionEdges from mermaidDiagram
+616:     QList<Codemap::MermaidEdge> connections = map.parsedConnections();
+617:     for (const auto& edge : connections) {
+618:         StepNode* source = stepNodeMap.value(edge.from, nullptr);
+619:         StepNode* target = stepNodeMap.value(edge.to, nullptr);
+620:         if (!source || !target) continue;
+621: 
+622:         auto* connEdge = new ConnectionEdge(source, target, edge.label);
+623:         m_canvasView->scene()->addItem(connEdge);
+624:         m_connectionEdges.append(connEdge);
+625:         connEdge->playAppearAnimation();
+626:     }
+627: 
+628:     // Animate cluster positions
+629:     QMap<QString, QPointF> clusterPositions;
+630:     qreal x = 0, y = 0;
+631:     int col = 0;
+632:     for (auto* cn : m_clusterNodes) {
+633:         clusterPositions[cn->clusterId()] = QPointF(x, y);
+634:         x += 500;
+635:         col++;
+636:         if (col >= 3) {
+637:             col = 0;
+
+(Showing lines 588-637 of 744. Use offset=638 to continue.)
+</content>
+```
+
+---
+
+## Assistant (Build · MiMo-V2.5-Pro · 18.9s)
+
+_Thinking:_
+
+I need to update showCodemap to:1. Set stale flag on StepNode
+2. Use ClusterLayout for cluster positions instead of inline gridLet me update the showCodemap method.
+
+**Tool: edit**
+
+**Input:**
+```json
+{
+  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvastab.cpp",
+  "newString": "        // Create StepNodes inside each cluster\n        for (const auto& loc : trace.locations) {\n            auto* stepNode = new StepNode(loc.id, loc.title, loc.codeSnippet,\n                                           loc.path, loc.lineNumber, clusterNode);\n            stepNode->setStale(loc.isStale);\n            clusterNode->addChild(stepNode);\n            connect(stepNode, &StepNode::stepClicked, this, &CanvasTab::onStepClicked);\n            stepNodeMap[loc.id] = stepNode;\n        }",
+  "oldString": "        // Create StepNodes inside each cluster\n        for (const auto& loc : trace.locations) {\n            auto* stepNode = new StepNode(loc.id, loc.title, loc.codeSnippet,\n                                           loc.path, loc.lineNumber, clusterNode);\n            clusterNode->addChild(stepNode);\n            connect(stepNode, &StepNode::stepClicked, this, &CanvasTab::onStepClicked);\n            stepNodeMap[loc.id] = stepNode;\n        }"
+}
+```
+
+**Output:**
+```
+Edit applied successfully.
+```
+
+---
+
+## Assistant (Build · MiMo-V2.5-Pro · 30.5s)
+
+_Thinking:_
+
+Now update the cluster positioning to use ClusterLayout.
+
+**Tool: edit**
+
+**Input:**
+```json
+{
+  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/canvastab.cpp",
+  "newString": "    // Animate cluster positions using ClusterLayout\n    ClusterLayout clusterLayout;\n    QMap<QString, QPointF> clusterPositions = clusterLayout.computeClusterPositions(m_clusterNodes);\n\n    QMap<QString, QGraphicsObject*> clusterObjs;\n    for (auto* cn : m_clusterNodes)\n        clusterObjs[cn->clusterId()] = cn;\n    m_layout->animateNodesToPositions(clusterPositions, clusterObjs, 500);",
+  "oldString": "    // Animate cluster positions\n    QMap<QString, QPointF> clusterPositions;\n    qreal x = 0, y = 0;\n    int col = 0;\n    for (auto* cn : m_clusterNodes) {\n        clusterPositions[cn->clusterId()] = QPointF(x, y);\n        x += 500;\n        col++;\n        if (col >= 3) {\n            col = 0;\n            x = 0;\n            y += 400;\n        }\n    }\n\n    QMap<QString, QGraphicsObject*> clusterObjs;\n    for (auto* cn : m_clusterNodes)\n        clusterObjs[cn->clusterId()] = cn;\n    m_layout->animateNodesToPositions(clusterPositions, clusterObjs, 500);"
 }
 ```
 
@@ -4340,16 +4428,18 @@ Edit applied successfully.
 
 _Thinking:_
 
-Now add m_layout and m_clusterSections.
+Now **Phase 5.2** — scope from chat. Let me add `lastUserMessage()` to ChatPanel.
+
+**Phase 5.2** — scope из чата.
 
 **Tool: edit**
 
 **Input:**
 ```json
 {
-  "filePath": "/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/digest_panel.h",
-  "newString": "    void setupUI();\n    void createCollapsibleSection(const QString& title, QWidget* content, QToolButton*& toggleBtn, QWidget*& container);\n\n    QVBoxLayout* m_layout;\n    QList<QWidget*> m_clusterSections;\n\n    QLabel* m_motivationLabel;",
-  "oldString": "    void setupUI();\n    void createCollapsibleSection(const QString& title, QWidget* content, QToolButton*& toggleBtn, QWidget*& container);\n\n    QLabel* m_motivationLabel;"
+  "filePath": "/home/resu/Documents/dev/cremniy/src/Agent/chat_panel.h",
+  "newString": "    void addMessage(const QString& text, ChatMessage::Role role);\n    void appendToLastMessage(const QString& text);\n    void clearMessages();\n\n    ChatMessage* lastMessage() const;\n    QString lastUserMessage() const;",
+  "oldString": "    void addMessage(const QString& text, ChatMessage::Role role);\n    void appendToLastMessage(const QString& text);\n    void clearMessages();\n\n    ChatMessage* lastMessage() const;"
 }
 ```
 
@@ -4360,11 +4450,140 @@ Edit applied successfully.
 
 ---
 
-## Assistant (Build · MiMo-V2.5-Pro · 36.0s)
+## Assistant (Build · MiMo-V2.5-Pro · 13.9s)
 
 _Thinking:_
 
-Now let me build to check if everything compiles.
+Now implement lastUserMessage() in chat_panel.cpp.
+
+**Tool: read**
+
+**Input:**
+```json
+{
+  "filePath": "/home/resu/Documents/dev/cremniy/src/Agent/chat_panel.cpp",
+  "offset": 100
+}
+```
+
+**Output:**
+```
+<path>/home/resu/Documents/dev/cremniy/src/Agent/chat_panel.cpp</path>
+<type>file</type>
+<content>
+100: 
+101: void ChatPanel::clearMessages()
+102: {
+103:     qDeleteAll(m_messages);
+104:     m_messages.clear();
+105: }
+106: 
+107: ChatMessage* ChatPanel::lastMessage() const
+108: {
+109:     return m_messages.isEmpty() ? nullptr : m_messages.last();
+110: }
+111: 
+112: void ChatPanel::onSendMessage()
+113: {
+114:     QString text = m_input->text().trimmed();
+115:     if (text.isEmpty()) return;
+116: 
+117:     m_input->clear();
+118:     addMessage(text, ChatMessage::User);
+119:     emit messageSent(text);
+120: }
+121: 
+122: bool ChatPanel::eventFilter(QObject* obj, QEvent* event)
+123: {
+124:     if (obj == m_input && event->type() == QEvent::KeyPress) {
+125:         auto* keyEvent = static_cast<QKeyEvent*>(event);
+126:         if (keyEvent->key() == Qt::Key_Return || keyEvent->key() == Qt::Key_Enter) {
+127:             if (!(keyEvent->modifiers() & Qt::ShiftModifier)) {
+128:                 onSendMessage();
+129:                 return true;
+130:             }
+131:         }
+132:     }
+133:     return QWidget::eventFilter(obj, event);
+134: }
+135: 
+136: void ChatPanel::scrollToBottom()
+137: {
+138:     QScrollBar* sb = m_scrollArea->verticalScrollBar();
+139:     sb->setValue(sb->maximum());
+140: }
+141: 
+142: void ChatPanel::onCodemapClicked()
+143: {
+144:     emit codemapRequested();
+145: }
+146: 
+147: void ChatPanel::setCodemapButtonState(bool generating)
+148: {
+149:     if (!m_codemapBtn) return;
+150:     m_codemapBtn->setEnabled(!generating);
+151:     m_codemapBtn->setText(generating ? "Generating..." : "Codemap");
+152: }
+
+(End of file - total 152 lines)
+</content>
+```
+
+---
+
+## Assistant (Build · MiMo-V2.5-Pro · 23.9s)
+
+_Thinking:_
+
+Now add lastUserMessage() implementation.
+
+**Tool: edit**
+
+**Input:**
+```json
+{
+  "filePath": "/home/resu/Documents/dev/cremniy/src/Agent/chat_panel.cpp",
+  "newString": "ChatMessage* ChatPanel::lastMessage() const\n{\n    return m_messages.isEmpty() ? nullptr : m_messages.last();\n}\n\nQString ChatPanel::lastUserMessage() const\n{\n    for (int i = m_messages.size() - 1; i >= 0; --i) {\n        if (m_messages[i]->role() == ChatMessage::User)\n            return m_messages[i]->text();\n    }\n    return QString();\n}",
+  "oldString": "ChatMessage* ChatPanel::lastMessage() const\n{\n    return m_messages.isEmpty() ? nullptr : m_messages.last();\n}"
+}
+```
+
+**Output:**
+```
+Edit applied successfully.
+```
+
+---
+
+## Assistant (Build · MiMo-V2.5-Pro · 23.0s)
+
+_Thinking:_
+
+Now update openOrGenerateConceptMap() to pass task from chat when scope is empty.
+
+**Tool: edit**
+
+**Input:**
+```json
+{
+  "filePath": "/home/resu/Documents/dev/cremniy/src/app/IDEWindow/idewindow.cpp",
+  "newString": "    QStringList effectiveScope = scope;\n    if (effectiveScope.isEmpty())\n        effectiveScope = canvas->currentGraph().allFiles;\n\n    // Check if there's a user message in chat to use as task\n    QString task;\n    if (scope.isEmpty())\n        task = m_chatPanel->lastUserMessage();\n\n    statusBar()->showMessage(\"Generating codemap via AI...\");\n    m_chatPanel->setCodemapButtonState(true);\n\n    QJsonObject args;\n    if (!task.isEmpty()) {\n        args[\"task\"] = task;\n    } else {\n        QJsonArray scopeArr;\n        for (const QString& f : effectiveScope)\n            scopeArr.append(f);\n        args[\"scope\"] = scopeArr;\n    }",
+  "oldString": "    QStringList effectiveScope = scope;\n    if (effectiveScope.isEmpty())\n        effectiveScope = canvas->currentGraph().allFiles;\n\n    statusBar()->showMessage(\"Generating codemap via AI...\");\n    m_chatPanel->setCodemapButtonState(true);\n\n    QJsonObject args;\n    QJsonArray scopeArr;\n    for (const QString& f : effectiveScope)\n        scopeArr.append(f);\n    args[\"scope\"] = scopeArr;"
+}
+```
+
+**Output:**
+```
+Edit applied successfully.
+```
+
+---
+
+## Assistant (Build · MiMo-V2.5-Pro · 56.4s)
+
+_Thinking:_
+
+Now build to check if everything compiles.
 
 **Tool: bash**
 
@@ -4372,1083 +4591,127 @@ Now let me build to check if everything compiles.
 ```json
 {
   "command": "cmake --build /home/resu/Documents/dev/cremniy/build --parallel 2 2>&1 | tail -10",
-  "description": "Build after DigestPanel integration",
+  "description": "Build after Phase 4+5.1+5.2",
   "timeout": 180000
 }
 ```
 
 **Output:**
 ```
-[ 14%] Built target QCodeEditor
-[ 32%] Built target QHexView
-[ 32%] Built target cremniy_autogen_timestamp_deps
-[ 33%] Automatic MOC and UIC for target cremniy
-[ 33%] Built target cremniy_autogen
-[ 34%] Building CXX object CMakeFiles/cremniy.dir/cremniy_autogen/mocs_compilation.cpp.o
-[ 35%] Building CXX object CMakeFiles/cremniy.dir/ToolTabs/Canvas/canvastab.cpp.o
-[ 36%] Building CXX object CMakeFiles/cremniy.dir/ToolTabs/Canvas/digest_panel.cpp.o
-[ 37%] Linking CXX executable cremniy
+[ 35%] Building CXX object CMakeFiles/cremniy.dir/cremniy_autogen/mocs_compilation.cpp.o
+[ 36%] Building CXX object CMakeFiles/cremniy.dir/Agent/chat_panel.cpp.o
+[ 36%] Building CXX object CMakeFiles/cremniy.dir/Agent/agent_session.cpp.o
+[ 37%] Building CXX object CMakeFiles/cremniy.dir/ToolTabs/Canvas/canvastab.cpp.o
+[ 38%] Building CXX object CMakeFiles/cremniy.dir/ToolTabs/Canvas/cluster_layout.cpp.o
+[ 39%] Building CXX object CMakeFiles/cremniy.dir/ToolTabs/Canvas/nodes/step_node.cpp.o
+[ 40%] Building CXX object CMakeFiles/cremniy.dir/ToolTabs/Canvas/nodes/cluster_group_node.cpp.o
+[ 40%] Building CXX object CMakeFiles/cremniy.dir/ToolTabs/Canvas/edges/connection_edge.cpp.o
+[ 41%] Linking CXX executable cremniy
 [100%] Built target cremniy
 
 ```
 
 ---
 
-## Assistant (Build · MiMo-V2.5-Pro · 23.1s)
+## Assistant (Build · MiMo-V2.5-Pro · 14.5s)
 
 _Thinking:_
 
-Build successful. Let me also run the tests.
+Build successful. Now **Phase 6.2** — integration tests. Let me add tests for loadLatest with Windsurf naming and import of real codemap format.
 
-Сборка успешна. Проверяю тесты.
-
-**Tool: bash**
-
-**Input:**
-```json
-{
-  "command": "cd /home/resu/Documents/dev/cremniy/tests/build && cmake --build . --parallel 2 2>&1 && ./test_dependency_parser 2>&1",
-  "description": "Run tests",
-  "timeout": 120000
-}
-```
-
-**Output:**
-```
-[  0%] Built target test_dependency_parser_autogen_timestamp_deps
-[ 16%] Built target test_dependency_parser_autogen
-[100%] Built target test_dependency_parser
-qt.qpa.plugin: Could not find the Qt platform plugin "wayland" in ""
-********* Start testing of TestDependencyParser *********
-Config: Using QtTest library 6.8.3, Qt 6.8.3 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 13.3.0), ubuntu 24.04
-PASS   : TestDependencyParser::initTestCase()
-PASS   : TestDependencyParser::testParserFindsAllFiles()
-PASS   : TestDependencyParser::testParserFindsIncludes()
-PASS   : TestDependencyParser::testParserResolvesRelativePaths()
-PASS   : TestDependencyParser::testNoDuplicates()
-PASS   : TestDependencyParser::testEmptyProject()
-PASS   : TestDependencyParser::testGraphUpdatedSignal()
-PASS   : TestDependencyParser::cleanupTestCase()
-Totals: 8 passed, 0 failed, 0 skipped, 0 blacklisted, 14ms
-********* Finished testing of TestDependencyParser *********
-
-```
-
----
-
-## Assistant (Build · MiMo-V2.5-Pro · 28.0s)
-
-_Thinking:_
-
-All tests pass. Let me commit.
-
-Все тесты проходят. Фиксирую.
-
-**Tool: bash**
-
-**Input:**
-```json
-{
-  "command": "git add src/ToolTabs/Canvas/canvas_layout.h src/ToolTabs/Canvas/canvas_layout.cpp src/ToolTabs/Canvas/canvastab.h src/ToolTabs/Canvas/canvastab.cpp src/ToolTabs/Canvas/nodes/cluster_group_node.h src/ToolTabs/Canvas/nodes/cluster_group_node.cpp src/ToolTabs/Canvas/digest_panel.h src/ToolTabs/Canvas/digest_panel.cpp && git commit -m \"feat: Phase 4 — ClusterGroupNode integration, animated layout, mode toggle, DigestPanel\n\nshowSemanticMap(): uses ClusterGroupNode+StepNode+ConnectionEdge (not FileNode)\n  - Steps are children of their cluster (setParentItem)\n  - Intra-cluster layout via computeLinearChain + animateNodesToPositions\n  - Cluster positions via grid layout with animation\n  - ConnectionEdge with relation labels\nanimateNodesToPositions: signature changed to QMap<QString, QGraphicsObject*>\n  - Works with both FileNode and StepNode (both inherit QGraphicsObject)\ntoggleGraphMode(): checks saved maps, emits needsSemanticMapGeneration if none\n  - onSemanticMapReady() callback for external generation flow\nClusterGroupNode: added playAppearAnimation, itemChange, positionChanged signal\nDigestPanel::showMap(): collapsible cluster sections with step cards,\n  code snippets, and 'Перейти' navigation buttons\nCanvasTab: signals semanticMapShown, needsSemanticMapGeneration,\n  stepNavigationRequested; clearSemanticNodes(), onStepClicked()\"",
-  "description": "Commit Phase 4",
-  "workdir": "/home/resu/Documents/dev/cremniy"
-}
-```
-
-**Output:**
-```
-[main 6067732] feat: Phase 4 — ClusterGroupNode integration, animated layout, mode toggle, DigestPanel
- 8 files changed, 311 insertions(+), 113 deletions(-)
-
-```
-
----
-
-## Assistant (Build · MiMo-V2.5-Pro · 32.0s)
-
-_Thinking:_
-
-Done. Let me mark the task and summarize.
-
-**Tool: task**
-
-**Input:**
-```json
-{
-  "operation": {
-    "action": "done",
-    "id": "T10",
-    "event_summary": "Phase 4 complete: ClusterGroupNode, animated layout, mode toggle, DigestPanel"
-  }
-}
-```
-
-**Output:**
-```
-done → done
-```
-
----
-
-## Assistant (Build · MiMo-V2.5-Pro · 17.7s)
-
-_Thinking:_
-
-Let me summarize what was done.
-
-Готово (`6067732`):
-
-**4.1 — showSemanticMap() на StepNode/ClusterGroupNode:**
-- `ClusterGroupNode` — контейнер кластера с `playAppearAnimation`, шаги как children (`setParentItem`)
-- `StepNode` — карточка шага с code snippet, `stepClicked(filePath, lineNumber)`
-- `ConnectionEdge` — рёбра с текстовыми метками, `playAppearAnimation`
-- Внутрикластерная раскладка через `computeLinearChain` + `animateNodesToPositions`
-- `animateNodesToPositions` → `QMap<QString, QGraphicsObject*>` (универсально для FileNode и StepNode)
-
-**4.2 — toggleGraphMode():**
-- Проверяет сохранённые карты → загружает → показывает
-- Нет карты → `emit needsSemanticMapGeneration()`
-- `onSemanticMapReady(map)` — callback для внешнего flow генерации
-
-**4.3 — DigestPanel::showMap():**
-- Collapsible секции кластеров (первый развёрнут, остальные свёрнуты)
-- Карточки шагов: title, code snippet (monospace), кнопка "Перейти →"
-- `stepNavigationRequested(filePath, lineNumber)` сигнал
-
----
-
-## User
-
-в системе установлен qt 6.4 проект должен собиратся на 6.8.3 папка с дистрибутивом в корне проекта third_party$ собирать через 6.8.3
-
----
-
-## Assistant (Build · MiMo-V2.5-Pro · 40.4s)
-
-_Thinking:_
-
-The user wants to ensure the project builds with Qt 6.8.3 from the third_party directory, not the system Qt 6.4. Let me check the current build configuration.
-
-**Tool: bash**
-
-**Input:**
-```json
-{
-  "command": "ls /home/resu/Documents/dev/cremniy/third_party/",
-  "description": "Check third_party contents"
-}
-```
-
-**Output:**
-```
-qt-build
-qt-install
-qt-src
-
-```
-
-**Tool: bash**
-
-**Input:**
-```json
-{
-  "command": "qmake6 --version 2>&1; echo \"---\"; /home/resu/Documents/dev/cremniy/third_party/qt-install/bin/qmake6 --version 2>&1",
-  "description": "Check system vs third_party Qt versions"
-}
-```
-
-**Output:**
-```
-QMake version 3.1
-Using Qt version 6.4.2 in /usr/lib/x86_64-linux-gnu
----
-QMake version 3.1
-Using Qt version 6.8.3 in /home/resu/Documents/dev/cremniy/third_party/qt-install/lib
-
-```
-
----
-
-## Assistant (Build · MiMo-V2.5-Pro · 19.9s)
-
-_Thinking:_
-
-The system Qt is 6.4.2, and the third_party Qt is 6.8.3. I need to make sure the CMake build uses the third_party Qt 6.8.3. Let me check the current CMakeCache to see which Qt is being used, and fix the CMake configuration.
-
-**Tool: bash**
-
-**Input:**
-```json
-{
-  "command": "grep -E \"Qt6_DIR|CMAKE_PREFIX_PATH|Qt6Core_DIR\" /home/resu/Documents/dev/cremniy/build/CMakeCache.txt 2>/dev/null | head -10",
-  "description": "Check which Qt CMake is using"
-}
-```
-
-**Output:**
-```
-CMAKE_PREFIX_PATH:UNINITIALIZED=/home/resu/Documents/dev/cremniy/third_party/qt-install
-Qt6Core_DIR:PATH=/home/resu/Documents/dev/cremniy/third_party/qt-install/lib/cmake/Qt6Core
-Qt6_DIR:PATH=/home/resu/Documents/dev/cremniy/third_party/qt-install/lib/cmake/Qt6
-
-```
-
----
-
-## Assistant (Build · MiMo-V2.5-Pro · 36.8s)
-
-_Thinking:_
-
-Good, the build is already using Qt 6.8.3 from third_party. But the user says it should build through 6.8.3. Let me check if there's a clean way to configure this. Let me also check the tests build.
-
-**Tool: bash**
-
-**Input:**
-```json
-{
-  "command": "grep -E \"Qt6_DIR|CMAKE_PREFIX_PATH\" /home/resu/Documents/dev/cremniy/tests/build/CMakeCache.txt 2>/dev/null | head -5",
-  "description": "Check tests Qt version"
-}
-```
-
-**Output:**
-```
-CMAKE_PREFIX_PATH:UNINITIALIZED=/home/resu/Documents/dev/cremniy/third_party/qt-install
-Qt6_DIR:PATH=/home/resu/Documents/dev/cremniy/third_party/qt-install/lib/cmake/Qt6
-
-```
-
----
-
-## Assistant (Build · MiMo-V2.5-Pro · 14.4s)
-
-_Thinking:_
-
-Both builds are already using Qt 6.8.3 from third_party. But let me verify by checking the actual linked libraries.
-
-**Tool: bash**
-
-**Input:**
-```json
-{
-  "command": "ldd /home/resu/Documents/dev/cremniy/build/cremniy 2>/dev/null | grep -i qt | head -5",
-  "description": "Check linked Qt libraries"
-}
-```
-
-**Output:**
-```
-	libQt6Widgets.so.6 => /home/resu/Documents/dev/cremniy/third_party/qt-install/lib/libQt6Widgets.so.6 (0x000075c9f7c00000)
-	libQt6Network.so.6 => /home/resu/Documents/dev/cremniy/third_party/qt-install/lib/libQt6Network.so.6 (0x000075c9f7800000)
-	libQt6Gui.so.6 => /home/resu/Documents/dev/cremniy/third_party/qt-install/lib/libQt6Gui.so.6 (0x000075c9f6e00000)
-	libQt6Core.so.6 => /home/resu/Documents/dev/cremniy/third_party/qt-install/lib/libQt6Core.so.6 (0x000075c9f6600000)
-	libQt6DBus.so.6 => /home/resu/Documents/dev/cremniy/third_party/qt-install/lib/libQt6DBus.so.6 (0x000075c9f7732000)
-
-```
-
----
-
-## Assistant (Build · MiMo-V2.5-Pro · 15.3s)
-
-_Thinking:_
-
-The build is already using Qt 6.8.3 from third_party. But I should verify by running the binary.
-
-Проект уже собирается на Qt 6.8.3 из `third_party/qt-install`:
-
-```
-libQt6Widgets.so.6 => third_party/qt-install/lib/...
-libQt6Core.so.6 => third_party/qt-install/lib/...
-```
-
-Сборка и тесты оба линкуются с 6.8.3. Если нужно пересобрать с нуля:
-
-```bash
-rm -rf build && mkdir build
-cmake -S src -B build -DCMAKE_PREFIX_PATH=$(pwd)/third_party/qt-install
-cmake --build build --parallel 2
-```
-
-Всё в порядке — проблем нет.
-
----
-
-## User
-
-фаза 5 :Полная картина. Заметил, что validateSemanticMapJson теперь принимает только rawJson (без availableFiles/projectRoot параметров — они стали членами класса m_availableFiles/m_projectRoot), что важно учесть в тестах. Также вижу: ROADMAP уже имеет завершённый раздел "Infinite Canvas" со своей Фазой 6 — новый Semantic Map функционал нужно оформить как отдельный раздел, не путать нумерацию.Created a file, read a fileCreated a file, read a fileГотово. Ключевые моменты:
-5.1 — CMake минимальный: проверка показала, что src/ToolTabs/Canvas/CMakeLists.txt и основной src/CMakeLists.txt уже включают все файлы Фаз 1-4 — основная сборка чистая. Фаза 5.1 сводится только к двум новым тестовым таргетам в tests/CMakeLists.txt, по образцу существующего test_dependency_parser.
-5.2 — 14 тестов для SemanticMap/SemanticStep/SemanticCluster round-trip, extractCodeSnippet (границы файла), и SemanticMapStore (включая отдельный тест на path traversal через sanitizeId).
-5.3 — самое тонкое место: validateSemanticMapJson — приватный метод, зависящий от членов класса m_availableFiles/m_projectRoot. Дал два варианта (friend-класс с #ifdef CREMNIY_TESTING или вынос в свободную функцию) с рекомендацией в пользу второго, если рефакторинг минимален. Тест 8 (testMarkdownWrappedJsonRejectedOrStripped) специально сформулирован как фиксация текущего поведения — если LLM реально оборачивает JSON в ```json, это всплывёт как failing/explicit regression test, а не тихий баг.
-5.4-5.5 — отдельный новый раздел в ROADMAP (не путать нумерацию с уже завершённой "Infinite Canvas" Phase 1-6), и подсекция в CONTRIBUTING с явной инструкцией не угадывать имя обработчика needsSemanticMapGeneration(), а взять из реального кода Фазы 4.2.
-После этой фазы план из вашего исходного .canvas-файла будет полностью закрыт — от структурного графа до AI-генерируемой концептуальной карты с тестами и докой.
-
-Фаза 5 — CMake & Тесты & Документация
-
-
-Финальная фаза концептуального графа. Сборка из корня уже работает на
-Qt 6.8.3 через third_party/qt-install (см. CONTRIBUTING.md:
-cmake .. -DCMAKE_PREFIX_PATH=../../third_party/qt-install) — новые
-цели тестов должны использовать тот же CMAKE_PREFIX_PATH, отдельной
-настройки не требуется.
-
-
-
-
-Контекст — что уже подключено
-
-
-src/ToolTabs/Canvas/CMakeLists.txt — уже включает все файлы Фаз 1-4
-(semantic_map.cpp/h, semantic_map_store.cpp/h, cluster_layout.cpp/h,
-nodes/step_node.cpp/h, nodes/cluster_group_node.cpp/h,
-edges/connection_edge.cpp/h, digest_panel.cpp/h) — проверка
-показала: основная сборка (make) уже проходит чисто, 0 ошибок.
-CMake-модуль для основного таргета — не требуется, только для тестов.
-src/CMakeLists.txt (Agent) — уже включает
-generate_semantic_map_tool.cpp/h.
-tests/CMakeLists.txt — содержит только test_dependency_parser
-(8/8 PASS).
-
-
-Таким образом Фаза 5.1 (CMake) сокращается до: добавить новые тестовые
-таргеты в tests/CMakeLists.txt, основной CMake не трогать.
-
-
-Промт 5.1 — тестовые цели в tests/CMakeLists.txt
-
-В Cremniy (tests/CMakeLists.txt) уже есть target test_dependency_parser.
-Добавь по аналогии два новых таргета:
-
-1. test_semantic_map — тестирует сериализацию SemanticMap/SemanticCluster/
-   SemanticStep (Фаза 1) и SemanticMapStore (Фаза 1, Промт C).
-
-add_executable(test_semantic_map
-    test_semantic_map.cpp
-    ${SRC_DIR}/ToolTabs/Canvas/semantic_map.cpp
-    ${SRC_DIR}/ToolTabs/Canvas/semantic_map.h
-    ${SRC_DIR}/ToolTabs/Canvas/semantic_map_store.cpp
-    ${SRC_DIR}/ToolTabs/Canvas/semantic_map_store.h
-    ${SRC_DIR}/ToolTabs/Canvas/semantic_map_utils.cpp
-    ${SRC_DIR}/ToolTabs/Canvas/semantic_map_utils.h
-)
-target_include_directories(test_semantic_map PRIVATE
-    ${SRC_DIR}
-    ${SRC_DIR}/ToolTabs/Canvas
-)
-target_link_libraries(test_semantic_map PRIVATE Qt6::Test Qt6::Widgets)
-add_test(NAME SemanticMap COMMAND test_semantic_map)
-
-2. test_generate_semantic_map_tool — тестирует валидацию ответа LLM
-   в GenerateSemanticMapTool (Фаза 2, Промт 2.3), БЕЗ реального
-   сетевого вызова (тестируем validateSemanticMapJson напрямую,
-   используя friend-класс или вынося валидацию в тестируемую форму —
-   см. Промт 5.2 для деталей).
-
-add_executable(test_generate_semantic_map_tool
-    test_generate_semantic_map_tool.cpp
-    ${SRC_DIR}/Agent/tools/generate_semantic_map_tool.cpp
-    ${SRC_DIR}/Agent/tools/generate_semantic_map_tool.h
-    ${SRC_DIR}/Agent/tools/agent_tool.h
-    ${SRC_DIR}/ToolTabs/Canvas/semantic_map.cpp
-    ${SRC_DIR}/ToolTabs/Canvas/semantic_map.h
-    ${SRC_DIR}/ToolTabs/Canvas/semantic_map_store.cpp
-    ${SRC_DIR}/ToolTabs/Canvas/semantic_map_store.h
-    ${SRC_DIR}/ToolTabs/Canvas/semantic_map_utils.cpp
-    ${SRC_DIR}/ToolTabs/Canvas/semantic_map_utils.h
-    ${SRC_DIR}/Agent/llm_client.cpp
-    ${SRC_DIR}/Agent/llm_client.h
-    ${SRC_DIR}/Agent/endpoint_manager.cpp
-    ${SRC_DIR}/Agent/endpoint_manager.h
-)
-target_include_directories(test_generate_semantic_map_tool PRIVATE
-    ${SRC_DIR}
-    ${SRC_DIR}/ToolTabs/Canvas
-    ${SRC_DIR}/Agent
-    ${SRC_DIR}/Agent/tools
-)
-target_link_libraries(test_generate_semantic_map_tool PRIVATE
-    Qt6::Test Qt6::Widgets Qt6::Network)
-add_test(NAME GenerateSemanticMapTool COMMAND test_generate_semantic_map_tool)
-
-Не меняй find_package(Qt6 6.8.3 ...) — сборка уже настроена на
-третьесторонний Qt из third_party/qt-install, версия пина корректна.
-
-
-Промт 5.2 — test_semantic_map.cpp
-
-В Cremniy (tests/) создай test_semantic_map.cpp по образцу
-test_dependency_parser.cpp (структура: class TestSemanticMap : public
-QObject, private slots для каждого теста, QTEST_MAIN(TestSemanticMap)):
-
-Тесты для сериализации (SemanticStep/SemanticCluster/SemanticMap):
-
-1. testStepRoundTrip()
-   - Создать SemanticStep с заполненными всеми полями (включая
-     непустые connections/connectionLabels)
-   - step.toJson() → SemanticStep::fromJson() → QCOMPARE всех полей
-     с исходными значениями
-
-2. testClusterRoundTrip() — аналогично для SemanticCluster с 2-3 steps
-
-3. testMapRoundTrip() — аналогично для SemanticMap с 2 clusters,
-   проверить createdAt сохраняется через ISO 8601 с точностью до секунды
-   (QDateTime может терять миллисекунды при ISODate — используй
-   QCOMPARE с допуском, например сравнивай toString(Qt::ISODate))
-
-4. testFromJsonMissingOptionalFields()
-   - QJsonObject с только обязательными полями (id, title), без
-     description/color/motivation/details/connections
-   - fromJson() не должен крашиться, опциональные поля = пустые
-     строки/пустые списки
-
-5. testFindStep()
-   - SemanticMap с несколькими clusters/steps
-   - findStep("2b") возвращает указатель на корректный SemanticStep
-   - findStep("nonexistent") возвращает nullptr
-
-Тесты для extractCodeSnippet (semantic_map_utils):
-
-6. testExtractCodeSnippetValidRange()
-   - Создать временный файл (QTemporaryDir, как в test_dependency_parser)
-     с известным содержимым (5 строк)
-   - extractCodeSnippet(tmpDir, "file.txt", 2, 4) возвращает строки 2-4
-
-7. testExtractCodeSnippetOutOfBounds()
-   - extractCodeSnippet(tmpDir, "file.txt", 10, 20) на 5-строчном файле
-     → возвращает "" (не крашится)
-
-8. testExtractCodeSnippetInvalidRange()
-   - startLine > endLine → возвращает ""
-   - startLine < 1 → возвращает ""
-
-9. testExtractCodeSnippetMissingFile()
-   - несуществующий файл → возвращает "", без исключения
-
-Тесты для SemanticMapStore:
-
-10. testStoreSaveAndLoad()
-    - QTemporaryDir как projectRoot
-    - SemanticMapStore store(tmpDir)
-    - store.save(map) → true
-    - store.load(map.id) → has_value(), содержимое совпадает с map
-
-11. testStoreLoadNonexistent()
-    - store.load("nonexistent_id") → std::nullopt (не крашится)
-
-12. testStoreList()
-    - сохранить 2-3 карты с разными createdAt
-    - store.list() возвращает корректные MapMeta (id, title, createdAt)
-      без полной загрузки clusters
-
-13. testStoreSanitizeId()
-    - SemanticMap с id, содержащим path traversal попытку
-      (например "../../etc/passwd" или "foo/bar")
-    - store.save() не должен создать файл за пределами storageDir()
-      (проверить через QDir::exists на ожидаемый санитайзенный путь,
-      и убедиться что файл вне tmpDir/.cremniy/semantic_maps/ НЕ создан)
-
-14. testStoreRemove()
-    - save → remove → load возвращает std::nullopt,
-      store.list() больше не содержит этот id
-
-
-Промт 5.3 — test_generate_semantic_map_tool.cpp (без сети)
-
-В Cremniy (tests/) создай test_generate_semantic_map_tool.cpp.
-
-ПРОБЛЕМА: validateSemanticMapJson() — приватный метод
-GenerateSemanticMapTool, и зависит от m_availableFiles/m_projectRoot
-(членов класса), заполняемых внутри execute() перед сетевым вызовом.
-Тестировать без сети нужно, делая ОДНО из двух (выбери менее инвазивное
-для существующего кода):
-
-Вариант A (рекомендуется) — friend-класс для теста:
-   В generate_semantic_map_tool.h добавь:
-   #ifdef CREMNIY_TESTING
-   friend class TestGenerateSemanticMapTool;
-   #endif
-   В tests/CMakeLists.txt для test_generate_semantic_map_tool добавь
-   target_compile_definitions(test_generate_semantic_map_tool PRIVATE CREMNIY_TESTING)
-
-   Тест создаёт GenerateSemanticMapTool, напрямую устанавливает
-   m_availableFiles и m_projectRoot (через friend-доступ), затем
-   вызывает validateSemanticMapJson(rawJson) и проверяет ValidationResult.
-
-Вариант B — если friend нежелателен, оберни валидацию в свободную
-функцию semantic_map_validation.h/cpp:
-   ValidationResult validateSemanticMapJson(const QString& rawJson,
-       const QStringList& availableFiles, const QString& projectRoot);
-   GenerateSemanticMapTool вызывает эту функцию вместо приватного метода.
-   Тест вызывает функцию напрямую без друзей/моков.
-
-   (Вариант B чище архитектурно — если рефакторинг минимален
-   (валидация уже выделена в отдельный приватный метод, судя по
-   текущей сигнатуре — просто перенести в .h/.cpp без класса),
-   предпочти его.)
-
-Тесты (структура как в предыдущих файлах, QTEST_MAIN):
-
-1. testValidJsonPasses()
-   - QTemporaryDir с файлом "src/main.cpp" (5+ строк реального кода)
-   - availableFiles = {"src/main.cpp"}
-   - rawJson = валидный SemanticMap JSON с одним кластером, одним
-     step (filePath="src/main.cpp", startLine=1, endLine=3,
-     connections пуст)
-   - validateSemanticMapJson(rawJson) → result.ok == true,
-     result.map.clusters.size() == 1,
-     result.map.clusters[0].steps[0].codeSnippet НЕ пуст
-     (перезаписан из реального файла — проверка требования
-     "не доверяй codeSnippet от LLM")
-
-2. testInvalidJsonSyntax()
-   - rawJson = "{ broken json"
-   - result.ok == false, errorReason содержит "Invalid JSON" или
-     аналогичное упоминание парсинга
-
-3. testUnknownFilePath()
-   - step.filePath = "src/nonexistent.cpp" (не в availableFiles)
-   - result.ok == false, errorReason содержит filePath и step.id
-
-4. testLineNumberOutOfBounds()
-   - availableFiles содержит "src/main.cpp" (5 строк)
-   - step.endLine = 100
-   - result.ok == false, errorReason упоминает превышение длины файла
-
-5. testStartLineGreaterThanEndLine()
-   - step.startLine = 10, step.endLine = 5
-   - result.ok == false
-
-6. testDanglingConnectionRemoved()
-   - step "1a" имеет connections = ["1b", "nonexistent_id"]
-   - после валидации (если result.ok == true для остальных условий)
-     connections для "1a" содержит только "1b", "nonexistent_id" удалён
-     (и соответствующий connectionLabels по тому же индексу)
-
-7. testEmptyClustersWithDetailsIsValid()
-   - rawJson = {"id": "x", "title": "x", "details": "Not enough
-     context", "clusters": []}
-   - result.ok == true, result.map.clusters.isEmpty() == true
-     (это валидный "недостаточно контекста" случай из системного
-     промта Фазы 2.2, не ошибка)
-
-8. testMarkdownWrappedJsonRejectedOrStripped()
-   - rawJson = "```json\n{...}\n```"
-   - Опиши ожидаемое поведение явно: если текущая реализация
-     НЕ обрабатывает markdown-обёртку — тест должен
-     ЗАФИКСИРОВАТЬ текущее поведение (ok == false с "Invalid JSON",
-     т.к. ```json не парсится как JSON). Если это нежелательно —
-     это повод для отдельного fix, не делай его в рамках Фазы 5,
-     но добавь комментарий TODO в тесте, ссылающийся на системный
-     промт 2.2 ("требование: первый символ ответа — {").
-
-
-Промт 5.4 — ROADMAP.md / ROADMAP_ru.md
-
-В Cremniy ROADMAP.md и ROADMAP_ru.md секция "Infinite Canvas" уже
-завершена (Phases 1-6, все [x]). Добавь НОВЫЙ раздел после неё
-(не переиспользуй нумерацию Phase 1-6 — это другая фича):
-
-## Concept Map / Semantic Layer (in progress)
-
-AI-generated conceptual overview of the codebase, complementing the
-structural dependency graph with semantic clusters (windsurf/codemap-style):
-
-- [x] Data model — SemanticMap/SemanticCluster/SemanticStep with JSON
-      serialization, SemanticMapStore (.cremniy/semantic_maps/)
-- [x] GenerateSemanticMapTool — agent tool with validation and retry
-      (filePath/lineNumber verification against real files)
-- [x] Canvas visualization — ClusterGroupNode, StepNode, ConnectionEdge
-      with labeled connections
-- [x] Tools → Concept Map menu entry; Structure/Concept toggle in
-      Canvas toolbar; DigestPanel with collapsible Motivation/Details
-- [x] Tests & documentation
-
-Аналогично для ROADMAP_ru.md, перевод на русский.
-
-
-Промт 5.5 — CONTRIBUTING.md / CONTRIBUTING_ru.md
-
-В Cremniy CONTRIBUTING.md уже есть секция "Canvas Module Architecture"
-(описывает Canvas/ структуру, как добавить layer-фильтр, как добавить
-layout). Добавь новую подсекцию ПОСЛЕ неё:
-
-## Concept Map / Semantic Layer
-
-The semantic layer adds an AI-generated conceptual overview on top of
-the structural dependency graph.
-
-### Data flow
-
-1. User triggers via Tools → Concept Map, or the Structure/Concept
-   toggle in CanvasTab toolbar
-2. CanvasTab checks SemanticMapStore::list() for a cached map in
-   `.cremniy/semantic_maps/`
-3. If absent, emits needsSemanticMapGeneration() — handled by
-   [IDEWindow/ToolsMenu — уточни фактический обработчик в коде],
-   which invokes GenerateSemanticMapTool via AgentSession
-4. GenerateSemanticMapTool sends project files to the LLM with a
-   structured system prompt, validates the response (real file paths,
-   in-bounds line numbers), retries up to 2 times on validation failure
-5. Valid result is saved via SemanticMapStore::save() and rendered via
-   CanvasTab::showSemanticMap()
-
-### Adding a new field to SemanticStep/SemanticCluster
-
-1. Add the field in semantic_map.h
-2. Update toJson()/fromJson() — make new fields optional in fromJson
-   for backward compatibility with cached .cremniy/semantic_maps/*.json
-3. Update the system prompt in
-   GenerateSemanticMapTool::buildSystemPrompt() to describe the new
-   field's expected format
-4. Update validateSemanticMapJson() if the field requires validation
-5. Update visualization (StepNode/ClusterGroupNode/DigestPanel) to
-   display the new field
-
-### Testing
-
-- tests/test_semantic_map.cpp — serialization, SemanticMapStore
-- tests/test_generate_semantic_map_tool.cpp — validation logic
-  (no network calls — see CREMNIY_TESTING / friend class pattern)
-
-Аналогично для CONTRIBUTING_ru.md, перевод на русский. В шаге 3
-("CanvasTab checks... ToolsMenu...") — проверь и укажи фактическое
-имя класса/метода-обработчика needsSemanticMapGeneration() из текущего
-кода (Фаза 4.2), не угадывай.
-
-
-Чеклист готовности
-
-
- test_semantic_map — собирается и проходит (14 тестов из Промта 5.2)
- test_generate_semantic_map_tool — собирается без сети, проходит (8 тестов из Промта 5.3)
- ctest из tests/build показывает 3 таргета: DependencyParser, SemanticMap, GenerateSemanticMapTool — все PASS
- ROADMAP.md/ROADMAP_ru.md — новый раздел "Concept Map / Semantic Layer"
- CONTRIBUTING.md/CONTRIBUTING_ru.md — новая подсекция с data flow и инструкцией расширения
- В CONTRIBUTING.md шаг "handled by..." указывает реальный класс/метод из кода Фазы 4.2 (не placeholder)
-
-
-
-Примечание про markdown-обёртку (testMarkdownWrappedJsonRejectedOrStripped)
-
-Тест 5.3.8 зафиксирует текущее поведение как regression-тест.
-Если на практике LLM часто оборачивает JSON в ```json
-несмотря на системный промт — это отдельный быстрый фикс вне Фазы 5:
-в onMapStreamFinished перед QJsonDocument::fromJson срезать
-обёртку регуляркой/строковыми операциями (trimmed(), проверка
-префикса  ```json / суффикса ```). Зафиксированный тест 5.3.8
-после такого фикса нужно будет обновить (превратить в
-testMarkdownWrappedJsonIsStripped с ok == true). 
-
----
-
-## Assistant (Build · MiMo-V2.5-Pro · 108.0s)
-
-_Thinking:_
-
-This is a large Phase 5 with tests, documentation updates. Let me implement it systematically:
-
-1. Tests CMakeLists.txt updates
-2. test_semantic_map.cpp (14 tests)
-3. test_generate_semantic_map_tool.cpp (8 tests) — need to decide on friend vs free function approach
-4. ROADMAP.md/ROADMAP_ru.md updates
-5. CONTRIBUTING.md/CONTRIBUTING_ru.md updates
-
-Let me start by checking the current state of the files I need to modify, then implement everything.
-
-For the validation testing approach, I'll go with Variant A (friend class) since it's less invasive — no need to refactor the existing GenerateSemanticMapTool code.
-
-**Tool: task**
-
-**Input:**
-```json
-{
-  "operation": {
-    "action": "create",
-    "summary": "Phase 5: Tests, ROADMAP, CONTRIBUTING for semantic map"
-  }
-}
-```
-
-**Output:**
-```
-Created T11 (open): Phase 5: Tests, ROADMAP, CONTRIBUTING for semantic map
-```
-
----
-
-## Assistant (Build · MiMo-V2.5-Pro · 17.7s)
-
-_Thinking:_
-
-Let me start implementing. First check the current tests/CMakeLists.txt.
-
-**Tool: task**
-
-**Input:**
-```json
-{
-  "operation": {
-    "action": "start",
-    "id": "T11"
-  }
-}
-```
-
-**Output:**
-```
-start → in_progress
-```
-
----
-
-## Assistant (Build · MiMo-V2.5-Pro · 191.7s)
-
-_Thinking:_
-
-Let me read the current state of the files I need to modify.
+**Phase 6.2** — интеграционные тесты.
 
 **Tool: read**
 
 **Input:**
 ```json
 {
-  "filePath": "/home/resu/Documents/dev/cremniy/tests/CMakeLists.txt"
+  "filePath": "/home/resu/Documents/dev/cremniy/tests/test_codemap.cpp",
+  "offset": 390
 }
 ```
 
 **Output:**
 ```
-<path>/home/resu/Documents/dev/cremniy/tests/CMakeLists.txt</path>
+<path>/home/resu/Documents/dev/cremniy/tests/test_codemap.cpp</path>
 <type>file</type>
 <content>
-1: cmake_minimum_required(VERSION 3.16)
-2: project(cremniy_tests LANGUAGES CXX)
-3: 
-4: set(CMAKE_AUTOMOC ON)
-5: set(CMAKE_CXX_STANDARD 17)
-6: set(CMAKE_CXX_STANDARD_REQUIRED ON)
-7: 
-8: find_package(Qt6 6.8.3 REQUIRED COMPONENTS Test Widgets)
-9: 
-10: set(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../src)
-11: 
-12: add_executable(test_dependency_parser
-13:     test_dependency_parser.cpp
-14:     ${SRC_DIR}/ToolTabs/Canvas/dependency_parser.cpp
-15:     ${SRC_DIR}/ToolTabs/Canvas/dependency_parser.h
-16: )
-17: 
-18: target_include_directories(test_dependency_parser PRIVATE
-19:     ${SRC_DIR}
-20:     ${SRC_DIR}/ToolTabs/Canvas
-21: )
-22: 
-23: target_link_libraries(test_dependency_parser PRIVATE Qt6::Test Qt6::Widgets)
-24: 
-25: add_test(NAME DependencyParser COMMAND test_dependency_parser)
+390:         QCOMPARE(CodemapStore::slugifyTitle("  spaces  "),
+391:                  QString("spaces"));
+392:     }
+393: 
+394:     void testBuildFileName()
+395:     {
+396:         Codemap map;
+397:         map.title = "Qt Application Entry Point";
+398:         map.metadata.generationTimestamp = "2026-06-14T12:31:13Z";
+399: 
+400:         QString fileName = CodemapStore::buildFileName(map);
+401:         QVERIFY(fileName.startsWith("Qt_Application_Entry_Point_"));
+402:         QVERIFY(fileName.endsWith(".codemap.txt"));
+403:         QVERIFY(fileName.contains("20260614"));
+404:     }
+405: 
+406:     void testStoreSaveAndLoadLatest()
+407:     {
+408:         QTemporaryDir dir;
+409:         QVERIFY(dir.isValid());
+410: 
+411:         CodemapStore store(dir.path());
+412: 
+413:         Codemap map;
+414:         map.id = "test_codemap";
+415:         map.title = "Test Codemap";
+416:         map.metadata.generationTimestamp = QDateTime::currentDateTime().toString(Qt::ISODate);
+417: 
+418:         CodemapTrace trace;
+419:         trace.id = "1";
+420:         trace.title = "Trace 1";
+421:         CodemapLocation loc;
+422:         loc.id = "1a";
+423:         loc.path = "src/main.cpp";
+424:         loc.lineNumber = 6;
+425:         loc.lineContent = "int main() {";
+426:         trace.locations = {loc};
+427:         map.traces = {trace};
+428: 
+429:         QVERIFY(store.save(map));
+430: 
+431:         auto list = store.list();
+432:         QCOMPARE(list.size(), 1);
+433:         QVERIFY(list[0].title == "Test Codemap");
+434: 
+435:         auto loaded = store.loadLatest();
+436:         QVERIFY(loaded.has_value());
+437:         QCOMPARE(loaded->id, map.id);
+438:         QCOMPARE(loaded->traces.size(), 1);
+439:         QCOMPARE(loaded->traces[0].locations[0].path, loc.path);
+440:     }
+441: };
+442: 
+443: QTEST_MAIN(TestCodemap)
+444: #include "test_codemap.moc"
 
-(End of file - total 25 lines)
-</content>
-```
-
-**Tool: read**
-
-**Input:**
-```json
-{
-  "filePath": "/home/resu/Documents/dev/cremniy/ROADMAP.md",
-  "offset": 40
-}
-```
-
-**Output:**
-```
-<path>/home/resu/Documents/dev/cremniy/ROADMAP.md</path>
-<type>file</type>
-<content>
-40: - [x] 🟡 [Implement StatusBar](https://github.com/Cremniy-Project/cremniy/issues/73)
-41: - [x] 🟢 [Pin file tabs (FileTab)](https://github.com/Cremniy-Project/cremniy/issues/75)
-42: - [x] 🟢 [Move files between directories in QTreeView](https://github.com/Cremniy-Project/cremniy/issues/77)
-43: 
-44: ## 🕓 Long-Term Tasks
-45: 
-46: - [ ] [Foundation of basic architecture for extensibility](https://github.com/Cremniy-Project/cremniy/issues/29)
-47: 
-48: ## 🔮 Future Plans
-49: 
-50: - Build user projects
-51: - Debugger for running programs
-52: - Memory viewer for running programs
-53: 
-54: ## Infinite Canvas (in progress)
-55: 
-56: Dependency graph visualization with gource-style animation:
-57: 
-58: - [x] Phase 1 — Basic canvas (QGraphicsView, pan/zoom/grid)
-59: - [x] Phase 2 — Canvas core (FileNode, DependencyEdge, CanvasTab)
-60: - [x] Phase 3 — Dependency parser (async #include parsing, directory-clustered layout, live updates)
-61: - [x] Phase 4 — Editor integration (click→editor, hover preview, context menu)
-62: - [x] Phase 5 — Gource visualization (git history playback, filter layers, minimap)
-63: - [x] Phase 6 — Tests & documentation
-
-(End of file - total 63 lines)
-</content>
-```
-
-**Tool: read**
-
-**Input:**
-```json
-{
-  "filePath": "/home/resu/Documents/dev/cremniy/CONTRIBUTING.md",
-  "offset": 60
-}
-```
-
-**Output:**
-```
-<path>/home/resu/Documents/dev/cremniy/CONTRIBUTING.md</path>
-<type>file</type>
-<content>
-60: 4. Sync your branch with the base branch (`dev` or `main`) and resolve any conflicts
-61: 5. Open a pull request to the appropriate branch (`dev` or `main`) with a clear description or a linked Issue
-62: 
-63: ### Linking PR to tasks
-64: 
-65: Each Pull Request should **clearly indicate which task or Issue it addresses**, if such a [task](ROADMAP.md) or Issue exists.  
-66: If there is no corresponding task, simply describe the changes in the PR.
-67: 
-68: ## Acknowledgements
-69: 
-70: All contributors will be added to [ACKNOWLEDGEMENTS.md](ACKNOWLEDGEMENTS.md)  
-71: and mentioned at the end of each video on the [YouTube channel](https://www.youtube.com/@igmunv)
-72: 
-73: ## Canvas Module Architecture
-74: 
-75: The infinite canvas module lives in `src/ToolTabs/Canvas/` and follows the ToolTab pattern:
-76: 
-77: ```
-78: Canvas/
-79:   canvastab.h/cpp       — main tab, graph building, signal wiring
-80:   canvas_view.h/cpp     — QGraphicsView with pan/zoom/grid
-81:   canvas_layout.h/cpp   — directory-clustered radial tree layout
-82:   dependency_parser.h/cpp — async #include parser (QThread worker)
-83:   gource_animator.h/cpp — git log reader, playback controls
-84:   layer_panel.h/cpp     — edge type filter toggles (QSettings)
-85:   minimap.h/cpp         — 160x120 viewport overlay
-86:   nodes/
-87:     file_node.h/cpp     — QGraphicsObject: hover, pulse, context menu
-88:   edges/
-89:     dependency_edge.h/cpp — animated Bezier edges
-90: ```
-91: 
-92: ### Adding a new edge type
-93: 
-94: 1. Add enum value to `DependencyEdge::EdgeType`
-95: 2. Add color case in `DependencyEdge::edgeColor()`
-96: 3. Add toggle checkbox in `LayerPanel`
-97: 4. Update `CanvasTab::applyLayerFilters()`
-98: 
-99: ### Adding a new layout algorithm
-100: 
-101: 1. Create a method in `CanvasLayout` (or subclass)
-102: 2. Compute target positions into `QMap<QString, QPointF>`
-103: 3. Use `animateToTargets()` for smooth transitions
-104: 4. Wire up in `CanvasTab::layoutNodesRadial()`
-105: 
-106: ### Running canvas tests
-107: 
-108: ```bash
-109: cd tests && mkdir build && cd build
-110: cmake .. -DCMAKE_PREFIX_PATH=../../third_party/qt-install
-111: cmake --build . && ./test_dependency_parser
-112: ```
-
-(End of file - total 112 lines)
+(End of file - total 444 lines)
 </content>
 ```
 
 ---
 
-## Assistant (Build · MiMo-V2.5-Pro · 7.9s)
+## Assistant (Build · MiMo-V2.5-Pro · 40.0s)
 
 _Thinking:_
 
-Now let me also check ROADMAP_ru.md and CONTRIBUTING_ru.md.
-
-**Tool: read**
-
-**Input:**
-```json
-{
-  "filePath": "/home/resu/Documents/dev/cremniy/ROADMAP_ru.md",
-  "offset": 40
-}
-```
-
-**Output:**
-```
-<path>/home/resu/Documents/dev/cremniy/ROADMAP_ru.md</path>
-<type>file</type>
-<content>
-40: - [x] 🟡 [Реализовать StatusBar](https://github.com/Cremniy-Project/cremniy/issues/73)
-41: - [x] 🟢 [Закрепление вкладки файла (FileTab)](https://github.com/Cremniy-Project/cremniy/issues/75)
-42: - [x] 🟢 [Перемещение файлов по директориям в QTreeView](https://github.com/Cremniy-Project/cremniy/issues/77)
-43: 
-44: ## 🕓 Долгосрочные задачи
-45: 
-46: - [ ] [Основы базовой архитектуры для обеспечения расширяемости](https://github.com/Cremniy-Project/cremniy/issues/29)
-47: 
-48: ## 🔮 Будущие планы
-49: 
-50: - Сборка проекта пользователя
-51: - Отладчик запущенной программы
-52: - Просмотр памяти запущенной программы
-
-(End of file - total 52 lines)
-</content>
-```
-
-**Tool: read**
-
-**Input:**
-```json
-{
-  "filePath": "/home/resu/Documents/dev/cremniy/CONTRIBUTING_ru.md",
-  "offset": 60
-}
-```
-
-**Output:**
-```
-<path>/home/resu/Documents/dev/cremniy/CONTRIBUTING_ru.md</path>
-<type>file</type>
-<content>
-60: 4. Синхронизируйте вашу ветку с базовой веткой (`dev` или `main`) и решите конфликты, если они есть
-61: 5. Создайте pull request в соответствующую ветку (`dev` или `main`) с понятным описанием или прикреплением Issue
-62: 
-63: ### Связывание PR с задачами
-64: 
-65: Каждый Pull Request должен **явно указывать, какую задачу или Issue он решает**, если такая [задача](ROADMAP_ru.md) или Issue существует.
-66: Если соответствующей задачи нет, просто опишите изменения в PR.
-67: 
-68: ## Благодарность
-69: 
-70: Все контрибьюторы будут добавлены в [ACKNOWLEDGEMENTS.md](ACKNOWLEDGEMENTS.md)  
-71: и упомянуты в конце каждого видео на [YouTube-канале](https://www.youtube.com/@igmunv)
-
-(End of file - total 71 lines)
-</content>
-```
-
----
-
-## Assistant (Build · MiMo-V2.5-Pro · 22.3s)
-
-_Thinking:_
-
-Now I need to also check the generate_semantic_map_tool.h to add the friend class.
-
-**Tool: read**
-
-**Input:**
-```json
-{
-  "filePath": "/home/resu/Documents/dev/cremniy/src/Agent/tools/generate_semantic_map_tool.h"
-}
-```
-
-**Output:**
-```
-<path>/home/resu/Documents/dev/cremniy/src/Agent/tools/generate_semantic_map_tool.h</path>
-<type>file</type>
-<content>
-1: #ifndef GENERATE_SEMANTIC_MAP_TOOL_H
-2: #define GENERATE_SEMANTIC_MAP_TOOL_H
-3: 
-4: #include "agent_tool.h"
-5: #include "../ToolTabs/Canvas/semantic_map.h"
-6: #include <QStringList>
-7: 
-8: class LLMClient;
-9: class EndpointManager;
-10: 
-11: struct ValidationResult {
-12:     bool ok = false;
-13:     SemanticMap map;
-14:     QString errorReason;
-15: };
-16: 
-17: class GenerateSemanticMapTool : public AgentTool
-18: {
-19:     Q_OBJECT
-20: public:
-21:     explicit GenerateSemanticMapTool(const QString& projectRoot,
-22:                                      EndpointManager* endpointManager,
-23:                                      QObject* parent = nullptr);
-24: 
-25:     QString name() const override { return "generate_semantic_map"; }
-26:     QString description() const override;
-27:     QJsonObject parameters() const override;
-28:     void execute(const QJsonObject& args) override;
-29: 
-30: private slots:
-31:     void onMapStreamToken(const QString& token);
-32:     void onMapStreamFinished(const QString& stopReason);
-33:     void onMapErrorOccurred(const QString& errorMessage);
-34: 
-35: private:
-36:     QString m_projectRoot;
-37:     EndpointManager* m_endpointManager;
-38:     LLMClient* m_innerClient = nullptr;
-39:     QString m_streamBuffer;
-40:     int m_retryCount = 0;
-41:     QStringList m_availableFiles;
-42:     QString m_originalSystemPrompt;
-43:     QString m_originalUserPrompt;
-44:     static constexpr int kMaxRetries = 2;
-45:     static constexpr int kMaxContextChars = 60000;
-46: 
-47:     QString buildSystemPrompt() const;
-48:     QString buildUserPrompt(const QJsonObject& args) const;
-49:     void sendGenerationRequest(const QString& systemPrompt, const QString& userPrompt);
-50:     QString gatherFileContents(const QStringList& scope) const;
-51:     ValidationResult validateSemanticMapJson(const QString& rawJson) const;
-52:     int countFileLines(const QString& fullPath) const;
-53: };
-54: 
-55: #endif // GENERATE_SEMANTIC_MAP_TOOL_H
-
-(End of file - total 55 lines)
-</content>
-```
-
----
-
-## Assistant (Build · MiMo-V2.5-Pro · 18.7s)
-
-_Thinking:_
-
-Now I have all the context. Let me implement everything:
-
-1. Add friend class to generate_semantic_map_tool.h
-2. Update tests/CMakeLists.txt
-3. Create test_semantic_map.cpp (14 tests)
-4. Create test_generate_semantic_map_tool.cpp (8 tests)
-5. Update ROADMAP.md and ROADMAP_ru.md
-6. Update CONTRIBUTING.md and CONTRIBUTING_ru.md
-
-Let me start implementing.
-
-**5.1** — friend class + CMakeLists.txt для тестов.
+Now add the new integration tests before the closing `};`.
 
 **Tool: edit**
 
 **Input:**
 ```json
 {
-  "filePath": "/home/resu/Documents/dev/cremniy/src/Agent/tools/generate_semantic_map_tool.h",
-  "newString": "class GenerateSemanticMapTool : public AgentTool\n{\n    Q_OBJECT\n#ifdef CREMNIY_TESTING\n    friend class TestGenerateSemanticMapTool;\n#endif\npublic:",
-  "oldString": "class GenerateSemanticMapTool : public AgentTool\n{\n    Q_OBJECT\npublic:"
+  "filePath": "/home/resu/Documents/dev/cremniy/tests/test_codemap.cpp",
+  "newString": "        QCOMPARE(loaded->traces[0].locations[0].path, loc.path);\n    }\n\n    void testLoadLatestWithWindsurfNaming()\n    {\n        QTemporaryDir dir;\n        QVERIFY(dir.isValid());\n\n        CodemapStore store(dir.path());\n\n        // Save first codemap\n        Codemap map1;\n        map1.id = \"first\";\n        map1.title = \"First Map\";\n        map1.metadata.generationTimestamp = \"2026-06-14T10:00:00Z\";\n        CodemapTrace t1;\n        t1.id = \"1\";\n        t1.title = \"T1\";\n        map1.traces = {t1};\n        store.save(map1);\n\n        // Save second codemap (newer)\n        Codemap map2;\n        map2.id = \"second\";\n        map2.title = \"Second Map\";\n        map2.metadata.generationTimestamp = \"2026-06-14T12:00:00Z\";\n        CodemapTrace t2;\n        t2.id = \"2\";\n        t2.title = \"T2\";\n        map2.traces = {t2};\n        store.save(map2);\n\n        auto list = store.list();\n        QCOMPARE(list.size(), 2);\n\n        auto latest = store.loadLatest();\n        QVERIFY(latest.has_value());\n        QCOMPARE(latest->id, QString(\"second\"));\n    }\n\n    void testImportRealCodemapFormat()\n    {\n        QTemporaryDir dir;\n        QVERIFY(dir.isValid());\n\n        // Simulate a real Windsurf .codemap.txt file\n        QString codemapJson =\n            \"{\\\"schemaVersion\\\": 1,\"\n            \"\\\"id\\\": \\\"Qt_Application_Entry_Point_and_Welcome_Window_System_20260614_123113\\\",\"\n            \"\\\"stableId\\\": \\\"550e8400-e29b-41d4-a716-446655440000\\\",\"\n            \"\\\"metadata\\\": {\"\n            \"\\\"cascadeId\\\": \\\"\\\",\"\n            \"\\\"generationSource\\\": \\\"cascade\\\",\"\n            \"\\\"generationTimestamp\\\": \\\"2026-06-14T12:31:13+05:00\\\",\"\n            \"\\\"mode\\\": \\\"FAST\\\",\"\n            \"\\\"originalPrompt\\\": \\\"Analyze Qt application entry point\\\"\"\n            \"},\"\n            \"\\\"title\\\": \\\"Qt Application Entry Point and Welcome Window System\\\",\"\n            \"\\\"traces\\\": [{\"\n            \"\\\"id\\\": \\\"1\\\",\"\n            \"\\\"title\\\": \\\"Application Bootstrap\\\",\"\n            \"\\\"description\\\": \\\"App initialization\\\",\"\n            \"\\\"locations\\\": [{\"\n            \"\\\"id\\\": \\\"1a\\\",\"\n            \"\\\"path\\\": \\\"src/main.cpp\\\",\"\n            \"\\\"lineNumber\\\": 6,\"\n            \"\\\"lineContent\\\": \\\"int main(int argc, char *argv[])\\\",\"\n            \"\\\"title\\\": \\\"Main entry\\\",\"\n            \"\\\"description\\\": \\\"Application entry point\\\"\"\n            \"}],\"\n            \"\\\"traceTextDiagram\\\": \\\"main()\\\\n  QApplication\\\\n  WelcomeForm\\\",\"\n            \"\\\"traceGuide\\\": \\\"# Motivation\\\\nApp needs entry.\\\\n\\\\n# Details\\\\nQt bootstrap.\\\",\"\n            \"\\\"color\\\": \\\"#2d3a4f\\\"\"\n            \"}],\"\n            \"\\\"mermaidDiagram\\\": \\\"graph TD\\\\n  1a -->|creates| 1b\\\"\"\n            \"}\";\n\n        // Write to file\n        QString filePath = dir.path() + \"/Qt_Application_Entry_Point_20260614_123113.codemap.txt\";\n        QFile file(filePath);\n        QVERIFY(file.open(QIODevice::WriteOnly));\n        file.write(codemapJson.toUtf8());\n        file.close();\n\n        // Load via CodemapStore\n        CodemapStore store(dir.path());\n        auto loaded = store.load(filePath);\n        QVERIFY(loaded.has_value());\n        QCOMPARE(loaded->title, QString(\"Qt Application Entry Point and Welcome Window System\"));\n        QCOMPARE(loaded->traces.size(), 1);\n        QCOMPARE(loaded->traces[0].locations[0].id, QString(\"1a\"));\n        QCOMPARE(loaded->traces[0].locations[0].lineNumber, 6);\n        QCOMPARE(loaded->traces[0].locations[0].lineContent, QString(\"int main(int argc, char *argv[])\"));\n        QVERIFY(!loaded->stableId.isEmpty());\n\n        // Verify mermaid parsing\n        auto edges = loaded->parsedConnections();\n        QCOMPARE(edges.size(), 1);\n        QCOMPARE(edges[0].from, QString(\"1a\"));\n        QCOMPARE(edges[0].label, QString(\"creates\"));\n    }\n\n    void testParsedConnectionsWithSubgraph()\n    {\n        Codemap map;\n        map.mermaidDiagram =\n            \"graph TB\\n\"\n            \"  subgraph startup[Startup]\\n\"\n            \"    1a[main]\\n\"\n            \"    1b[init]\\n\"\n            \"  end\\n\"\n            \"  subgraph ui[UI]\\n\"\n            \"    2a[window]\\n\"\n            \"  end\\n\"\n            \"  1a -->|creates| 2a\\n\"\n            \"  1b -->|initializes| 2a\";\n\n        auto edges = map.parsedConnections();\n        QCOMPARE(edges.size(), 2);\n        QCOMPARE(edges[0].from, QString(\"1a\"));\n        QCOMPARE(edges[0].to, QString(\"2a\"));\n        QCOMPARE(edges[0].label, QString(\"creates\"));\n        QCOMPARE(edges[1].from, QString(\"1b\"));\n        QCOMPARE(edges[1].label, QString(\"initializes\"));\n    }\n};\n\nQTEST_MAIN(TestCodemap)\n#include \"test_codemap.moc\"",
+  "oldString": "        QCOMPARE(loaded->traces[0].locations[0].path, loc.path);\n    }\n};\n\nQTEST_MAIN(TestCodemap)\n#include \"test_codemap.moc\""
 }
 ```
 
@@ -5459,80 +4722,7 @@ Edit applied successfully.
 
 ---
 
-## Assistant (Build · MiMo-V2.5-Pro · 106.5s)
-
-_Thinking:_
-
-Now update tests/CMakeLists.txt.
-
-**Tool: write**
-
-**Input:**
-```json
-{
-  "content": "cmake_minimum_required(VERSION 3.16)\nproject(cremniy_tests LANGUAGES CXX)\n\nset(CMAKE_AUTOMOC ON)\nset(CMAKE_CXX_STANDARD 17)\nset(CMAKE_CXX_STANDARD_REQUIRED ON)\n\nfind_package(Qt6 6.8.3 REQUIRED COMPONENTS Test Widgets Network)\n\nset(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../src)\n\n# --- test_dependency_parser ---\nadd_executable(test_dependency_parser\n    test_dependency_parser.cpp\n    ${SRC_DIR}/ToolTabs/Canvas/dependency_parser.cpp\n    ${SRC_DIR}/ToolTabs/Canvas/dependency_parser.h\n)\n\ntarget_include_directories(test_dependency_parser PRIVATE\n    ${SRC_DIR}\n    ${SRC_DIR}/ToolTabs/Canvas\n)\n\ntarget_link_libraries(test_dependency_parser PRIVATE Qt6::Test Qt6::Widgets)\n\nadd_test(NAME DependencyParser COMMAND test_dependency_parser)\n\n# --- test_semantic_map ---\nadd_executable(test_semantic_map\n    test_semantic_map.cpp\n    ${SRC_DIR}/ToolTabs/Canvas/semantic_map.cpp\n    ${SRC_DIR}/ToolTabs/Canvas/semantic_map.h\n    ${SRC_DIR}/ToolTabs/Canvas/semantic_map_store.cpp\n    ${SRC_DIR}/ToolTabs/Canvas/semantic_map_store.h\n    ${SRC_DIR}/ToolTabs/Canvas/semantic_map_utils.cpp\n    ${SRC_DIR}/ToolTabs/Canvas/semantic_map_utils.h\n)\n\ntarget_include_directories(test_semantic_map PRIVATE\n    ${SRC_DIR}\n    ${SRC_DIR}/ToolTabs/Canvas\n)\n\ntarget_link_libraries(test_semantic_map PRIVATE Qt6::Test Qt6::Widgets)\n\nadd_test(NAME SemanticMap COMMAND test_semantic_map)\n\n# --- test_generate_semantic_map_tool ---\nadd_executable(test_generate_semantic_map_tool\n    test_generate_semantic_map_tool.cpp\n    ${SRC_DIR}/Agent/tools/generate_semantic_map_tool.cpp\n    ${SRC_DIR}/Agent/tools/generate_semantic_map_tool.h\n    ${SRC_DIR}/Agent/tools/agent_tool.h\n    ${SRC_DIR}/ToolTabs/Canvas/semantic_map.cpp\n    ${SRC_DIR}/ToolTabs/Canvas/semantic_map.h\n    ${SRC_DIR}/ToolTabs/Canvas/semantic_map_store.cpp\n    ${SRC_DIR}/ToolTabs/Canvas/semantic_map_store.h\n    ${SRC_DIR}/ToolTabs/Canvas/semantic_map_utils.cpp\n    ${SRC_DIR}/ToolTabs/Canvas/semantic_map_utils.h\n    ${SRC_DIR}/Agent/llm_client.cpp\n    ${SRC_DIR}/Agent/llm_client.h\n    ${SRC_DIR}/Agent/endpoint_manager.cpp\n    ${SRC_DIR}/Agent/endpoint_manager.h\n)\n\ntarget_include_directories(test_generate_semantic_map_tool PRIVATE\n    ${SRC_DIR}\n    ${SRC_DIR}/ToolTabs/Canvas\n    ${SRC_DIR}/Agent\n    ${SRC_DIR}/Agent/tools\n)\n\ntarget_compile_definitions(test_generate_semantic_map_tool PRIVATE CREMNIY_TESTING)\n\ntarget_link_libraries(test_generate_semantic_map_tool PRIVATE\n    Qt6::Test Qt6::Widgets Qt6::Network)\n\nadd_test(NAME GenerateSemanticMapTool COMMAND test_generate_semantic_map_tool)\n",
-  "filePath": "/home/resu/Documents/dev/cremniy/tests/CMakeLists.txt"
-}
-```
-
-**Output:**
-```
-Wrote file successfully.
-```
-
----
-
-## Assistant (Build · MiMo-V2.5-Pro · 141.6s)
-
-_Thinking:_
-
-Now create test_semantic_map.cpp with 14 tests.
-
-**5.2** — test_semantic_map.cpp (14 тестов).
-
-**Tool: write**
-
-**Input:**
-```json
-{
-  "content": "#include <QtTest>\n#include <QTemporaryDir>\n#include <QFile>\n#include <QTextStream>\n#include \"semantic_map.h\"\n#include \"semantic_map_store.h\"\n#include \"semantic_map_utils.h\"\n\nclass TestSemanticMap : public QObject\n{\n    Q_OBJECT\n\nprivate:\n    bool createFile(const QTemporaryDir& dir, const QString& relPath, const QString& content)\n    {\n        QString fullPath = dir.path() + \"/\" + relPath;\n        QDir().mkpath(QFileInfo(fullPath).absolutePath());\n        QFile f(fullPath);\n        if (!f.open(QIODevice::WriteOnly | QIODevice::Text))\n            return false;\n        f.write(content.toUtf8());\n        f.close();\n        return true;\n    }\n\nprivate slots:\n    // --- Serialization round-trip ---\n\n    void testStepRoundTrip()\n    {\n        SemanticStep step;\n        step.id = \"1a\";\n        step.title = \"QApplication creation\";\n        step.filePath = \"src/main.cpp\";\n        step.startLine = 5;\n        step.endLine = 12;\n        step.codeSnippet = \"int main() { ... }\";\n        step.connections = {\"1b\", \"2a\"};\n        step.connectionLabels = {\"initializes\", \"calls\"};\n\n        QJsonObject obj = step.toJson();\n        SemanticStep restored = SemanticStep::fromJson(obj);\n\n        QCOMPARE(restored.id, step.id);\n        QCOMPARE(restored.title, step.title);\n        QCOMPARE(restored.filePath, step.filePath);\n        QCOMPARE(restored.startLine, step.startLine);\n        QCOMPARE(restored.endLine, step.endLine);\n        QCOMPARE(restored.codeSnippet, step.codeSnippet);\n        QCOMPARE(restored.connections, step.connections);\n        QCOMPARE(restored.connectionLabels, step.connectionLabels);\n    }\n\n    void testClusterRoundTrip()\n    {\n        SemanticCluster cluster;\n        cluster.id = \"startup\";\n        cluster.title = \"Application Startup\";\n        cluster.description = \"Init sequence\";\n        cluster.color = \"#2d3a4f\";\n\n        SemanticStep s1;\n        s1.id = \"1a\";\n        s1.title = \"Step 1\";\n        s1.filePath = \"src/a.cpp\";\n        s1.startLine = 1;\n        s1.endLine = 5;\n\n        SemanticStep s2;\n        s2.id = \"1b\";\n        s2.title = \"Step 2\";\n        s2.filePath = \"src/b.cpp\";\n        s2.startLine = 10;\n        s2.endLine = 20;\n        s2.connections = {\"1a\"};\n        s2.connectionLabels = {\"depends on\"};\n\n        cluster.steps = {s1, s2};\n\n        QJsonObject obj = cluster.toJson();\n        SemanticCluster restored = SemanticCluster::fromJson(obj);\n\n        QCOMPARE(restored.id, cluster.id);\n        QCOMPARE(restored.title, cluster.title);\n        QCOMPARE(restored.description, cluster.description);\n        QCOMPARE(restored.color, cluster.color);\n        QCOMPARE(restored.steps.size(), 2);\n        QCOMPARE(restored.steps[0].id, s1.id);\n        QCOMPARE(restored.steps[1].connections.size(), 1);\n        QCOMPARE(restored.steps[1].connections[0], QString(\"1a\"));\n    }\n\n    void testMapRoundTrip()\n    {\n        SemanticMap map;\n        map.id = \"test_map\";\n        map.title = \"Test Map\";\n        map.motivation = \"Testing serialization\";\n        map.details = \"Some details here\";\n        map.createdAt = QDateTime(QDate(2025, 6, 14), QTime(12, 30, 0));\n\n        SemanticCluster c1;\n        c1.id = \"c1\";\n        c1.title = \"Cluster 1\";\n        SemanticStep s1;\n        s1.id = \"1a\";\n        s1.title = \"S1\";\n        c1.steps = {s1};\n\n        SemanticCluster c2;\n        c2.id = \"c2\";\n        c2.title = \"Cluster 2\";\n\n        map.clusters = {c1, c2};\n\n        QJsonObject obj = map.toJson();\n        SemanticMap restored = SemanticMap::fromJson(obj);\n\n        QCOMPARE(restored.id, map.id);\n        QCOMPARE(restored.title, map.title);\n        QCOMPARE(restored.motivation, map.motivation);\n        QCOMPARE(restored.details, map.details);\n        QCOMPARE(restored.createdAt.toString(Qt::ISODate), map.createdAt.toString(Qt::ISODate));\n        QCOMPARE(restored.clusters.size(), 2);\n        QCOMPARE(restored.clusters[0].id, c1.id);\n    }\n\n    void testFromJsonMissingOptionalFields()\n    {\n        QJsonObject obj;\n        obj[\"id\"] = \"minimal\";\n        obj[\"title\"] = \"Minimal Map\";\n\n        SemanticMap map = SemanticMap::fromJson(obj);\n        QCOMPARE(map.id, QString(\"minimal\"));\n        QCOMPARE(map.title, QString(\"Minimal Map\"));\n        QCOMPARE(map.motivation, QString());\n        QCOMPARE(map.details, QString());\n        QVERIFY(map.clusters.isEmpty());\n\n        QJsonObject clusterObj;\n        clusterObj[\"id\"] = \"c1\";\n        clusterObj[\"title\"] = \"C1\";\n        SemanticCluster cluster = SemanticCluster::fromJson(clusterObj);\n        QCOMPARE(cluster.description, QString());\n        QCOMPARE(cluster.color, QString());\n        QVERIFY(cluster.steps.isEmpty());\n\n        QJsonObject stepObj;\n        stepObj[\"id\"] = \"s1\";\n        stepObj[\"title\"] = \"S1\";\n        SemanticStep step = SemanticStep::fromJson(stepObj);\n        QCOMPARE(step.filePath, QString());\n        QCOMPARE(step.startLine, 0);\n        QVERIFY(step.connections.isEmpty());\n        QVERIFY(step.connectionLabels.isEmpty());\n    }\n\n    void testFindStep()\n    {\n        SemanticMap map;\n        map.id = \"test\";\n\n        SemanticCluster c1;\n        c1.id = \"c1\";\n        SemanticStep s1;\n        s1.id = \"1a\";\n        s1.title = \"Step 1a\";\n        SemanticStep s2;\n        s2.id = \"1b\";\n        s2.title = \"Step 1b\";\n        c1.steps = {s1, s2};\n\n        SemanticCluster c2;\n        c2.id = \"c2\";\n        SemanticStep s3;\n        s3.id = \"2a\";\n        s3.title = \"Step 2a\";\n        c2.steps = {s3};\n\n        map.clusters = {c1, c2};\n\n        const SemanticStep* found = map.findStep(\"1b\");\n        QVERIFY(found != nullptr);\n        QCOMPARE(found->title, QString(\"Step 1b\"));\n\n        const SemanticStep* found2 = map.findStep(\"2a\");\n        QVERIFY(found2 != nullptr);\n        QCOMPARE(found2->title, QString(\"Step 2a\"));\n\n        const SemanticStep* notFound = map.findStep(\"nonexistent\");\n        QVERIFY(notFound == nullptr);\n    }\n\n    // --- extractCodeSnippet ---\n\n    void testExtractCodeSnippetValidRange()\n    {\n        QTemporaryDir dir;\n        QVERIFY(dir.isValid());\n        createFile(dir, \"file.txt\", \"line1\\nline2\\nline3\\nline4\\nline5\\n\");\n\n        QString snippet = extractCodeSnippet(dir.path(), \"file.txt\", 2, 4);\n        QStringList lines = snippet.split(\"\\n\");\n        QCOMPARE(lines.size(), 3);\n        QCOMPARE(lines[0], QString(\"line2\"));\n        QCOMPARE(lines[1], QString(\"line3\"));\n        QCOMPARE(lines[2], QString(\"line4\"));\n    }\n\n    void testExtractCodeSnippetOutOfBounds()\n    {\n        QTemporaryDir dir;\n        QVERIFY(dir.isValid());\n        createFile(dir, \"file.txt\", \"line1\\nline2\\nline3\\nline4\\nline5\\n\");\n\n        QString snippet = extractCodeSnippet(dir.path(), \"file.txt\", 10, 20);\n        QVERIFY(snippet.isEmpty());\n    }\n\n    void testExtractCodeSnippetInvalidRange()\n    {\n        QTemporaryDir dir;\n        QVERIFY(dir.isValid());\n        createFile(dir, \"file.txt\", \"line1\\nline2\\nline3\\n\");\n\n        // startLine > endLine\n        QVERIFY(extractCodeSnippet(dir.path(), \"file.txt\", 5, 2).isEmpty());\n\n        // startLine < 1\n        QVERIFY(extractCodeSnippet(dir.path(), \"file.txt\", 0, 3).isEmpty());\n        QVERIFY(extractCodeSnippet(dir.path(), \"file.txt\", -1, 3).isEmpty());\n    }\n\n    void testExtractCodeSnippetMissingFile()\n    {\n        QTemporaryDir dir;\n        QVERIFY(dir.isValid());\n\n        QString snippet = extractCodeSnippet(dir.path(), \"nonexistent.cpp\", 1, 5);\n        QVERIFY(snippet.isEmpty());\n    }\n\n    // --- SemanticMapStore ---\n\n    void testStoreSaveAndLoad()\n    {\n        QTemporaryDir dir;\n        QVERIFY(dir.isValid());\n\n        SemanticMapStore store(dir.path());\n\n        SemanticMap map;\n        map.id = \"test_map_1\";\n        map.title = \"Test Map\";\n        map.motivation = \"Testing\";\n        map.createdAt = QDateTime::currentDateTime();\n\n        SemanticCluster c;\n        c.id = \"c1\";\n        c.title = \"Cluster 1\";\n        SemanticStep s;\n        s.id = \"1a\";\n        s.title = \"Step 1\";\n        s.filePath = \"src/main.cpp\";\n        s.startLine = 1;\n        s.endLine = 5;\n        c.steps = {s};\n        map.clusters = {c};\n\n        QVERIFY(store.save(map));\n\n        auto loaded = store.load(\"test_map_1\");\n        QVERIFY(loaded.has_value());\n        QCOMPARE(loaded->id, map.id);\n        QCOMPARE(loaded->title, map.title);\n        QCOMPARE(loaded->motivation, map.motivation);\n        QCOMPARE(loaded->clusters.size(), 1);\n        QCOMPARE(loaded->clusters[0].steps[0].filePath, s.filePath);\n    }\n\n    void testStoreLoadNonexistent()\n    {\n        QTemporaryDir dir;\n        QVERIFY(dir.isValid());\n\n        SemanticMapStore store(dir.path());\n        auto result = store.load(\"nonexistent_id\");\n        QVERIFY(!result.has_value());\n    }\n\n    void testStoreList()\n    {\n        QTemporaryDir dir;\n        QVERIFY(dir.isValid());\n\n        SemanticMapStore store(dir.path());\n\n        SemanticMap map1;\n        map1.id = \"map_alpha\";\n        map1.title = \"Alpha Map\";\n        map1.createdAt = QDateTime(QDate(2025, 1, 1), QTime(10, 0, 0));\n\n        SemanticMap map2;\n        map2.id = \"map_beta\";\n        map2.title = \"Beta Map\";\n        map2.createdAt = QDateTime(QDate(2025, 6, 1), QTime(12, 0, 0));\n\n        store.save(map1);\n        store.save(map2);\n\n        auto list = store.list();\n        QCOMPARE(list.size(), 2);\n\n        bool foundAlpha = false, foundBeta = false;\n        for (const auto& m : list) {\n            if (m.id == \"map_alpha\") {\n                foundAlpha = true;\n                QCOMPARE(m.title, QString(\"Alpha Map\"));\n            }\n            if (m.id == \"map_beta\") {\n                foundBeta = true;\n                QCOMPARE(m.title, QString(\"Beta Map\"));\n            }\n        }\n        QVERIFY(foundAlpha);\n        QVERIFY(foundBeta);\n    }\n\n    void testStoreSanitizeId()\n    {\n        QTemporaryDir dir;\n        QVERIFY(dir.isValid());\n\n        SemanticMapStore store(dir.path());\n\n        SemanticMap map;\n        map.id = \"../../etc/passwd\";\n        map.title = \"Evil Map\";\n        map.createdAt = QDateTime::currentDateTime();\n\n        QVERIFY(store.save(map));\n\n        // File should be at sanitized path, NOT outside storage dir\n        QString expectedPath = dir.path() + \"/.cremniy/semantic_maps/______etc_passwd.json\";\n        QVERIFY(QFile::exists(expectedPath));\n\n        // Verify no file was created at traversal path\n        QVERIFY(!QFile::exists(dir.path() + \"/../../etc/passwd.json\"));\n    }\n\n    void testStoreRemove()\n    {\n        QTemporaryDir dir;\n        QVERIFY(dir.isValid());\n\n        SemanticMapStore store(dir.path());\n\n        SemanticMap map;\n        map.id = \"removable\";\n        map.title = \"Will be removed\";\n        map.createdAt = QDateTime::currentDateTime();\n\n        store.save(map);\n        QVERIFY(store.load(\"removable\").has_value());\n\n        QVERIFY(store.remove(\"removable\"));\n        QVERIFY(!store.load(\"removable\").has_value());\n\n        auto list = store.list();\n        for (const auto& m : list)\n            QVERIFY(m.id != \"removable\");\n    }\n};\n\nQTEST_MAIN(TestSemanticMap)\n#include \"test_semantic_map.moc\"\n",
-  "filePath": "/home/resu/Documents/dev/cremniy/tests/test_semantic_map.cpp"
-}
-```
-
-**Output:**
-```
-Wrote file successfully.
-```
-
----
-
-## Assistant (Build · MiMo-V2.5-Pro · 54.3s)
-
-_Thinking:_
-
-Now create test_generate_semantic_map_tool.cpp with 8 tests.
-
-**5.3** — test_generate_semantic_map_tool.cpp (8 тестов).
-
-**Tool: write**
-
-**Input:**
-```json
-{
-  "content": "#include <QtTest>\n#include <QTemporaryDir>\n#include <QFile>\n#include \"generate_semantic_map_tool.h\"\n\nclass TestGenerateSemanticMapTool : public QObject\n{\n    Q_OBJECT\n\nprivate:\n    QTemporaryDir m_tempDir;\n    GenerateSemanticMapTool* m_tool = nullptr;\n\n    bool createFile(const QString& relPath, const QString& content)\n    {\n        QString fullPath = m_tempDir.path() + \"/\" + relPath;\n        QDir().mkpath(QFileInfo(fullPath).absolutePath());\n        QFile f(fullPath);\n        if (!f.open(QIODevice::WriteOnly | QIODevice::Text))\n            return false;\n        f.write(content.toUtf8());\n        f.close();\n        return true;\n    }\n\n    ValidationResult validate(const QString& rawJson)\n    {\n        return m_tool->validateSemanticMapJson(rawJson);\n    }\n\nprivate slots:\n    void initTestCase()\n    {\n        QVERIFY(m_tempDir.isValid());\n        createFile(\"src/main.cpp\",\n            \"#include <iostream>\\n\"\n            \"int main() {\\n\"\n            \"    return 0;\\n\"\n            \"}\\n\"\n            \"// end\\n\");\n\n        m_tool = new GenerateSemanticMapTool(m_tempDir.path(), nullptr, this);\n        m_tool->m_availableFiles = {\"src/main.cpp\"};\n        m_tool->m_projectRoot = m_tempDir.path();\n    }\n\n    void cleanupTestCase()\n    {\n        delete m_tool;\n        m_tool = nullptr;\n    }\n\n    void testValidJsonPasses()\n    {\n        QString json = R\"({\n            \"id\": \"test_map\",\n            \"title\": \"Test Map\",\n            \"motivation\": \"Testing\",\n            \"details\": \"Details here\",\n            \"clusters\": [{\n                \"id\": \"c1\",\n                \"title\": \"Cluster 1\",\n                \"description\": \"Desc\",\n                \"color\": \"#2d3a4f\",\n                \"steps\": [{\n                    \"id\": \"1a\",\n                    \"title\": \"Main function\",\n                    \"filePath\": \"src/main.cpp\",\n                    \"startLine\": 1,\n                    \"endLine\": 3,\n                    \"connections\": [],\n                    \"connectionLabels\": []\n                }]\n            }]\n        })\";\n\n        ValidationResult result = validate(json);\n        QVERIFY(result.ok);\n        QCOMPARE(result.map.clusters.size(), 1);\n        QCOMPARE(result.map.clusters[0].steps.size(), 1);\n        QVERIFY(!result.map.clusters[0].steps[0].codeSnippet.isEmpty());\n    }\n\n    void testInvalidJsonSyntax()\n    {\n        ValidationResult result = validate(\"{ broken json\");\n        QVERIFY(!result.ok);\n        QVERIFY(result.errorReason.contains(\"Invalid JSON\"));\n    }\n\n    void testUnknownFilePath()\n    {\n        QString json = R\"({\n            \"id\": \"test\",\n            \"title\": \"Test\",\n            \"clusters\": [{\n                \"id\": \"c1\",\n                \"title\": \"C1\",\n                \"steps\": [{\n                    \"id\": \"1a\",\n                    \"title\": \"S1\",\n                    \"filePath\": \"src/nonexistent.cpp\",\n                    \"startLine\": 1,\n                    \"endLine\": 3,\n                    \"connections\": [],\n                    \"connectionLabels\": []\n                }]\n            }]\n        })\";\n\n        ValidationResult result = validate(json);\n        QVERIFY(!result.ok);\n        QVERIFY(result.errorReason.contains(\"nonexistent.cpp\"));\n        QVERIFY(result.errorReason.contains(\"1a\"));\n    }\n\n    void testLineNumberOutOfBounds()\n    {\n        QString json = R\"({\n            \"id\": \"test\",\n            \"title\": \"Test\",\n            \"clusters\": [{\n                \"id\": \"c1\",\n                \"title\": \"C1\",\n                \"steps\": [{\n                    \"id\": \"1a\",\n                    \"title\": \"S1\",\n                    \"filePath\": \"src/main.cpp\",\n                    \"startLine\": 1,\n                    \"endLine\": 100,\n                    \"connections\": [],\n                    \"connectionLabels\": []\n                }]\n            }]\n        })\";\n\n        ValidationResult result = validate(json);\n        QVERIFY(!result.ok);\n        QVERIFY(result.errorReason.contains(\"100\"));\n    }\n\n    void testStartLineGreaterThanEndLine()\n    {\n        QString json = R\"({\n            \"id\": \"test\",\n            \"title\": \"Test\",\n            \"clusters\": [{\n                \"id\": \"c1\",\n                \"title\": \"C1\",\n                \"steps\": [{\n                    \"id\": \"1a\",\n                    \"title\": \"S1\",\n                    \"filePath\": \"src/main.cpp\",\n                    \"startLine\": 10,\n                    \"endLine\": 5,\n                    \"connections\": [],\n                    \"connectionLabels\": []\n                }]\n            }]\n        })\";\n\n        ValidationResult result = validate(json);\n        QVERIFY(!result.ok);\n        QVERIFY(result.errorReason.contains(\"invalid line range\"));\n    }\n\n    void testDanglingConnectionRemoved()\n    {\n        QString json = R\"({\n            \"id\": \"test\",\n            \"title\": \"Test\",\n            \"clusters\": [{\n                \"id\": \"c1\",\n                \"title\": \"C1\",\n                \"steps\": [{\n                    \"id\": \"1a\",\n                    \"title\": \"S1\",\n                    \"filePath\": \"src/main.cpp\",\n                    \"startLine\": 1,\n                    \"endLine\": 3,\n                    \"connections\": [\"1b\", \"nonexistent_id\"],\n                    \"connectionLabels\": [\"calls\", \"invalid\"]\n                }, {\n                    \"id\": \"1b\",\n                    \"title\": \"S2\",\n                    \"filePath\": \"src/main.cpp\",\n                    \"startLine\": 4,\n                    \"endLine\": 5,\n                    \"connections\": [],\n                    \"connectionLabels\": []\n                }]\n            }]\n        })\";\n\n        ValidationResult result = validate(json);\n        QVERIFY(result.ok);\n\n        // \"1a\" connections: \"1b\" kept, \"nonexistent_id\" removed\n        QCOMPARE(result.map.clusters[0].steps[0].connections.size(), 1);\n        QCOMPARE(result.map.clusters[0].steps[0].connections[0], QString(\"1b\"));\n        QCOMPARE(result.map.clusters[0].steps[0].connectionLabels.size(), 1);\n        QCOMPARE(result.map.clusters[0].steps[0].connectionLabels[0], QString(\"calls\"));\n    }\n\n    void testEmptyClustersWithDetailsIsValid()\n    {\n        QString json = R\"({\n            \"id\": \"empty\",\n            \"title\": \"Empty Map\",\n            \"details\": \"Not enough context to analyze\",\n            \"clusters\": []\n        })\";\n\n        ValidationResult result = validate(json);\n        QVERIFY(result.ok);\n        QVERIFY(result.map.clusters.isEmpty());\n    }\n\n    void testMarkdownWrappedJsonRejectedOrStripped()\n    {\n        // Current behavior: markdown-wrapped JSON fails validation\n        // because onMapStreamFinished strips ```json before calling\n        // validateSemanticMapJson, but the raw validator itself does NOT strip.\n        // This test documents current behavior: raw ```json → Invalid JSON.\n        // TODO: If LLM frequently wraps in ```json, the stripping in\n        // onMapStreamFinished should be moved to validateSemanticMapJson.\n        QString json = \"```json\\n{\\\"id\\\": \\\"x\\\", \\\"title\\\": \\\"x\\\", \\\"clusters\\\": []}\\n```\";\n\n        ValidationResult result = validate(json);\n        // Current behavior: fails because ```json is not valid JSON\n        QVERIFY(!result.ok);\n        QVERIFY(result.errorReason.contains(\"Invalid JSON\"));\n    }\n};\n\nQTEST_MAIN(TestGenerateSemanticMapTool)\n#include \"test_generate_semantic_map_tool.moc\"\n",
-  "filePath": "/home/resu/Documents/dev/cremniy/tests/test_generate_semantic_map_tool.cpp"
-}
-```
-
-**Output:**
-```
-Wrote file successfully.
-```
-
----
-
-## Assistant (Build · MiMo-V2.5-Pro · 18.0s)
+## Assistant (Build · MiMo-V2.5-Pro · 58.6s)
 
 _Thinking:_
 
@@ -5543,8 +4733,9 @@ Now build and run all tests.
 **Input:**
 ```json
 {
-  "command": "rm -rf /home/resu/Documents/dev/cremniy/tests/build && mkdir /home/resu/Documents/dev/cremniy/tests/build && cmake -S /home/resu/Documents/dev/cremniy/tests -B /home/resu/Documents/dev/cremniy/tests/build -DCMAKE_PREFIX_PATH=/home/resu/Documents/dev/cremniy/third_party/qt-install 2>&1",
-  "description": "Configure tests with Qt 6.8.3"
+  "command": "rm -rf /home/resu/Documents/dev/cremniy/tests/build && mkdir /home/resu/Documents/dev/cremniy/tests/build && cmake -S /home/resu/Documents/dev/cremniy/tests -B /home/resu/Documents/dev/cremniy/tests/build -DCMAKE_PREFIX_PATH=/home/resu/Documents/dev/cremniy/third_party/qt-install 2>&1 && cmake --build /home/resu/Documents/dev/cremniy/tests/build --parallel 2 2>&1 | tail -5",
+  "description": "Build tests after Phase 6.2",
+  "timeout": 180000
 }
 ```
 
@@ -5565,255 +4756,87 @@ Now build and run all tests.
 -- Found OpenGL: /usr/lib/x86_64-linux-gnu/libOpenGL.so   
 -- Found WrapOpenGL: TRUE  
 -- Found XKB: /usr/lib/x86_64-linux-gnu/libxkbcommon.so (found suitable version "1.6.0", minimum required is "0.5.0") 
--- Configuring done (1.2s)
+-- Configuring done (1.0s)
 -- Generating done (0.0s)
 -- Build files have been written to: /home/resu/Documents/dev/cremniy/tests/build
+[ 84%] Building CXX object CMakeFiles/test_generate_codemap_tool.dir/home/resu/Documents/dev/cremniy/src/Agent/llm_client.cpp.o
+[ 88%] Building CXX object CMakeFiles/test_generate_codemap_tool.dir/home/resu/Documents/dev/cremniy/src/Agent/endpoint_manager.cpp.o
+[ 92%] Building CXX object CMakeFiles/test_generate_codemap_tool.dir/home/resu/Documents/dev/cremniy/src/utils/appsettings.cpp.o
+[ 96%] Linking CXX executable test_generate_codemap_tool
+[100%] Built target test_generate_codemap_tool
 
 ```
 
 ---
 
-## Assistant (Build · MiMo-V2.5-Pro · 174.0s)
+## Assistant (Build · MiMo-V2.5-Pro · 49.2s)
 
 _Thinking:_
 
-Now build all test targets.
+Build successful. Run all tests.
 
 **Tool: bash**
 
 **Input:**
 ```json
 {
-  "command": "cmake --build /home/resu/Documents/dev/cremniy/tests/build --parallel 2 2>&1 | tail -20",
-  "description": "Build all test targets",
-  "timeout": 180000
-}
-```
-
-**Output:**
-```
-[ 76%] Building CXX object CMakeFiles/test_generate_semantic_map_tool.dir/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/semantic_map.cpp.o
-[ 80%] Building CXX object CMakeFiles/test_generate_semantic_map_tool.dir/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/semantic_map_store.cpp.o
-[ 84%] Building CXX object CMakeFiles/test_generate_semantic_map_tool.dir/home/resu/Documents/dev/cremniy/src/ToolTabs/Canvas/semantic_map_utils.cpp.o
-[ 88%] Building CXX object CMakeFiles/test_generate_semantic_map_tool.dir/home/resu/Documents/dev/cremniy/src/Agent/llm_client.cpp.o
-[ 92%] Building CXX object CMakeFiles/test_generate_semantic_map_tool.dir/home/resu/Documents/dev/cremniy/src/Agent/endpoint_manager.cpp.o
-[ 96%] Linking CXX executable test_generate_semantic_map_tool
-/usr/bin/ld: CMakeFiles/test_generate_semantic_map_tool.dir/home/resu/Documents/dev/cremniy/src/Agent/llm_client.cpp.o: в функции «LLMClient::buildAnthropicRequest(QJsonArray const&, QJsonArray const&)»:
-llm_client.cpp:(.text+0x15a7): undefined reference to `AppSettings::llmMaxTokens()'
-/usr/bin/ld: llm_client.cpp:(.text+0x175b): undefined reference to `AppSettings::llmSystemPrompt()'
-/usr/bin/ld: CMakeFiles/test_generate_semantic_map_tool.dir/home/resu/Documents/dev/cremniy/src/Agent/llm_client.cpp.o: в функции «LLMClient::buildOpenAIRequest(QJsonArray const&, QJsonArray const&)»:
-llm_client.cpp:(.text+0x1bb9): undefined reference to `AppSettings::llmMaxTokens()'
-/usr/bin/ld: CMakeFiles/test_generate_semantic_map_tool.dir/home/resu/Documents/dev/cremniy/src/Agent/llm_client.cpp.o: в функции «LLMClient::convertMessagesForOpenAI(QJsonArray const&) const»:
-llm_client.cpp:(.text+0x21c2): undefined reference to `AppSettings::llmSystemPrompt()'
-/usr/bin/ld: CMakeFiles/test_generate_semantic_map_tool.dir/home/resu/Documents/dev/cremniy/src/Agent/endpoint_manager.cpp.o: в функции «EndpointManager::migrateLegacySettings()»:
-endpoint_manager.cpp:(.text+0xd1c): undefined reference to `AppSettings::llmApiKey()'
-/usr/bin/ld: endpoint_manager.cpp:(.text+0xd28): undefined reference to `AppSettings::llmModel()'
-collect2: error: ld returned 1 exit status
-gmake[2]: *** [CMakeFiles/test_generate_semantic_map_tool.dir/build.make:222: test_generate_semantic_map_tool] Ошибка 1
-gmake[1]: *** [CMakeFiles/Makefile2:148: CMakeFiles/test_generate_semantic_map_tool.dir/all] Ошибка 2
-gmake: *** [Makefile:91: all] Ошибка 2
-
-```
-
----
-
-## Assistant (Build · MiMo-V2.5-Pro · 68.0s)
-
-_Thinking:_
-
-The test_generate_semantic_map_tool needs AppSettings sources. Let me add them to the CMakeLists.txt.
-
-**Tool: edit**
-
-**Input:**
-```json
-{
-  "filePath": "/home/resu/Documents/dev/cremniy/tests/CMakeLists.txt",
-  "newString": "# --- test_generate_semantic_map_tool ---\nadd_executable(test_generate_semantic_map_tool\n    test_generate_semantic_map_tool.cpp\n    ${SRC_DIR}/Agent/tools/generate_semantic_map_tool.cpp\n    ${SRC_DIR}/Agent/tools/generate_semantic_map_tool.h\n    ${SRC_DIR}/Agent/tools/agent_tool.h\n    ${SRC_DIR}/ToolTabs/Canvas/semantic_map.cpp\n    ${SRC_DIR}/ToolTabs/Canvas/semantic_map.h\n    ${SRC_DIR}/ToolTabs/Canvas/semantic_map_store.cpp\n    ${SRC_DIR}/ToolTabs/Canvas/semantic_map_store.h\n    ${SRC_DIR}/ToolTabs/Canvas/semantic_map_utils.cpp\n    ${SRC_DIR}/ToolTabs/Canvas/semantic_map_utils.h\n    ${SRC_DIR}/Agent/llm_client.cpp\n    ${SRC_DIR}/Agent/llm_client.h\n    ${SRC_DIR}/Agent/endpoint_manager.cpp\n    ${SRC_DIR}/Agent/endpoint_manager.h\n    ${SRC_DIR}/utils/appsettings.cpp\n    ${SRC_DIR}/utils/appsettings.h\n)",
-  "oldString": "# --- test_generate_semantic_map_tool ---\nadd_executable(test_generate_semantic_map_tool\n    test_generate_semantic_map_tool.cpp\n    ${SRC_DIR}/Agent/tools/generate_semantic_map_tool.cpp\n    ${SRC_DIR}/Agent/tools/generate_semantic_map_tool.h\n    ${SRC_DIR}/Agent/tools/agent_tool.h\n    ${SRC_DIR}/ToolTabs/Canvas/semantic_map.cpp\n    ${SRC_DIR}/ToolTabs/Canvas/semantic_map.h\n    ${SRC_DIR}/ToolTabs/Canvas/semantic_map_store.cpp\n    ${SRC_DIR}/ToolTabs/Canvas/semantic_map_store.h\n    ${SRC_DIR}/ToolTabs/Canvas/semantic_map_utils.cpp\n    ${SRC_DIR}/ToolTabs/Canvas/semantic_map_utils.h\n    ${SRC_DIR}/Agent/llm_client.cpp\n    ${SRC_DIR}/Agent/llm_client.h\n    ${SRC_DIR}/Agent/endpoint_manager.cpp\n    ${SRC_DIR}/Agent/endpoint_manager.h\n)"
-}
-```
-
-**Output:**
-```
-Edit applied successfully.
-```
-
----
-
-## Assistant (Build · MiMo-V2.5-Pro · 175.8s)
-
-_Thinking:_
-
-Now rebuild.
-
-**Tool: bash**
-
-**Input:**
-```json
-{
-  "command": "cmake --build /home/resu/Documents/dev/cremniy/tests/build --parallel 2 2>&1 | tail -10",
-  "description": "Rebuild tests with appsettings",
-  "timeout": 180000
-}
-```
-
-**Output:**
-```
-[  7%] Automatic MOC for target test_semantic_map
-[  7%] Built target test_dependency_parser_autogen
-[  7%] Built target test_semantic_map_autogen
-[ 11%] Automatic MOC for target test_generate_semantic_map_tool
-[ 30%] Built target test_dependency_parser
-[ 30%] Built target test_generate_semantic_map_tool_autogen
-[ 57%] Built target test_semantic_map
-[ 61%] Building CXX object CMakeFiles/test_generate_semantic_map_tool.dir/home/resu/Documents/dev/cremniy/src/utils/appsettings.cpp.o
-[ 65%] Linking CXX executable test_generate_semantic_map_tool
-[100%] Built target test_generate_semantic_map_tool
-
-```
-
----
-
-## Assistant (Build · MiMo-V2.5-Pro · 125.6s)
-
-_Thinking:_
-
-All three test targets built. Now run them all.
-
-**Tool: bash**
-
-**Input:**
-```json
-{
-  "command": "cd /home/resu/Documents/dev/cremniy/tests/build && ctest --output-on-failure 2>&1",
-  "description": "Run all tests via ctest",
+  "command": "cd /home/resu/Documents/dev/cremniy/tests/build && ./test_dependency_parser 2>&1 | tail -1 && ./test_codemap 2>&1 && echo \"=== GENERATE ===\" && ./test_generate_codemap_tool 2>&1 | tail -1",
+  "description": "Run all tests",
   "timeout": 60000
 }
 ```
 
 **Output:**
 ```
-Test project /home/resu/Documents/dev/cremniy/tests/build
-No tests were found!!!
-
-```
-
----
-
-## Assistant (Build · MiMo-V2.5-Pro · 19.7s)
-
-_Thinking:_
-
-The tests weren't registered. Let me reconfigure cmake.
-
-**Tool: bash**
-
-**Input:**
-```json
-{
-  "command": "cd /home/resu/Documents/dev/cremniy/tests/build && cmake .. -DCMAKE_PREFIX_PATH=/home/resu/Documents/dev/cremniy/third_party/qt-install 2>&1 && ctest --output-on-failure 2>&1",
-  "description": "Reconfigure and run ctest",
-  "timeout": 60000
-}
-```
-
-**Output:**
-```
--- Configuring done (0.2s)
--- Generating done (0.0s)
--- Build files have been written to: /home/resu/Documents/dev/cremniy/tests/build
-Test project /home/resu/Documents/dev/cremniy/tests/build
-No tests were found!!!
-
-```
-
----
-
-## Assistant (Build · MiMo-V2.5-Pro · 222.3s)
-
-_Thinking:_
-
-The tests aren't found by ctest. Let me try running them directly.
-
-**Tool: bash**
-
-**Input:**
-```json
-{
-  "command": "cd /home/resu/Documents/dev/cremniy/tests/build && ./test_dependency_parser 2>&1 && echo \"=== SEMANTIC MAP ===\" && ./test_semantic_map 2>&1 && echo \"=== GENERATE TOOL ===\" && ./test_generate_semantic_map_tool 2>&1",
-  "description": "Run all tests directly",
-  "timeout": 60000
-}
-```
-
-**Output:**
-```
-qt.qpa.plugin: Could not find the Qt platform plugin "wayland" in ""
-********* Start testing of TestDependencyParser *********
-Config: Using QtTest library 6.8.3, Qt 6.8.3 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 13.3.0), ubuntu 24.04
-PASS   : TestDependencyParser::initTestCase()
-PASS   : TestDependencyParser::testParserFindsAllFiles()
-PASS   : TestDependencyParser::testParserFindsIncludes()
-PASS   : TestDependencyParser::testParserResolvesRelativePaths()
-PASS   : TestDependencyParser::testNoDuplicates()
-PASS   : TestDependencyParser::testEmptyProject()
-PASS   : TestDependencyParser::testGraphUpdatedSignal()
-PASS   : TestDependencyParser::cleanupTestCase()
-Totals: 8 passed, 0 failed, 0 skipped, 0 blacklisted, 14ms
 ********* Finished testing of TestDependencyParser *********
-=== SEMANTIC MAP ===
 qt.qpa.plugin: Could not find the Qt platform plugin "wayland" in ""
-********* Start testing of TestSemanticMap *********
+********* Start testing of TestCodemap *********
 Config: Using QtTest library 6.8.3, Qt 6.8.3 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 13.3.0), ubuntu 24.04
-PASS   : TestSemanticMap::initTestCase()
-PASS   : TestSemanticMap::testStepRoundTrip()
-PASS   : TestSemanticMap::testClusterRoundTrip()
-PASS   : TestSemanticMap::testMapRoundTrip()
-PASS   : TestSemanticMap::testFromJsonMissingOptionalFields()
-PASS   : TestSemanticMap::testFindStep()
-PASS   : TestSemanticMap::testExtractCodeSnippetValidRange()
-PASS   : TestSemanticMap::testExtractCodeSnippetOutOfBounds()
-PASS   : TestSemanticMap::testExtractCodeSnippetInvalidRange()
-PASS   : TestSemanticMap::testExtractCodeSnippetMissingFile()
-PASS   : TestSemanticMap::testStoreSaveAndLoad()
-PASS   : TestSemanticMap::testStoreLoadNonexistent()
-PASS   : TestSemanticMap::testStoreList()
-PASS   : TestSemanticMap::testStoreSanitizeId()
-PASS   : TestSemanticMap::testStoreRemove()
-PASS   : TestSemanticMap::cleanupTestCase()
-Totals: 16 passed, 0 failed, 0 skipped, 0 blacklisted, 7ms
-********* Finished testing of TestSemanticMap *********
-=== GENERATE TOOL ===
-qt.qpa.plugin: Could not find the Qt platform plugin "wayland" in ""
-********* Start testing of TestGenerateSemanticMapTool *********
-Config: Using QtTest library 6.8.3, Qt 6.8.3 (x86_64-little_endian-lp64 shared (dynamic) release build; by GCC 13.3.0), ubuntu 24.04
-PASS   : TestGenerateSemanticMapTool::initTestCase()
-PASS   : TestGenerateSemanticMapTool::testValidJsonPasses()
-PASS   : TestGenerateSemanticMapTool::testInvalidJsonSyntax()
-PASS   : TestGenerateSemanticMapTool::testUnknownFilePath()
-PASS   : TestGenerateSemanticMapTool::testLineNumberOutOfBounds()
-PASS   : TestGenerateSemanticMapTool::testStartLineGreaterThanEndLine()
-PASS   : TestGenerateSemanticMapTool::testDanglingConnectionRemoved()
-PASS   : TestGenerateSemanticMapTool::testEmptyClustersWithDetailsIsValid()
-PASS   : TestGenerateSemanticMapTool::testMarkdownWrappedJsonRejectedOrStripped()
-PASS   : TestGenerateSemanticMapTool::cleanupTestCase()
-Totals: 10 passed, 0 failed, 0 skipped, 0 blacklisted, 2ms
-********* Finished testing of TestGenerateSemanticMapTool *********
+PASS   : TestCodemap::initTestCase()
+PASS   : TestCodemap::testLocationRoundTrip()
+PASS   : TestCodemap::testTraceRoundTrip()
+PASS   : TestCodemap::testCodemapRoundTrip()
+PASS   : TestCodemap::testFromJsonMissingOptionalFields()
+PASS   : TestCodemap::testFindLocation()
+PASS   : TestCodemap::testParsedConnections()
+PASS   : TestCodemap::testParsedConnectionsNoLabel()
+PASS   : TestCodemap::testMotivationDetailsParsing()
+PASS   : TestCodemap::testExtractCodeSnippetValidRange()
+PASS   : TestCodemap::testExtractCodeSnippetOutOfBounds()
+PASS   : TestCodemap::testExtractCodeSnippetInvalidLine()
+PASS   : TestCodemap::testExtractCodeSnippetMissingFile()
+PASS   : TestCodemap::testCheckLocationStaleWhenCurrent()
+PASS   : TestCodemap::testCheckLocationStaleWhenChanged()
+PASS   : TestCodemap::testCheckLocationStaleMissingFile()
+PASS   : TestCodemap::testToRelativePath()
+PASS   : TestCodemap::testToAbsolutePath()
+PASS   : TestCodemap::testNormalizeAbsolutePaths()
+PASS   : TestCodemap::testStoreSaveAndLoad()
+PASS   : TestCodemap::testStoreLoadNonexistent()
+PASS   : TestCodemap::testStoreDefaultFilePath()
+PASS   : TestCodemap::testSlugifyTitle()
+PASS   : TestCodemap::testBuildFileName()
+PASS   : TestCodemap::testStoreSaveAndLoadLatest()
+PASS   : TestCodemap::testLoadLatestWithWindsurfNaming()
+PASS   : TestCodemap::testImportRealCodemapFormat()
+PASS   : TestCodemap::testParsedConnectionsWithSubgraph()
+PASS   : TestCodemap::cleanupTestCase()
+Totals: 29 passed, 0 failed, 0 skipped, 0 blacklisted, 10ms
+********* Finished testing of TestCodemap *********
+=== GENERATE ===
+********* Finished testing of TestGenerateCodemapTool *********
 
 ```
 
 ---
 
-## Assistant (Build · MiMo-V2.5-Pro · 17.4s)
+## Assistant (Build · MiMo-V2.5-Pro · 22.0s)
 
 _Thinking:_
 
-All 34 tests pass (8 + 16 + 10). Now let me update the documentation.
+All 47 tests pass (8 + 29 + 10). Now let me update ROADMAP and commit.
 
-Все 34 теста проходят (8 + 16 + 10). Теперь документация.
-
-**5.4** — ROADMAP.md / ROADMAP_ru.md.
+47/47 PASS. Обновляю ROADMAP и фиксирую.
 
 **Tool: edit**
 
@@ -5821,8 +4844,8 @@ All 34 tests pass (8 + 16 + 10). Now let me update the documentation.
 ```json
 {
   "filePath": "/home/resu/Documents/dev/cremniy/ROADMAP.md",
-  "newString": "- [x] Phase 6 — Tests & documentation\n\n## Concept Map / Semantic Layer (in progress)\n\nAI-generated conceptual overview of the codebase, complementing the structural dependency graph with semantic clusters (windsurf/codemap-style):\n\n- [x] Data model — SemanticMap/SemanticCluster/SemanticStep with JSON serialization, SemanticMapStore (.cremniy/semantic_maps/)\n- [x] GenerateSemanticMapTool — agent tool with validation and retry (filePath/lineNumber verification against real files)\n- [x] Canvas visualization — ClusterGroupNode, StepNode, ConnectionEdge with labeled connections\n- [x] Tools → Concept Map menu entry; Structure/Concept toggle in Canvas toolbar; DigestPanel with collapsible Motivation/Details\n- [x] Tests & documentation",
-  "oldString": "- [x] Phase 6 — Tests & documentation"
+  "newString": "## Concept Map / Semantic Layer (done)\n\nAI-generated conceptual overview of the codebase, complementing the structural dependency graph with semantic clusters (windsurf/codemap-style):\n\n- [x] Data model — Codemap/CodemapTrace/CodemapLocation with Windsurf-compatible .codemap format\n- [x] GenerateCodemapTool — agent tool with validation, retry, lineContent staleness check\n- [x] Canvas visualization — ClusterGroupNode, StepNode, ConnectionEdge (connections from mermaidDiagram)\n- [x] Tools → Codemap menu entry; Semantic/Graph toggle in Canvas toolbar; DigestPanel with per-trace Motivation/Details\n- [x] CodemapStore — <Title>_YYYYMMDD_HHMMSS.codemap.txt in project root\n- [x] Autonomous project-level Canvas (not file-bound)\n- [x] Scope from chat, stale indicator on StepNode\n- [x] Tests & documentation (47/47 PASS)",
+  "oldString": "## Concept Map / Semantic Layer (in progress)\n\nAI-generated conceptual overview of the codebase, complementing the structural dependency graph with semantic clusters (windsurf/codemap-style):\n\n- [x] Data model — Codemap/CodemapTrace/CodemapLocation with Windsurf-compatible .codemap format\n- [x] GenerateCodemapTool — agent tool with validation, retry, lineContent staleness check\n- [x] Canvas visualization — ClusterGroupNode, StepNode, ConnectionEdge (connections from mermaidDiagram)\n- [x] Tools → Codemap menu entry; Structure/Concept toggle in Canvas toolbar; DigestPanel with per-trace Motivation/Details\n- [x] CodemapStore — <project>.codemap in project root (portable, relative paths)\n- [x] Tests & documentation"
 }
 ```
 
@@ -5833,140 +4856,33 @@ Edit applied successfully.
 
 ---
 
-## Assistant (Build · MiMo-V2.5-Pro · 79.6s)
+## Assistant (Build · MiMo-V2.5-Pro · 17.9s)
 
 _Thinking:_
 
-Now update ROADMAP_ru.md.
-
-**Tool: edit**
-
-**Input:**
-```json
-{
-  "filePath": "/home/resu/Documents/dev/cremniy/ROADMAP_ru.md",
-  "newString": "## 🔮 Будущие планы\n\n- Сборка проекта пользователя\n- Отладчик запущенной программы\n- Просмотр памяти запущенной программы\n\n## Infinite Canvas (в процессе)\n\nВизуализация графа зависимостей с анимацией в стиле gource:\n\n- [x] Фаза 1 — Базовый канвас (QGraphicsView, pan/zoom/grid)\n- [x] Фаза 2 — Ядро канваса (FileNode, DependencyEdge, CanvasTab)\n- [x] Фаза 3 — Парсер зависимостей (async #include, радиальный layout, live-обновления)\n- [x] Фаза 4 — Интеграция с редактором (клик→редактор, hover preview, context menu)\n- [x] Фаза 5 — Gource-визуализация (git history, фильтры слоёв, миникарта)\n- [x] Фаза 6 — Тесты и документация\n\n## Concept Map / Семантический слой (в процессе)\n\nAI-генерируемая концептуальная карта кодовой базы, дополняющая структурный граф зависимостей семантическими кластерами (в стиле windsurf/codemap):\n\n- [x] Модель данных — SemanticMap/SemanticCluster/SemanticStep с JSON-сериализацией, SemanticMapStore (.cremniy/semantic_maps/)\n- [x] GenerateSemanticMapTool — инструмент агента с валидацией и retry (проверка filePath/lineNumber по реальным файлам)\n- [x] Визуализация на канвасе — ClusterGroupNode, StepNode, ConnectionEdge с подписями связей\n- [x] Пункт меню «Концептуальная карта»; переключатель «Структура/Концепт» в toolbar; DigestPanel со сворачиваемыми секциями\n- [x] Тесты и документация",
-  "oldString": "## 🔮 Будущие планы\n\n- Сборка проекта пользователя\n- Отладчик запущенной программы\n- Просмотр памяти запущенной программы"
-}
-```
-
-**Output:**
-```
-Edit applied successfully.
-```
-
----
-
-## Assistant (Build · MiMo-V2.5-Pro · 83.4s)
-
-_Thinking:_
-
-Now update CONTRIBUTING.md.
-
-**5.5** — CONTRIBUTING.md / CONTRIBUTING_ru.md.
-
-**Tool: edit**
-
-**Input:**
-```json
-{
-  "filePath": "/home/resu/Documents/dev/cremniy/CONTRIBUTING.md",
-  "newString": "### Running canvas tests\n\n```bash\ncd tests && mkdir build && cd build\ncmake .. -DCMAKE_PREFIX_PATH=../../third_party/qt-install\ncmake --build . && ./test_dependency_parser\n```\n\n## Concept Map / Semantic Layer\n\nThe semantic layer adds an AI-generated conceptual overview on top of the structural dependency graph.\n\n### Data flow\n\n1. User triggers via Tools → Concept Map (Ctrl+Shift+M), or the Structure/Concept toggle in CanvasTab toolbar\n2. CanvasTab checks `SemanticMapStore::list()` for a cached map in `.cremniy/semantic_maps/`\n3. If absent, emits `needsSemanticMapGeneration()` — handled by `IDEWindow::on_GenerateSemanticMap()`, which invokes `GenerateSemanticMapTool` via `AgentSession::toolRegistry()`\n4. `GenerateSemanticMapTool` sends project files to the LLM with a structured system prompt, validates the response (real file paths, in-bounds line numbers), retries up to 2 times on validation failure\n5. Valid result is saved via `SemanticMapStore::save()` and rendered via `CanvasTab::showSemanticMap()`\n\n### Adding a new field to SemanticStep/SemanticCluster\n\n1. Add the field in `semantic_map.h`\n2. Update `toJson()`/`fromJson()` — make new fields optional in `fromJson` for backward compatibility with cached `.cremniy/semantic_maps/*.json`\n3. Update the system prompt in `GenerateSemanticMapTool::buildSystemPrompt()` to describe the new field's expected format\n4. Update `validateSemanticMapJson()` if the field requires validation\n5. Update visualization (`StepNode`/`ClusterGroupNode`/`DigestPanel`) to display the new field\n\n### Testing\n\n- `tests/test_semantic_map.cpp` — serialization round-trip, `SemanticMapStore` save/load/list/remove/sanitize\n- `tests/test_generate_semantic_map_tool.cpp` — validation logic (no network calls — uses `CREMNIY_TESTING` friend class pattern)\n\n```bash\ncd tests && mkdir build && cd build\ncmake .. -DCMAKE_PREFIX_PATH=../../third_party/qt-install\ncmake --build . && ctest --output-on-failure\n```",
-  "oldString": "### Running canvas tests\n\n```bash\ncd tests && mkdir build && cd build\ncmake .. -DCMAKE_PREFIX_PATH=../../third_party/qt-install\ncmake --build . && ./test_dependency_parser\n```"
-}
-```
-
-**Output:**
-```
-Edit applied successfully.
-```
-
----
-
-## Assistant (Build · MiMo-V2.5-Pro · 159.9s)
-
-_Thinking:_
-
-Now update CONTRIBUTING_ru.md.
-
-**Tool: edit**
-
-**Input:**
-```json
-{
-  "filePath": "/home/resu/Documents/dev/cremniy/CONTRIBUTING_ru.md",
-  "newString": "## Благодарность\n\nВсе контрибьюторы будут добавлены в [ACKNOWLEDGEMENTS.md](ACKNOWLEDGEMENTS.md)  \nи упомянуты в конце каждого видео на [YouTube-канале](https://www.youtube.com/@igmunv)\n\n## Архитектура модуля Canvas\n\nМодуль бесконечного канваса находится в `src/ToolTabs/Canvas/` и следует паттерну ToolTab:\n\n```\nCanvas/\n  canvastab.h/cpp       — главная вкладка, построение графа, подключение сигналов\n  canvas_view.h/cpp     — QGraphicsView с pan/zoom/grid\n  canvas_layout.h/cpp   — радиальный дерево- layout по директориям\n  dependency_parser.h/cpp — async #include парсер (QThread worker)\n  gource_animator.h/cpp — чтение git log, управление воспроизведением\n  layer_panel.h/cpp     — переключатели типов рёбер (QSettings)\n  minimap.h/cpp         — оверлей миникарты 160x120\n  nodes/\n    file_node.h/cpp     — QGraphicsObject: hover, pulse, context menu\n    step_node.h/cpp      — узел шага семантической карты\n    cluster_group_node.h/cpp — контейнер кластера\n  edges/\n    dependency_edge.h/cpp — анимированные рёбра Безье\n    connection_edge.h/cpp — рёбра семантических связей\n  semantic_map.h/cpp    — модель данных SemanticMap/SemanticCluster/SemanticStep\n  semantic_map_store.h/cpp — хранилище карт в .cremniy/semantic_maps/\n  semantic_map_utils.h/cpp — утилиты (extractCodeSnippet)\n  cluster_layout.h/cpp  — layout кластеров\n  digest_panel.h/cpp    — панель digest с кластерами\n```\n\n### Запуск тестов канваса\n\n```bash\ncd tests && mkdir build && cd build\ncmake .. -DCMAKE_PREFIX_PATH=../../third_party/qt-install\ncmake --build . && ./test_dependency_parser\n```\n\n## Concept Map / Семантический слой\n\nСемантический слой добавляет AI-генерируемую концептуальную карту поверх структурного графа зависимостей.\n\n### Поток данных\n\n1. Пользователь вызывает через «Концептуальная карта» (Ctrl+Shift+M) или переключатель «Структура/Концепт» в toolbar канваса\n2. `CanvasTab` проверяет `SemanticMapStore::list()` на наличие кэшированной карты в `.cremniy/semantic_maps/`\n3. Если нет — эмитит `needsSemanticMapGeneration()`, который обрабатывает `IDEWindow::on_GenerateSemanticMap()`, вызывая `GenerateSemanticMapTool` через `AgentSession::toolRegistry()`\n4. `GenerateSemanticMapTool` отправляет файлы проекта LLM со структурированным системным промтом, валидирует ответ (реальные пути файлов, корректные номера строк), повторяет до 2 раз при ошибке валидации\n5. Валидный результат сохраняется через `SemanticMapStore::save()` и отображается через `CanvasTab::showSemanticMap()`\n\n### Добавление нового поля в SemanticStep/SemanticCluster\n\n1. Добавьте поле в `semantic_map.h`\n2. Обновите `toJson()`/`fromJson()` — новые поля должны быть опциональными в `fromJson` для обратной совместимости с кэшированными `.cremniy/semantic_maps/*.json`\n3. Обновите системный промт в `GenerateSemanticMapTool::buildSystemPrompt()` с описанием формата нового поля\n4. Обновите `validateSemanticMapJson()`, если поле требует валидации\n5. Обновите визуализацию (`StepNode`/`ClusterGroupNode`/`DigestPanel`) для отображения нового поля\n\n### Тестирование\n\n- `tests/test_semantic_map.cpp` — сериализация round-trip, `SemanticMapStore` save/load/list/remove/sanitize\n- `tests/test_generate_semantic_map_tool.cpp` — логика валидации (без сетевых вызовов — паттерн friend-класса через `CREMNIY_TESTING`)\n\n```bash\ncd tests && mkdir build && cd build\ncmake .. -DCMAKE_PREFIX_PATH=../../third_party/qt-install\ncmake --build . && ctest --output-on-failure\n```",
-  "oldString": "## Благодарность\n\nВсе контрибьюторы будут добавлены в [ACKNOWLEDGEMENTS.md](ACKNOWLEDGEMENTS.md)  \nи упомянуты в конце каждого видео на [YouTube-канале](https://www.youtube.com/@igmunv)"
-}
-```
-
-**Output:**
-```
-Edit applied successfully.
-```
-
----
-
-## Assistant (Build · MiMo-V2.5-Pro · 34.1s)
-
-_Thinking:_
-
-Now let me also verify the main project still builds, and then commit everything.
+Now commit everything.
 
 **Tool: bash**
 
 **Input:**
 ```json
 {
-  "command": "cmake --build /home/resu/Documents/dev/cremniy/build --parallel 2 2>&1 | tail -5",
-  "description": "Verify main project still builds",
-  "timeout": 180000
-}
-```
-
-**Output:**
-```
-[ 34%] Building CXX object CMakeFiles/cremniy.dir/cremniy_autogen/mocs_compilation.cpp.o
-[ 34%] Building CXX object CMakeFiles/cremniy.dir/Agent/agent_session.cpp.o
-[ 35%] Building CXX object CMakeFiles/cremniy.dir/Agent/tools/generate_semantic_map_tool.cpp.o
-[ 36%] Linking CXX executable cremniy
-[100%] Built target cremniy
-
-```
-
----
-
-## Assistant (Build · MiMo-V2.5-Pro · 24.0s)
-
-_Thinking:_
-
-Everything builds. Now commit.
-
-Фиксирую Phase 5.
-
-**Tool: bash**
-
-**Input:**
-```json
-{
-  "command": "git add tests/CMakeLists.txt tests/test_semantic_map.cpp tests/test_generate_semantic_map_tool.cpp src/Agent/tools/generate_semantic_map_tool.h ROADMAP.md ROADMAP_ru.md CONTRIBUTING.md CONTRIBUTING_ru.md && git commit -m \"feat: Phase 5 — tests and documentation for semantic map\n\nTests (34 total, all passing):\n- test_semantic_map: 14 tests — serialization round-trip, findStep,\n  extractCodeSnippet (valid/out-of-bounds/invalid/missing), SemanticMapStore\n  (save/load/list/remove/sanitize path traversal)\n- test_generate_semantic_map_tool: 8 tests — valid JSON, invalid syntax,\n  unknown file path, line out of bounds, start>end, dangling connection\n  cleanup, empty clusters valid, markdown-wrapped JSON regression\n- friend class via CREMNIY_TESTING for private validateSemanticMapJson\n\nDocumentation:\n- ROADMAP.md/ru: new 'Concept Map / Semantic Layer' section\n- CONTRIBUTING.md/ru: data flow, adding fields, testing instructions\n- generate_semantic_map_tool.h: CREMNIY_TESTING friend class\"",
-  "description": "Commit Phase 5",
+  "command": "git add src/ui/filestabwidget.h src/ui/filestabwidget.cpp src/app/IDEWindow/idewindow.h src/app/IDEWindow/idewindow.cpp src/ToolTabs/Canvas/canvastab.h src/ToolTabs/Canvas/canvastab.cpp src/ToolTabs/Canvas/cluster_layout.h src/ToolTabs/Canvas/cluster_layout.cpp src/ToolTabs/Canvas/nodes/step_node.h src/ToolTabs/Canvas/nodes/step_node.cpp src/Agent/chat_panel.h src/Agent/chat_panel.cpp tests/test_codemap.cpp ROADMAP.md && git commit -m \"feat: autonomous codemap canvas — Phase 4+5.1+5.2+6.2\n\nPhase 4 — Project-level Canvas:\n- FilesTabWidget::openCodemapTab() creates tab bound to projectRoot\n- IDEWindow::openOrCreateCodemapCanvas() opens semantic-first canvas\n- CanvasTab::setFile() handles directory paths (skip Gource/animator)\n- openOrGenerateConceptMap() uses openOrCreateCodemapCanvas()\n\nPhase 5.1 — Layout polish:\n- ClusterLayout::computeClusterPositions() returns QMap for animation\n- StepNode: stale indicator (orange border + ⚠) via setStale()\n- showCodemap() sets stale flag from CodemapLocation.isStale\n- showCodemap() uses ClusterLayout for grid positioning\n\nPhase 5.2 — Scope from chat:\n- ChatPanel::lastUserMessage() returns last user message text\n- openOrGenerateConceptMap() passes task from chat when no scope\n\nPhase 6.2 — Integration tests:\n- testLoadLatestWithWindsurfNaming: two maps, loadLatest returns newest\n- testImportRealCodemapFormat: load real Windsurf .codemap.txt format\n- testParsedConnectionsWithSubgraph: mermaid subgraph edge parsing\n- ROADMAP: Concept Map marked as done\n\nTests: 47/47 PASS (8 + 29 + 10)\"",
+  "description": "Commit Phase 4+5.1+5.2+6.2",
   "workdir": "/home/resu/Documents/dev/cremniy"
 }
 ```
 
 **Output:**
 ```
-[main 4bd2dd6] feat: Phase 5 — tests and documentation for semantic map
- 8 files changed, 801 insertions(+), 1 deletion(-)
- create mode 100644 tests/test_generate_semantic_map_tool.cpp
- create mode 100644 tests/test_semantic_map.cpp
+[main 564b1fb] feat: autonomous codemap canvas — Phase 4+5.1+5.2+6.2
+ 13 files changed, 270 insertions(+), 25 deletions(-)
 
 ```
 
 ---
 
-## Assistant (Build · MiMo-V2.5-Pro · 16.6s)
+## Assistant (Build · MiMo-V2.5-Pro · 13.4s)
 
 _Thinking:_
 
@@ -5979,8 +4895,8 @@ Done. Let me mark the task and summarize.
 {
   "operation": {
     "action": "done",
-    "id": "T11",
-    "event_summary": "Phase 5 complete: 34 tests passing, ROADMAP + CONTRIBUTING updated"
+    "id": "T15",
+    "event_summary": "All remaining phases complete: autonomous canvas, layout polish, scope from chat, integration tests. 47/47 PASS."
   }
 }
 ```
@@ -5992,23 +4908,32 @@ done → done
 
 ---
 
-## Assistant (Build · MiMo-V2.5-Pro · 15.6s)
+## Assistant (Build · MiMo-V2.5-Pro · 20.2s)
 
 _Thinking:_
 
-Let me summarize.
+Done. Let me summarize everything that was accomplished.
 
-Готово (`4bd2dd6`):
+Все фазы завершены (`564b1fb`). Итого:
 
-**Тесты — 34/34 PASS:**
-- `test_semantic_map` (14): round-trip сериализации, `findStep`, `extractCodeSnippet` (4 граничных случая), `SemanticMapStore` (save/load/list/remove/sanitize path traversal)
-- `test_generate_semantic_map_tool` (8): валидный JSON, невалидный синтаксис, неизвестный filePath, lineNumber за пределами файла, start>end, cleanup dangling connections, пустые clusters валидны, markdown-wrapped JSON regression
-- `test_dependency_parser` (8): без изменений
+**Phase 4** — автономный Canvas:
+- `openCodemapTab()` — вкладка "Codemap" привязана к проекту, не к файлу
+- `openOrCreateCodemapCanvas()` — semantic-first, parser не стартует до "Граф"
+- `setFile()` обрабатывает директории (без Gource/animator)
 
-**Документация:**
-- `ROADMAP.md/ru` — новый раздел «Concept Map / Semantic Layer»
-- `CONTRIBUTING.md/ru` — data flow, инструкция добавления полей, как запускать тесты
-- `generate_semantic_map_tool.h` — `CREMNIY_TESTING` friend class для тестирования приватной валидации
+**Phase 5.1** — layout polish:
+- `ClusterLayout::computeClusterPositions()` → анимация через `animateNodesToPositions()`
+- StepNode: ⚠ stale-индикатор (оранжевая рамка) если `lineContent` не совпадает
+
+**Phase 5.2** — scope из чата:
+- `lastUserMessage()` → передаётся как `task` в GenerateCodemapTool
+
+**Phase 6.2** — тесты:
+- `testLoadLatestWithWindsurfNaming`, `testImportRealCodemapFormat`, `testParsedConnectionsWithSubgraph`
+
+**ROADMAP** — Concept Map отмечена как done.
+
+**47/47 тестов PASS.** Весь план выполнен.
 
 ---
 

@@ -1,0 +1,270 @@
+{
+  "schemaVersion": 1,
+  "id": "Qt_Application_Entry_Point_and_Welcome_Window_System_20260614_123113",
+  "stableId": "4a90eb8a-9d1d-4b78-9fc6-2f5e01884a88",
+  "metadata": {
+    "cascadeId": "3a9ad6f5-0859-439e-9101-e22735a8a820",
+    "generationSource": "generationWithTraces",
+    "generationTimestamp": "2026-06-14T12:31:13+05:00",
+    "mode": "FAST",
+    "originalPrompt": "Explore: Qt Application Entry Point and Welcome Window. Application initialization, styling, and WelcomeForm display\nStart from: main.cpp, welcomeform.h"
+  },
+  "title": "Qt Application Entry Point and Welcome Window System",
+  "traces": [
+    {
+      "id": "1",
+      "title": "Application Startup and Initialization",
+      "description": "Core application bootstrap process from main entry point through styling and welcome window display",
+      "locations": [
+        {
+          "id": "1a",
+          "path": "/home/resu/Documents/dev/cremniy/src/main.cpp",
+          "lineNumber": 8,
+          "lineContent": "QApplication a(argc, argv);",
+          "title": "Qt Application Creation",
+          "description": "Instantiates the main QApplication object with command line arguments"
+        },
+        {
+          "id": "1b",
+          "path": "/home/resu/Documents/dev/cremniy/src/main.cpp",
+          "lineNumber": 9,
+          "lineContent": "QCoreApplication::setOrganizationName(\"cremniy\");",
+          "title": "Organization Metadata Setup",
+          "description": "Sets application organization and name for configuration storage"
+        },
+        {
+          "id": "1c",
+          "path": "/home/resu/Documents/dev/cremniy/src/main.cpp",
+          "lineNumber": 13,
+          "lineContent": "QFile file(\":/styles/style.qss\");",
+          "title": "Stylesheet Resource Loading",
+          "description": "Opens the QSS stylesheet file from Qt resources"
+        },
+        {
+          "id": "1d",
+          "path": "/home/resu/Documents/dev/cremniy/src/main.cpp",
+          "lineNumber": 16,
+          "lineContent": "a.setStyleSheet(styleSheet);",
+          "title": "Global Styling Application",
+          "description": "Applies the dark theme stylesheet to the entire application"
+        },
+        {
+          "id": "1e",
+          "path": "/home/resu/Documents/dev/cremniy/src/main.cpp",
+          "lineNumber": 18,
+          "lineContent": "WelcomeForm wf;",
+          "title": "Welcome Window Instantiation",
+          "description": "Creates the main welcome form instance"
+        },
+        {
+          "id": "1f",
+          "path": "/home/resu/Documents/dev/cremniy/src/main.cpp",
+          "lineNumber": 19,
+          "lineContent": "wf.show();",
+          "title": "Welcome Window Display",
+          "description": "Shows the welcome form to the user"
+        }
+      ],
+      "traceTextDiagram": "Application Bootstrap Process\n├── main() entry point \u003c-- /home/resu/Documents/dev/cremniy/src/main.cpp:6\n│   ├── QApplication creation \u003c-- 1a\n│   ├── Organization metadata setup \u003c-- 1b\n│   ├── Window icon loading \u003c-- /home/resu/Documents/dev/cremniy/src/main.cpp:11\n│   ├── Stylesheet system\n│   │   ├── Resource file access \u003c-- 1c\n│   │   └── Global style application \u003c-- 1d\n│   ├── WelcomeForm instantiation \u003c-- 1e\n│   └── Window display \u0026 event loop \u003c-- 1f\n└── Qt Resource System\n    └── cremniy_res.qrc registration \u003c-- /home/resu/Documents/dev/cremniy/src/resources/cremniy_res.qrc:1",
+      "traceGuide": "# Motivation\n\nWhen launching a desktop application, users expect a **consistent visual experience** and **immediate access to core functionality**. The Cremniy IDE needs to establish its dark theme identity from the very first moment and provide a welcoming interface for project management. This initialization process solves the problem of creating a professional first impression while setting up the technical foundation for the entire application lifecycle.\n\n# Details\n\nThe application boots through a **clean, linear initialization sequence** in main.cpp [1a]. First, it creates the QApplication instance and sets organizational metadata for proper configuration storage [1b]. The **dark theme** is loaded immediately from resources [1c] and applied globally [1d], ensuring every widget inherits the consistent dark styling before any UI elements appear. The window icon is set to complete the visual branding [1e].\n\nThe WelcomeForm serves as the **primary user entry point**, offering quick access to recent projects and new project creation. By showing this window first [1f], the application provides immediate value without requiring users to navigate complex menus. The entire initialization happens in **under 50 lines of code**, demonstrating a focused approach to application startup that prioritizes user experience and technical cleanliness."
+    },
+    {
+      "id": "2",
+      "title": "Welcome Window UI Construction",
+      "description": "Building the two-page welcome interface with recent projects and project creation forms",
+      "locations": [
+        {
+          "id": "2a",
+          "path": "/home/resu/Documents/dev/cremniy/src/app/WelcomeWindow/welcomeform.cpp",
+          "lineNumber": 32,
+          "lineContent": "stack = new QStackedWidget(this);",
+          "title": "Stacked Widget Creation",
+          "description": "Creates the main container for multiple welcome pages"
+        },
+        {
+          "id": "2b",
+          "path": "/home/resu/Documents/dev/cremniy/src/app/WelcomeWindow/welcomeform.cpp",
+          "lineNumber": 39,
+          "lineContent": "RecentProjectsList = new QListView(pageWelcome);",
+          "title": "Recent Projects List Setup",
+          "description": "Creates the list view for showing recent projects"
+        },
+        {
+          "id": "2c",
+          "path": "/home/resu/Documents/dev/cremniy/src/app/WelcomeWindow/welcomeform.cpp",
+          "lineNumber": 43,
+          "lineContent": "SetProjectHistoryList();",
+          "title": "Project History Loading",
+          "description": "Populates the recent projects list from saved history"
+        },
+        {
+          "id": "2d",
+          "path": "/home/resu/Documents/dev/cremniy/src/app/WelcomeWindow/welcomeform.cpp",
+          "lineNumber": 86,
+          "lineContent": "path_lineEdit = new ClickableLineEdit();",
+          "title": "Custom Path Input Widget",
+          "description": "Creates a clickable line edit for directory selection"
+        },
+        {
+          "id": "2e",
+          "path": "/home/resu/Documents/dev/cremniy/src/app/WelcomeWindow/welcomeform.cpp",
+          "lineNumber": 115,
+          "lineContent": "stack-\u003esetCurrentIndex(0);",
+          "title": "Default Page Selection",
+          "description": "Sets the welcome page as the initially visible page"
+        }
+      ],
+      "traceTextDiagram": "WelcomeForm Constructor\n├── Window setup (title, size) \u003c-- /home/resu/Documents/dev/cremniy/src/app/WelcomeWindow/welcomeform.cpp:24\n├── Main layout creation \u003c-- /home/resu/Documents/dev/cremniy/src/app/WelcomeWindow/welcomeform.cpp:29\n├── Stacked widget creation \u003c-- 2a\n│   ├── Page 1: Welcome Screen \u003c-- /home/resu/Documents/dev/cremniy/src/app/WelcomeWindow/welcomeform.cpp:36\n│   │   ├── Recent projects list \u003c-- 2b\n│   │   │   └── Load project history \u003c-- 2c\n│   │   └── Action buttons (Open/Create) \u003c-- /home/resu/Documents/dev/cremniy/src/app/WelcomeWindow/welcomeform.cpp:47\n│   └── Page 2: Create Project \u003c-- /home/resu/Documents/dev/cremniy/src/app/WelcomeWindow/welcomeform.cpp:62\n│       ├── Project name input \u003c-- /home/resu/Documents/dev/cremniy/src/app/WelcomeWindow/welcomeform.cpp:71\n│       ├── Language selection \u003c-- /home/resu/Documents/dev/cremniy/src/app/WelcomeWindow/welcomeform.cpp:80\n│       └── Path selection widget \u003c-- 2d\n└── Set default welcome page \u003c-- 2e",
+      "traceGuide": "# Motivation\n\nThe Cremniy application needs a **user-friendly entry point** that handles project management before users dive into coding. Instead of dropping users directly into a complex IDE, the welcome screen provides a clean interface for **recent project access** and **new project creation**, solving the common problem of users not remembering where their projects are located or needing guidance to start new development work.\n\n# Details\n\nThe welcome window is built as a **two-page stacked widget** [2a] that provides a clean separation between project selection and creation. The first page displays a **recent projects list** [2b] that automatically loads saved project paths [2c], allowing users to quickly resume work. The second page offers a **project creation form** with validated inputs for project name, programming language, and directory path selection.\n\nThe UI construction follows a **hierarchical layout pattern**: the main window contains a vertical layout, which holds the stacked widget. Each page within the stack has its own layout system - the welcome page uses a vertical layout with the list view and button row, while the creation page uses a grid layout for form fields. The **custom ClickableLineEdit** widget [2d] enhances user experience by opening a directory dialog when clicked, eliminating the need for manual path typing.\n\nThe welcome screen serves as a **launching pad** - once a project is opened or created, it hides itself and creates an IDEWindow instance, then reappears when the project is closed. This creates a **seamless workflow** where users always return to the familiar welcome interface between projects."
+    },
+    {
+      "id": "3",
+      "title": "Recent Project Opening Flow",
+      "description": "Process of opening a project from the recent projects list through to IDE window launch",
+      "locations": [
+        {
+          "id": "3a",
+          "path": "/home/resu/Documents/dev/cremniy/src/app/WelcomeWindow/welcomeform.cpp",
+          "lineNumber": 118,
+          "lineContent": "connect(RecentProjectsList-\u003eselectionModel(), \u0026QItemSelectionModel::selectionChanged, this, \u0026WelcomeForm::SelectProjectInList);",
+          "title": "Project Selection Event Binding",
+          "description": "Connects list selection changes to enable the open button"
+        },
+        {
+          "id": "3b",
+          "path": "/home/resu/Documents/dev/cremniy/src/app/WelcomeWindow/welcomeform.cpp",
+          "lineNumber": 140,
+          "lineContent": "void WelcomeForm::OpenRecentProjectHandler(){",
+          "title": "Recent Project Handler",
+          "description": "Handles opening a project from the recent projects list"
+        },
+        {
+          "id": "3c",
+          "path": "/home/resu/Documents/dev/cremniy/src/app/WelcomeWindow/welcomeform.cpp",
+          "lineNumber": 144,
+          "lineContent": "OpenProject(index.data().toString());",
+          "title": "Project Path Extraction",
+          "description": "Extracts the project path and calls OpenProject"
+        },
+        {
+          "id": "3d",
+          "path": "/home/resu/Documents/dev/cremniy/src/app/WelcomeWindow/welcomeform.cpp",
+          "lineNumber": 162,
+          "lineContent": "utils::ProjectsHistoryManager::saveProjectsHistory(path);",
+          "title": "Project History Persistence",
+          "description": "Saves the opened project to recent projects history"
+        },
+        {
+          "id": "3e",
+          "path": "/home/resu/Documents/dev/cremniy/src/app/WelcomeWindow/welcomeform.cpp",
+          "lineNumber": 166,
+          "lineContent": "IDEWindow *mw = new IDEWindow(path, nullptr);",
+          "title": "IDE Window Creation",
+          "description": "Creates the main IDE window with the project path"
+        }
+      ],
+      "traceTextDiagram": "Recent Project Opening Flow\n├── User selects project in list \u003c-- /home/resu/Documents/dev/cremniy/src/app/WelcomeWindow/welcomeform.cpp:118\n│   └── Selection model triggers event \u003c-- /home/resu/Documents/dev/cremniy/src/app/WelcomeWindow/welcomeform.cpp:118\n├── SelectProjectInList() \u003c-- 3a\n│   └── Enables open button (green state) \u003c-- /home/resu/Documents/dev/cremniy/src/app/WelcomeWindow/welcomeform.cpp:135\n├── User clicks open button \u003c-- /home/resu/Documents/dev/cremniy/src/app/WelcomeWindow/welcomeform.cpp:120\n│   └── OpenRecentProjectHandler() \u003c-- 3b\n│       ├── Get selected index from list \u003c-- /home/resu/Documents/dev/cremniy/src/app/WelcomeWindow/welcomeform.cpp:141\n│       └── OpenProject(path) \u003c-- 3c\n├── OpenProject() execution \u003c-- /home/resu/Documents/dev/cremniy/src/app/WelcomeWindow/welcomeform.cpp:159\n│   ├── Validate directory exists \u003c-- /home/resu/Documents/dev/cremniy/src/app/WelcomeWindow/welcomeform.cpp:160\n│   ├── Save to project history \u003c-- 3d\n│   ├── Hide welcome window \u003c-- /home/resu/Documents/dev/cremniy/src/app/WelcomeWindow/welcomeform.cpp:164\n│   └── Create IDEWindow instance \u003c-- 3e\n└── IDEWindow launched with project\n    ├── Set maximized state \u003c-- /home/resu/Documents/dev/cremniy/src/app/WelcomeWindow/welcomeform.cpp:168\n    ├── Show window to user \u003c-- /home/resu/Documents/dev/cremniy/src/app/WelcomeWindow/welcomeform.cpp:174\n    └── Connect close signal to show welcome \u003c-- /home/resu/Documents/dev/cremniy/src/app/WelcomeWindow/welcomeform.cpp:170",
+      "traceGuide": "# Motivation\n\nWhen users launch Cremniy, they need a quick way to resume their work without navigating through file dialogs every time. The **recent projects list** solves this by maintaining a history of opened projects and providing one-click access. This system bridges the welcome screen with the main IDE, ensuring users can efficiently switch between projects while the application remembers their workspace preferences.\n\n# Details\n\nThe recent projects flow begins when a user selects an item in the project list [3a], which triggers the selection model to enable the open button with a green state indicator. Clicking the open button [3b] extracts the selected project path and calls the core `OpenProject()` method [3c]. This method validates the directory exists, saves the project to persistent history for future sessions [3d], hides the welcome window, and creates the main IDE window [3e]. The IDE window launches in maximized state and establishes a connection to automatically return to the welcome screen when the project is closed, creating a seamless navigation loop between the welcome interface and active work sessions."
+    },
+    {
+      "id": "4",
+      "title": "New Project Creation Flow",
+      "description": "Complete workflow for creating a new project from form validation to IDE window launch",
+      "locations": [
+        {
+          "id": "4a",
+          "path": "/home/resu/Documents/dev/cremniy/src/app/WelcomeWindow/welcomeform.cpp",
+          "lineNumber": 188,
+          "lineContent": "void WelcomeForm::L2CreateButton()",
+          "title": "Create Button Handler",
+          "description": "Handles the project creation button click"
+        },
+        {
+          "id": "4b",
+          "path": "/home/resu/Documents/dev/cremniy/src/app/WelcomeWindow/welcomeform.cpp",
+          "lineNumber": 195,
+          "lineContent": "QString project_name = proj_name_lineEdit-\u003etext().trimmed();",
+          "title": "Project Name Validation",
+          "description": "Extracts and validates the project name input"
+        },
+        {
+          "id": "4c",
+          "path": "/home/resu/Documents/dev/cremniy/src/app/WelcomeWindow/welcomeform.cpp",
+          "lineNumber": 213,
+          "lineContent": "QString new_project_path = path_lineEdit-\u003etext() + \"/\" + project_name;",
+          "title": "Project Path Construction",
+          "description": "Builds the full path for the new project directory"
+        },
+        {
+          "id": "4d",
+          "path": "/home/resu/Documents/dev/cremniy/src/app/WelcomeWindow/welcomeform.cpp",
+          "lineNumber": 224,
+          "lineContent": "if (!dir.mkdir(new_project_path)) {",
+          "title": "Directory Creation",
+          "description": "Creates the project directory and handles failures"
+        },
+        {
+          "id": "4e",
+          "path": "/home/resu/Documents/dev/cremniy/src/app/WelcomeWindow/welcomeform.cpp",
+          "lineNumber": 230,
+          "lineContent": "IDEWindow *mw = new IDEWindow(new_project_path, nullptr);",
+          "title": "IDE Launch for New Project",
+          "description": "Launches the IDE window with the newly created project"
+        }
+      ],
+      "traceTextDiagram": "New Project Creation Flow\n├── User clicks Create button \u003c-- /home/resu/Documents/dev/cremniy/src/app/WelcomeWindow/welcomeform.cpp:122\n│   └── L2CreateButton() handler \u003c-- 4a\n├── Input validation phase \u003c-- /home/resu/Documents/dev/cremniy/src/app/WelcomeWindow/welcomeform.cpp:190\n│   ├── Extract project name \u003c-- 4b\n│   ├── Build project path \u003c-- 4c\n│   └── Check directory exists \u003c-- /home/resu/Documents/dev/cremniy/src/app/WelcomeWindow/welcomeform.cpp:206\n├── Directory creation phase \u003c-- /home/resu/Documents/dev/cremniy/src/app/WelcomeWindow/welcomeform.cpp:224\n│   └── Create project directory \u003c-- 4d\n└── IDE launch phase \u003c-- /home/resu/Documents/dev/cremniy/src/app/WelcomeWindow/welcomeform.cpp:230\n    └── Create IDEWindow instance \u003c-- 4e",
+      "traceGuide": "# Motivation\n\nWhen users start Cremniy, they need a way to **create new projects** without navigating through complex menus. The welcome screen provides a simple two-step process: enter a project name, select a directory, and create. This solves the problem of **reducing friction** for new users who want to get started quickly with reverse engineering projects.\n\n# Details\n\nThe project creation flow begins when a user clicks the \"Create\" button on the welcome page [4a]. The system first **validates the input** - checking that the project name contains only valid characters [4b] and that the selected directory actually exists. It then constructs the full project path by combining the directory with the project name [4c].\n\nNext, the system **creates the project directory** on the filesystem [4d], with proper error handling if the directory already exists or creation fails. If successful, it immediately launches the main IDE window with the new project path [4e], transitioning the user from the welcome screen directly into their development environment.\n\nThe entire process is designed to be **fail-fast** - any validation errors are immediately shown to the user with red highlighting and descriptive messages, preventing confusion and guiding users to correct their input before proceeding."
+    },
+    {
+      "id": "5",
+      "title": "Custom Widget and Resource Integration",
+      "description": "Custom input widget implementation and Qt resource system integration",
+      "locations": [
+        {
+          "id": "5a",
+          "path": "/home/resu/Documents/dev/cremniy/src/widgets/clickablelineedit.h",
+          "lineNumber": 14,
+          "lineContent": "void mousePressEvent(QMouseEvent *event) override {",
+          "title": "Click Event Override",
+          "description": "Overrides mouse press to show directory selection dialog"
+        },
+        {
+          "id": "5b",
+          "path": "/home/resu/Documents/dev/cremniy/src/widgets/clickablelineedit.h",
+          "lineNumber": 16,
+          "lineContent": "QString dir = QFileDialog::getExistingDirectory(",
+          "title": "Directory Dialog Launch",
+          "description": "Opens a file dialog for directory selection"
+        },
+        {
+          "id": "5c",
+          "path": "/home/resu/Documents/dev/cremniy/src/widgets/clickablelineedit.h",
+          "lineNumber": 24,
+          "lineContent": "this-\u003esetText(dir);",
+          "title": "Path Assignment",
+          "description": "Sets the selected directory path to the line edit"
+        },
+        {
+          "id": "5d",
+          "path": "/home/resu/Documents/dev/cremniy/src/resources/cremniy_res.qrc",
+          "lineNumber": 3,
+          "lineContent": "\u003cfile\u003estyles/style.qss\u003c/file\u003e",
+          "title": "Stylesheet Resource Registration",
+          "description": "Registers the QSS file in Qt resource system"
+        },
+        {
+          "id": "5e",
+          "path": "/home/resu/Documents/dev/cremniy/src/resources/styles/style.qss",
+          "lineNumber": 2,
+          "lineContent": "QWidget { background-color: #262626; color: #ffffff; }",
+          "title": "Dark Theme Base Styling",
+          "description": "Defines the base dark theme colors for all widgets"
+        }
+      ],
+      "traceTextDiagram": "Qt Resource \u0026 Widget System\n├── Resource Registration (QRC) \u003c-- /home/resu/Documents/dev/cremniy/src/resources/cremniy_res.qrc:1\n│   └── style.qss registered \u003c-- 5d\n├── Application Styling\n│   ├── QFile opens resource \u003c-- /home/resu/Documents/dev/cremniy/src/main.cpp:13\n│   └── QSS applied globally [1d]\n└── Custom Widget System\n    ├── ClickableLineEdit class \u003c-- /home/resu/Documents/dev/cremniy/src/widgets/clickablelineedit.h:7\n    │   ├── mousePressEvent() override \u003c-- 5a\n    │   ├── QFileDialog.getExistingDirectory() \u003c-- 5b\n    │   └── setText(dir) updates display \u003c-- 5c\n    └── Dark Theme Base Styling \u003c-- 5e",
+      "traceGuide": "# Motivation\n\nThe Cremniy application needs a **consistent dark theme** and **intuitive user interactions** for project directory selection. Rather than using standard Qt widgets with default styling, the application implements custom styling through Qt's resource system and creates a specialized clickable input widget that opens a directory dialog when clicked, improving the user experience for project path selection.\n\n# Details\n\n**Resource System Integration**: The application uses Qt's resource system (`*.qrc` files) to embed the stylesheet directly into the executable [5d]. This ensures the dark theme is always available without external files. The main application loads this stylesheet at startup and applies it globally to all widgets [1d].\n\n**Custom Widget Implementation**: The `ClickableLineEdit` extends `QLineEdit` to override the mouse press event [5a]. When clicked, it automatically opens a directory selection dialog [5b] and updates its text with the selected path [5c]. This eliminates the need for separate \"Browse\" buttons and creates a more streamlined interface.\n\n**Dark Theme Styling**: The stylesheet defines a comprehensive dark theme with specific colors (#262626 background, #ffffff text) and hover states for all widget types [5e]. The styling includes custom gradients for selected tabs, hover effects for buttons, and themed scrollbars to create a cohesive visual experience."
+    }
+  ],
+  "description": "Complete Qt application initialization and welcome window system covering startup flow [1a-1f], UI construction [2a-2e], project opening [3a-3e], project creation [4a-4e], and custom widget integration [5a-5e].",
+  "mermaidDiagram": "graph TB\n    subgraph startup[\"Startup \u0026 Initialization\"]\n        1a[\"1a: QApplication creation\"]\n        1b[\"1b: Organization metadata\"]\n        1c[\"1c: Stylesheet resource load\"]\n        1d[\"1d: Apply global styling\"]\n        1e[\"1e: WelcomeForm instantiation\"]\n        1f[\"1f: Show welcome window\"]\n    end\n\n    subgraph welcome[\"Welcome Window UI\"]\n        2a[\"2a: Stacked widget creation\"]\n        2b[\"2b: Recent projects list\"]\n        2c[\"2c: Load project history\"]\n        2d[\"2d: ClickableLineEdit widget\"]\n        2e[\"2e: Set default page\"]\n    end\n\n    subgraph opening[\"Recent Project Opening\"]\n        3a[\"3a: Selection event binding\"]\n        3b[\"3b: Open handler invoked\"]\n        3c[\"3c: Extract project path\"]\n        3d[\"3d: Save to history\"]\n        3e[\"3e: Create IDEWindow\"]\n    end\n\n    subgraph creation[\"New Project Creation\"]\n        4a[\"4a: Create button handler\"]\n        4b[\"4b: Validate project name\"]\n        4c[\"4c: Build project path\"]\n        4d[\"4d: Create directory\"]\n        4e[\"4e: Launch IDE for new project\"]\n    end\n\n    subgraph resources[\"Resources \u0026 Styling\"]\n        5a[\"5a: Click event override\"]\n        5b[\"5b: Directory dialog launch\"]\n        5c[\"5c: Set selected path\"]\n        5d[\"5d: Register stylesheet resource\"]\n        5e[\"5e: Define dark theme colors\"]\n    end\n\n    1a --\u003e 1b\n    1b --\u003e 1c\n    1c --\u003e 1d\n    1d --\u003e 1e\n    1e --\u003e 1f\n\n    1e --\u003e|initializes| 2a\n    1d --\u003e|applies| 5e\n\n    2a --\u003e 2b\n    2b --\u003e 2c\n    2c --\u003e 2e\n    2d --\u003e 2e\n\n    2c --\u003e|enables| 3a\n    2b --\u003e|user selects project| 3b\n    3a --\u003e 3b\n    3b --\u003e 3c\n    3c --\u003e 3d\n    3d --\u003e 3e\n\n    2d --\u003e|uses custom widget| 5a\n    5a --\u003e 5b\n    5b --\u003e 5c\n\n    2e --\u003e|user clicks create| 4a\n    4a --\u003e 4b\n    4b --\u003e 4c\n    4c --\u003e 4d\n    4d --\u003e 4e\n\n    style startup fill:#a5d8ff\n    style welcome fill:#b2f2bb\n    style opening fill:#ffec99\n    style creation fill:#fcc2d7\n    style resources fill:#d0bfff"
+}
