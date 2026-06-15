@@ -239,9 +239,7 @@ void GenerateCodemapTool::onMapStreamFinished(const QString& stopReason)
     CodemapValidationResult result = validateCodemapJson(cleaned);
 
     if (result.ok) {
-        CodemapStore store(m_projectRoot);
-        store.save(result.map);
-
+        // Don't save here — IDEWindow handles saving with proper filename
         QJsonDocument doc(result.map.toJson());
         emit finished(doc.toJson(QJsonDocument::Compact), false);
         return;

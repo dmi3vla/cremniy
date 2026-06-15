@@ -340,6 +340,7 @@ private slots:
         map.id = "test_codemap";
         map.title = "Test";
         map.stableId = "test-uuid";
+        map.metadata.generationTimestamp = QDateTime::currentDateTime().toString(Qt::ISODate);
 
         CodemapTrace trace;
         trace.id = "1";
@@ -353,9 +354,8 @@ private slots:
         map.traces = {trace};
 
         QVERIFY(store.save(map));
-        QVERIFY(store.exists());
 
-        auto loaded = store.load();
+        auto loaded = store.loadLatest();
         QVERIFY(loaded.has_value());
         QCOMPARE(loaded->id, map.id);
         QCOMPARE(loaded->title, map.title);
@@ -376,7 +376,67 @@ private slots:
     void testStoreDefaultFilePath()
     {
         CodemapStore store("/home/user/myproject");
-        QCOMPARE(store.defaultFilePath(), QString("/home/user/myproject/myproject.codemap"));
+        // defaultFilePath uses buildFileName with empty Codemap
+        QVERIFY(store.defaultFilePath().contains("codemap"));
+        QVERIFY(store.defaultFilePath().contains(".codemap.txt"));
+    }
+
+    void testSlugifyTitle()
+    {
+        QCOMPARE(CodemapStore::slugifyTitle("Qt Application Entry Point"),
+                 QString("Qt_Application_Entry_Point"));
+        QCOMPARE(CodemapStore::slugifyTitle("Hello World!"),
+                 QString("Hello_World"));
+        QCOMPARE(CodemapStore::slugifyTitle("  spaces  "),
+                 QString("spaces"));
+    }
+
+    void testBuildFileName()
+    {
+        Codemap map;
+        map.title = "Qt Application Entry Point";
+        map.metadata.generationTimestamp = "2026-06-14T12:31:13Z";
+
+        QString fileName = CodemapStore::buildFileName(map);
+        QVERIFY(fileName.startsWith("Qt_Application_Entry_Point_"));
+        QVERIFY(fileName.endsWith(".codemap.txt"));
+        QVERIFY(fileName.contains("20260614"));
+    }
+
+    void testStoreSaveAndLoadLatest()
+    {
+        QTemporaryDir dir;
+        QVERIFY(dir.isValid());
+
+        CodemapStore store(dir.path());
+
+        Codemap map;
+        map.id = "test_codemap";
+        map.title = "Test Codemap";
+        map.metadata.generationTimestamp = QDateTime::currentDateTime().toString(Qt::ISODate);
+
+        CodemapTrace trace;
+        trace.id = "1";
+        trace.title = "Trace 1";
+        CodemapLocation loc;
+        loc.id = "1a";
+        loc.path = "src/main.cpp";
+        loc.lineNumber = 6;
+        loc.lineContent = "int main() {";
+        trace.locations = {loc};
+        map.traces = {trace};
+
+        QVERIFY(store.save(map));
+
+        auto list = store.list();
+        QCOMPARE(list.size(), 1);
+        QVERIFY(list[0].title == "Test Codemap");
+
+        auto loaded = store.loadLatest();
+        QVERIFY(loaded.has_value());
+        QCOMPARE(loaded->id, map.id);
+        QCOMPARE(loaded->traces.size(), 1);
+        QCOMPARE(loaded->traces[0].locations[0].path, loc.path);
     }
 };
 

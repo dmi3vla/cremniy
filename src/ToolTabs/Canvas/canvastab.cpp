@@ -49,39 +49,52 @@ CanvasTab::CanvasTab(FileDataBuffer* buffer, QWidget* parent)
     auto* zoomInBtn = createToolButton("+", "Zoom In");
     auto* zoomOutBtn = createToolButton("-", "Zoom Out");
     auto* resetBtn = createToolButton("Reset", "Reset Zoom");
-    auto* refreshBtn = createToolButton("Refresh", "Refresh Graph");
-    auto* toggleModeBtn = createToolButton("Mode", "Toggle Graph Mode");
+    m_refreshBtn = createToolButton("Refresh", "Refresh Graph");
+
+    // Semantic / Structural toggle (segmented control)
+    m_semanticBtn = createToolButton("Semantic", "Concept map / codemap layout");
+    m_graphBtn = createToolButton("Graph", "Dependency graph (#include)");
+    m_semanticBtn->setCheckable(true);
+    m_graphBtn->setCheckable(true);
+    m_graphBtn->setChecked(true);
+    auto* modeGroup = new QButtonGroup(this);
+    modeGroup->addButton(m_semanticBtn);
+    modeGroup->addButton(m_graphBtn);
+    modeGroup->setExclusive(true);
 
     // Gource controls
-    auto* playBtn = createToolButton("Play", "Play git history");
-    auto* pauseBtn = createToolButton("Pause", "Pause playback");
-    auto* speedSlider = new QSlider(Qt::Horizontal, this);
-    speedSlider->setRange(1, 10);
-    speedSlider->setValue(2);
-    speedSlider->setFixedWidth(80);
-    speedSlider->setToolTip("Playback speed");
+    m_playBtn = createToolButton("Play", "Play git history");
+    m_pauseBtn = createToolButton("Pause", "Pause playback");
+    m_speedSlider = new QSlider(Qt::Horizontal, this);
+    m_speedSlider->setRange(1, 10);
+    m_speedSlider->setValue(2);
+    m_speedSlider->setFixedWidth(80);
+    m_speedSlider->setToolTip("Playback speed");
 
     connect(zoomInBtn, &QToolButton::clicked, m_canvasView, &CanvasView::zoomIn);
     connect(zoomOutBtn, &QToolButton::clicked, m_canvasView, &CanvasView::zoomOut);
     connect(resetBtn, &QToolButton::clicked, m_canvasView, &CanvasView::resetZoom);
-    connect(refreshBtn, &QToolButton::clicked, this, [this]() {
+    connect(m_refreshBtn, &QToolButton::clicked, this, [this]() {
         if (m_parser && !m_projectPath.isEmpty()) {
             clearCanvas();
             m_parser->startParsing();
         }
     });
-    connect(toggleModeBtn, &QToolButton::clicked, this, &CanvasTab::toggleGraphMode);
+    connect(m_semanticBtn, &QToolButton::clicked, this, &CanvasTab::enterSemanticMode);
+    connect(m_graphBtn, &QToolButton::clicked, this, &CanvasTab::enterStructuralMode);
 
     toolbarLayout->addWidget(zoomInBtn);
     toolbarLayout->addWidget(zoomOutBtn);
     toolbarLayout->addWidget(resetBtn);
-    toolbarLayout->addWidget(toggleModeBtn);
+    toolbarLayout->addSpacing(8);
+    toolbarLayout->addWidget(m_semanticBtn);
+    toolbarLayout->addWidget(m_graphBtn);
     toolbarLayout->addStretch();
-    toolbarLayout->addWidget(playBtn);
-    toolbarLayout->addWidget(pauseBtn);
-    toolbarLayout->addWidget(speedSlider);
+    toolbarLayout->addWidget(m_playBtn);
+    toolbarLayout->addWidget(m_pauseBtn);
+    toolbarLayout->addWidget(m_speedSlider);
     toolbarLayout->addStretch();
-    toolbarLayout->addWidget(refreshBtn);
+    toolbarLayout->addWidget(m_refreshBtn);
 
     layout->addWidget(toolbar);
     layout->addWidget(m_canvasView);
@@ -101,13 +114,13 @@ CanvasTab::CanvasTab(FileDataBuffer* buffer, QWidget* parent)
     m_animator = nullptr;
     m_parser = nullptr;
 
-    connect(playBtn, &QToolButton::clicked, this, [this]() {
+    connect(m_playBtn, &QToolButton::clicked, this, [this]() {
         if (m_animator) m_animator->play();
     });
-    connect(pauseBtn, &QToolButton::clicked, this, [this]() {
+    connect(m_pauseBtn, &QToolButton::clicked, this, [this]() {
         if (m_animator) m_animator->pause();
     });
-    connect(speedSlider, &QSlider::valueChanged, this, [this](int val) {
+    connect(m_speedSlider, &QSlider::valueChanged, this, [this](int val) {
         if (m_animator) m_animator->setSpeed(val);
     });
     connect(m_layerPanel, &LayerPanel::layerToggled, this, &CanvasTab::applyLayerFilters);
@@ -134,8 +147,13 @@ void CanvasTab::setTabData()
     if (!m_parser || m_projectPath.isEmpty())
         return;
 
+    // Don't start parser if we're in semantic mode — lazy load
+    if (m_viewMode == Semantic)
+        return;
+
     clearCanvas();
     m_parser->startParsing();
+    m_parserInitialized = true;
 }
 
 void CanvasTab::saveTabData()
@@ -146,8 +164,11 @@ void CanvasTab::saveTabData()
 void CanvasTab::onGraphReady(DependencyGraph graph)
 {
     m_currentGraph = graph;
-    buildGraph(graph);
-    layoutNodesRadial(graph);
+    if (m_viewMode == Structural) {
+        buildGraph(graph);
+        layoutNodesRadial(graph);
+    }
+    // In Semantic mode, just save the graph for later use
 }
 
 void CanvasTab::buildGraph(const DependencyGraph& graph)
@@ -516,12 +537,15 @@ void CanvasTab::stopNodePulsing()
 void CanvasTab::showCodemap(const Codemap& map)
 {
     m_currentCodemap = map;
+    m_viewMode = Semantic;
     m_layoutMode = LayoutMode::LinearChain;
-    m_structuralMode = false;
-    m_generatingConceptMap = false;
 
     clearCanvas();
     clearSemanticNodes();
+    setStructuralUIVisible(false);
+
+    m_semanticBtn->setChecked(true);
+    m_graphBtn->setChecked(false);
 
     if (map.traces.isEmpty())
         return;
@@ -610,10 +634,17 @@ void CanvasTab::showCodemap(const Codemap& map)
 
 void CanvasTab::showStructureGraph()
 {
-    m_structuralMode = true;
+    m_viewMode = Structural;
     m_layoutMode = LayoutMode::Radial;
     clearSemanticNodes();
     clearCanvas();
+
+    // Lazy-start parser if needed
+    if (!m_parserInitialized && m_parser && !m_projectPath.isEmpty()) {
+        m_parser->startParsing();
+        m_parserInitialized = true;
+        return; // onGraphReady will draw when parsing completes
+    }
 
     if (m_currentGraph.allFiles.isEmpty())
         return;
@@ -637,31 +668,52 @@ void CanvasTab::onStepClicked(const QString& filePath, int lineNumber)
 
 void CanvasTab::onCodemapReady(const Codemap& map)
 {
-    m_generatingConceptMap = false;
     showCodemap(map);
+}
+
+void CanvasTab::enterSemanticMode()
+{
+    if (m_viewMode == Semantic) return;
+
+    if (!m_currentCodemap.traces.isEmpty()) {
+        showCodemap(m_currentCodemap);
+    } else {
+        CodemapStore store(m_projectPath);
+        if (store.exists()) {
+            auto mapOpt = store.load();
+            if (mapOpt.has_value()) {
+                showCodemap(mapOpt.value());
+                return;
+            }
+        }
+        m_semanticBtn->setChecked(true);
+        m_graphBtn->setChecked(false);
+        emit needsSemanticMapGeneration();
+    }
+}
+
+void CanvasTab::enterStructuralMode()
+{
+    if (m_viewMode == Structural) return;
+    setStructuralUIVisible(true);
+    showStructureGraph();
+}
+
+void CanvasTab::setStructuralUIVisible(bool visible)
+{
+    if (m_playBtn) m_playBtn->setVisible(visible);
+    if (m_pauseBtn) m_pauseBtn->setVisible(visible);
+    if (m_speedSlider) m_speedSlider->setVisible(visible);
+    if (m_refreshBtn) m_refreshBtn->setVisible(visible);
+    if (m_layerPanel) m_layerPanel->setVisible(visible);
+    if (m_minimap) m_minimap->setVisible(visible);
+    if (m_digestPanel) m_digestPanel->setVisible(!visible);
 }
 
 void CanvasTab::toggleGraphMode()
 {
-    if (m_structuralMode) {
-        // Switch to concept mode
-        if (!m_currentCodemap.traces.isEmpty()) {
-            showCodemap(m_currentCodemap);
-        } else {
-            // Check for saved codemap
-            CodemapStore store(m_projectPath);
-            if (store.exists()) {
-                auto mapOpt = store.load();
-                if (mapOpt.has_value()) {
-                    showCodemap(mapOpt.value());
-                    return;
-                }
-            }
-            // No map — request generation
-            m_generatingConceptMap = true;
-            emit needsSemanticMapGeneration();
-        }
-    } else {
-        showStructureGraph();
-    }
+    if (m_viewMode == Structural)
+        enterSemanticMode();
+    else
+        enterStructuralMode();
 }
