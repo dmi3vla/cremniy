@@ -42,6 +42,7 @@ public:
     void enterSemanticMode();
     void enterStructuralMode();
     void setProjectRoot(const QString& root) { m_projectPath = root; }
+    void highlightNodeByPath(const QString& filePath);
 
 public slots:
     void setFile(QString filepath) override;

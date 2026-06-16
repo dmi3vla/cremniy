@@ -36,6 +36,7 @@ public:
 
     void saveToFile(QString path) {}
     void setTabData(QByteArray &data);
+    void jumpToAddress(const QString &addr);
 
     struct LineInfo {
         int sectionIndex = -1; // index in m_sections
@@ -55,6 +56,7 @@ public:
 
 signals:
     void requestDisassembly(const QString &filePath, const QString &arch);
+    void instructionSelected(quint64 vaddr);
 
 public slots:
 
@@ -97,7 +99,6 @@ private:
     QString formatLine(const LineInfo &li) const;
     void rebuildFunctionsFromLines();          // objdump labels
     void setFunctionsList(const QVector<DisasmFunction> &funcs);
-    void jumpToAddress(const QString &addr);
     QString autoCommentForLine(const LineInfo &li) const;
     bool tryResolveStringRefAddr(const LineInfo &li, quint64 *outAddr) const;
 

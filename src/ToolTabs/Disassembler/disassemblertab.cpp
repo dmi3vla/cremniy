@@ -490,6 +490,18 @@ void DisassemblerTab::setupUi()
             return;
         const QPoint p = m_disasmView->cursorRect().bottomRight();
         showInstructionHelpAt(p, true);
+
+        // Emit instructionSelected for Source↔Binary mapping
+        int visLine = m_disasmView->textCursor().blockNumber();
+        if (visLine >= 0 && visLine < m_visibleLineMap.size()) {
+            int idx = m_visibleLineMap[visLine];
+            if (idx >= 0 && idx < m_lines.size()) {
+                bool ok;
+                quint64 vaddr = m_lines[idx].address.toULongLong(&ok, 16);
+                if (ok)
+                    emit instructionSelected(vaddr);
+            }
+        }
     });
 
     // Обработчик выделения в дизассемблере - уведомляем буфер

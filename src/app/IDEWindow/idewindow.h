@@ -14,6 +14,8 @@
 class ChatPanel;
 class AgentSession;
 class CanvasTab;
+class SourceBinaryStore;
+class ObjectFileIndexer;
 
 class IDEWindow : public QMainWindow
 {
@@ -28,6 +30,7 @@ public:
     CanvasTab* canvasTab() const;
     CanvasTab* openOrCreateCanvasTab();
     CanvasTab* openOrCreateCodemapCanvas();
+    class DisassemblerTab* disassemblerTab() const;
 
     void openOrGenerateConceptMap(const QStringList& scope = {});
 
@@ -72,6 +75,13 @@ private:
 
     // - - Project - -
     QString m_projectPath;
+
+    // - - Source↔Binary Mapping - -
+    SourceBinaryStore* m_sourceBinaryStore = nullptr;
+    ObjectFileIndexer* m_objectFileIndexer = nullptr;
+
+    void watchBuildDirectory();
+    void connectCanvasNavigation(CanvasTab* canvas);
 
 
 public slots:

@@ -15,7 +15,13 @@
 #include "ToolTabs/Canvas/canvastab.h"
 #include "ToolTabs/Canvas/codemap.h"
 #include "ToolTabs/Canvas/codemap_store.h"
+#include "ToolTabs/Disassembler/disassemblertab.h"
+#include "SourceBinary/source_binary_store.h"
+#include "SourceBinary/object_file_indexer.h"
+#include "utils/appsettings.h"
 #include <QJsonDocument>
+#include <QDir>
+#include <QFileSystemWatcher>
 
 IDEWindow::IDEWindow(QString ProjectPath, QWidget *parent)
     : QMainWindow(parent)
@@ -111,6 +117,17 @@ IDEWindow::IDEWindow(QString ProjectPath, QWidget *parent)
 
     connect(m_chatPanel, &ChatPanel::codemapRequested, this,
             [this]() { openOrGenerateConceptMap(); });
+
+    // Source↔Binary mapping
+    m_sourceBinaryStore = new SourceBinaryStore(this);
+    QString r2Path = AppSettings::radare2Path();
+    if (r2Path.isEmpty()) r2Path = "r2";
+    m_objectFileIndexer = new ObjectFileIndexer(r2Path, this);
+    connect(m_objectFileIndexer, &ObjectFileIndexer::indexReady,
+            m_sourceBinaryStore, &SourceBinaryStore::addIndex);
+
+    // Watch build directory for .o files
+    watchBuildDirectory();
 
     while (m_filesTabWidget->count() > 0) {
         m_filesTabWidget->removeTab(0);
@@ -349,10 +366,10 @@ CanvasTab* IDEWindow::openOrCreateCodemapCanvas()
 void IDEWindow::ensureCanvasSignalsConnected(CanvasTab* canvas)
 {
     if (!canvas) return;
-    // Qt::UniqueConnection prevents duplicate connections even if called multiple times
     connect(canvas, &CanvasTab::needsCodemapGeneration,
             this, &IDEWindow::onConceptMapNeeded,
             Qt::UniqueConnection);
+    connectCanvasNavigation(canvas);
 }
 
 void IDEWindow::onConceptMapNeeded()
@@ -438,4 +455,84 @@ void IDEWindow::openOrGenerateConceptMap(const QStringList& scope)
 
     statusBar()->showMessage("AI agent not available for codemap generation", 5000);
     m_chatPanel->setCodemapButtonState(false);
+}
+
+void IDEWindow::watchBuildDirectory()
+{
+    QString buildDir = m_projectPath + "/build";
+    QDir dir(buildDir);
+    if (!dir.exists())
+        return;
+
+    QStringList objFiles = dir.entryList({"*.o", "*.obj"}, QDir::Files, QDir::Time);
+    for (const QString& f : objFiles)
+        m_objectFileIndexer->indexObjectFile(dir.filePath(f), m_projectPath);
+
+    // Watch for changes
+    auto* watcher = new QFileSystemWatcher(this);
+    watcher->addPath(buildDir);
+    connect(watcher, &QFileSystemWatcher::directoryChanged, this, [this](const QString& path) {
+        QDir dir(path);
+        QStringList objFiles = dir.entryList({"*.o", "*.obj"}, QDir::Files, QDir::Time);
+        for (const QString& f : objFiles)
+            m_objectFileIndexer->indexObjectFile(dir.filePath(f), m_projectPath);
+    });
+}
+
+void IDEWindow::connectCanvasNavigation(CanvasTab* canvas)
+{
+    if (!canvas) return;
+
+    // Canvas step → CodeEditor + Disassembler + HexView
+    connect(canvas, &CanvasTab::stepNavigationRequested, this,
+        [this](const QString& filePath, int lineNumber) {
+            // Open file in editor
+            m_filesTabWidget->openFile(
+                projectPath() + "/" + filePath,
+                QFileInfo(filePath).fileName());
+
+            // Jump to ASM address if indexed
+            if (m_sourceBinaryStore && !m_sourceBinaryStore->isEmpty()) {
+                auto mapping = m_sourceBinaryStore->findBySourceLine(filePath, lineNumber);
+                if (mapping.has_value() && mapping->vaddr > 0) {
+                    DisassemblerTab* disasm = disassemblerTab();
+                    if (disasm)
+                        disasm->jumpToAddress(QString("0x%1").arg(mapping->vaddr, 0, 16));
+                }
+            }
+        });
+
+    // Disassembler click → Source file + Canvas highlight
+    DisassemblerTab* disasm = disassemblerTab();
+    if (disasm) {
+        connect(disasm, &DisassemblerTab::instructionSelected, this,
+            [this](quint64 vaddr) {
+                if (!m_sourceBinaryStore || m_sourceBinaryStore->isEmpty())
+                    return;
+                auto mapping = m_sourceBinaryStore->findByVaddr(vaddr);
+                if (!mapping.has_value()) return;
+
+                // Open source file
+                m_filesTabWidget->openFile(
+                    projectPath() + "/" + mapping->filePath,
+                    QFileInfo(mapping->filePath).fileName());
+
+                // Highlight on canvas
+                CanvasTab* canvas = canvasTab();
+                if (canvas)
+                    canvas->highlightNodeByPath(mapping->filePath);
+            });
+    }
+}
+
+DisassemblerTab* IDEWindow::disassemblerTab() const
+{
+    for (int i = 0; i < m_filesTabWidget->count(); ++i) {
+        QWidget* tab = m_filesTabWidget->widget(i);
+        if (!tab) continue;
+        DisassemblerTab* disasm = tab->findChild<DisassemblerTab*>();
+        if (disasm)
+            return disasm;
+    }
+    return nullptr;
 }

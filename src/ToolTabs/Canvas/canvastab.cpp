@@ -732,3 +732,23 @@ void CanvasTab::toggleGraphMode()
     else
         enterStructuralMode();
 }
+
+void CanvasTab::highlightNodeByPath(const QString& filePath)
+{
+    // In structural mode — highlight FileNode
+    if (m_nodes.contains(filePath)) {
+        highlightDependencies(filePath);
+        m_nodes[filePath]->startPulse();
+        return;
+    }
+
+    // In semantic mode — find and pulse matching StepNode
+    for (auto* cluster : m_clusterNodes) {
+        for (auto* child : cluster->children()) {
+            if (child->filePath() == filePath) {
+                child->playAppearAnimation();
+                return;
+            }
+        }
+    }
+}

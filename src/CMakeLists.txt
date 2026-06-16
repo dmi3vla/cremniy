@@ -98,7 +98,13 @@ qt_add_executable(${PROJECT_NAME}
     Agent/tools/agent_tools.cpp
     Agent/tools/agent_tools.h
     Agent/tools/generate_codemap_tool.cpp
-    Agent/tools/generate_codemap_tool.h)
+    Agent/tools/generate_codemap_tool.h
+
+    SourceBinary/source_binary_index.h
+    SourceBinary/object_file_indexer.cpp
+    SourceBinary/object_file_indexer.h
+    SourceBinary/source_binary_store.cpp
+    SourceBinary/source_binary_store.h)
 target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets
