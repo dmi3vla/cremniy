@@ -139,6 +139,7 @@ private:
 
     int m_currentSectionIndex = -1;
     QTimer *m_refreshDebounce = nullptr;
+    bool m_rejectedSourceFile = false;
 };
 
 #endif // DISASSEMBLERTAB_H

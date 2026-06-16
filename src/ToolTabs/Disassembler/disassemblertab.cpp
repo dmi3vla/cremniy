@@ -272,6 +272,8 @@ DisassemblerTab::~DisassemblerTab()
 }
 
 void DisassemblerTab::setFile(QString filepath){
+    m_fileContext = new FileContext(filepath);
+
     // Reject source files — disassembler needs compiled binaries
     QFileInfo fi(filepath);
     QString suffix = fi.suffix().toLower();
@@ -279,10 +281,10 @@ void DisassemblerTab::setFile(QString filepath){
         suffix == "hpp" || suffix == "cc" || suffix == "cxx" ||
         suffix == "txt" || suffix == "md" || suffix == "json" ||
         suffix == "cmake" || suffix == "py" || suffix == "js") {
-        showPlaceholder(tr("Open a binary file (ELF/PE/.o) to disassemble"));
+        m_rejectedSourceFile = true;
         return;
     }
-    m_fileContext = new FileContext(filepath);
+    m_rejectedSourceFile = false;
 }
 
 void DisassemblerTab::setTabData()
@@ -881,6 +883,10 @@ void DisassemblerTab::onGlobalActionTriggered(const QString &actionName)
 void DisassemblerTab::startDisassembly()
 {
     if (m_running) return;
+    if (m_rejectedSourceFile) {
+        showPlaceholder(tr("Open a binary file (ELF/PE/.o) to disassemble"));
+        return;
+    }
     if (m_fileContext->filePath().isEmpty()) { showPlaceholder(tr("No file path set")); return; }
 
     // If radare2 backend is selected, ensure r2 is available. If not, prompt for path.
