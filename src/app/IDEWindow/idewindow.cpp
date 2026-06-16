@@ -21,6 +21,7 @@
 #include "utils/appsettings.h"
 #include <QJsonDocument>
 #include <QDir>
+#include <QDirIterator>
 #include <QFileSystemWatcher>
 
 IDEWindow::IDEWindow(QString ProjectPath, QWidget *parent)
@@ -464,18 +465,18 @@ void IDEWindow::watchBuildDirectory()
     if (!dir.exists())
         return;
 
-    QStringList objFiles = dir.entryList({"*.o", "*.obj"}, QDir::Files, QDir::Time);
-    for (const QString& f : objFiles)
-        m_objectFileIndexer->indexObjectFile(dir.filePath(f), m_projectPath);
+    // Recursive search for .o files (including CMakeFiles subdirectories)
+    QDirIterator it(buildDir, {"*.o", "*.obj"}, QDir::Files, QDirIterator::Subdirectories);
+    while (it.hasNext())
+        m_objectFileIndexer->indexObjectFile(it.next(), m_projectPath);
 
-    // Watch for changes
+    // Watch for changes in build directory
     auto* watcher = new QFileSystemWatcher(this);
     watcher->addPath(buildDir);
     connect(watcher, &QFileSystemWatcher::directoryChanged, this, [this](const QString& path) {
-        QDir dir(path);
-        QStringList objFiles = dir.entryList({"*.o", "*.obj"}, QDir::Files, QDir::Time);
-        for (const QString& f : objFiles)
-            m_objectFileIndexer->indexObjectFile(dir.filePath(f), m_projectPath);
+        QDirIterator it(path, {"*.o", "*.obj"}, QDir::Files, QDirIterator::Subdirectories);
+        while (it.hasNext())
+            m_objectFileIndexer->indexObjectFile(it.next(), m_projectPath);
     });
 }
 
@@ -535,4 +536,28 @@ DisassemblerTab* IDEWindow::disassemblerTab() const
             return disasm;
     }
     return nullptr;
+}
+
+void IDEWindow::openInDisassembler(const QString& filePath)
+{
+    // Check ELF magic bytes: 0x7f 0x45 0x4c 0x46
+    QFile file(filePath);
+    if (!file.open(QIODevice::ReadOnly))
+        return;
+    QByteArray magic = file.read(4);
+    file.close();
+
+    bool isBinary = (magic.size() >= 4 &&
+                     magic[0] == '\x7f' && magic[1] == 'E' &&
+                     magic[2] == 'L' && magic[3] == 'F');
+
+    if (!isBinary) {
+        // Also check for .o/.obj extension as fallback
+        QString suffix = QFileInfo(filePath).suffix().toLower();
+        if (suffix != "o" && suffix != "obj" && suffix != "so" && suffix != "a")
+            return;
+    }
+
+    // Open in disassembler
+    m_filesTabWidget->openFile(filePath, QFileInfo(filePath).fileName());
 }

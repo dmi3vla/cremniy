@@ -272,6 +272,16 @@ DisassemblerTab::~DisassemblerTab()
 }
 
 void DisassemblerTab::setFile(QString filepath){
+    // Reject source files — disassembler needs compiled binaries
+    QFileInfo fi(filepath);
+    QString suffix = fi.suffix().toLower();
+    if (suffix == "cpp" || suffix == "c" || suffix == "h" ||
+        suffix == "hpp" || suffix == "cc" || suffix == "cxx" ||
+        suffix == "txt" || suffix == "md" || suffix == "json" ||
+        suffix == "cmake" || suffix == "py" || suffix == "js") {
+        showPlaceholder(tr("Open a binary file (ELF/PE/.o) to disassemble"));
+        return;
+    }
     m_fileContext = new FileContext(filepath);
 }
 

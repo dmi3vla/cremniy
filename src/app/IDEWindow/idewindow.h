@@ -30,7 +30,8 @@ public:
     CanvasTab* canvasTab() const;
     CanvasTab* openOrCreateCanvasTab();
     CanvasTab* openOrCreateCodemapCanvas();
-    class DisassemblerTab* disassemblerTab() const;
+    class     DisassemblerTab* disassemblerTab() const;
+    void openInDisassembler(const QString& filePath);
 
     void openOrGenerateConceptMap(const QStringList& scope = {});
 
