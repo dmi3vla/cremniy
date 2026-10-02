@@ -1,0 +1,24 @@
+diff --git a/base/demo.cpp b/head/demo.cpp
+index 0393396..893a168 100644
+--- a/base/demo.cpp
++++ b/head/demo.cpp
+@@ -32,16 +32,16 @@ extern "C" __attribute__((noinline)) int scenario_one(int input) {
+ }
+ 
+ extern "C" __attribute__((noinline)) int scenario_two(int input) {
+-    return calculate_beta(input);
++    return calculate_beta(input) + shared_helper(input);
+ }
+ 
+ static int debug_only(int input) { return input + 17; }
+ 
+-extern "C" __attribute__((noinline)) int removed_probe(int input) {
++extern "C" __attribute__((noinline)) int added_probe(int input) {
+     return debug_only(input);
+ }
+ 
+ int main(int argc, char**) {
+     return scenario_one(argc) + scenario_two(argc) + calculate_with_state(argc)
+-           + removed_probe(argc);
++           + added_probe(argc);
+ }

@@ -33,6 +33,10 @@ target_sources(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/codemap_utils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/codemap_store.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/codemap_store.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/trace_model.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/trace_model.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/trace_explorer.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/trace_explorer.h
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE

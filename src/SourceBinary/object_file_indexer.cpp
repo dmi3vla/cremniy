@@ -6,6 +6,8 @@
 #include <QJsonDocument>
 #include <QJsonArray>
 #include <QJsonObject>
+#include <QCryptographicHash>
+#include <QFile>
 
 // --- ObjectFileIndexerWorker ---
 
@@ -67,11 +69,10 @@ QVector<SourceLineMapping> ObjectFileIndexerWorker::parseDwarfLineInfo(const QSt
                   return a.vaddr < b.vaddr;
               });
 
-    // Compute vaddrEnd (next line's vaddr, or vaddr+1 as fallback)
-    for (int i = 0; i < result.size() - 1; ++i)
-        result[i].vaddrEnd = result[i + 1].vaddr;
-    if (!result.isEmpty())
-        result.last().vaddrEnd = result.last().vaddr + 1;
+    // A DWARF row identifies an address, not a function extent. Do not infer
+    // ownership or a range from the next row, particularly for .o sections.
+    for (auto& mapping : result)
+        mapping.vaddrEnd = mapping.vaddr + 1;
 
     return result;
 }
@@ -133,6 +134,10 @@ void ObjectFileIndexerWorker::index(const QString& objFilePath, const QString& p
 {
     ObjectFileIndex index;
     index.objectFilePath = objFilePath;
+    QFile binary(objFilePath);
+    if (binary.open(QIODevice::ReadOnly))
+        index.buildId = QString::fromLatin1(
+            QCryptographicHash::hash(binary.readAll(), QCryptographicHash::Sha256).toHex());
 
     // Step 1: DWARF line info
     QVector<SourceLineMapping> lineMappings = parseDwarfLineInfo(objFilePath);
@@ -146,52 +151,37 @@ void ObjectFileIndexerWorker::index(const QString& objFilePath, const QString& p
         mapping.filePath = toRelativePath(mapping.filePath, projectRoot);
     }
 
-    // Step 2: Functions
-    QVector<DisasmFunction> functions = parseFunctions(objFilePath);
-
-    // Step 3: Sections for fileOffset computation
+    // Step 2: Sections for fileOffset computation
     QVector<DisasmSection> sections = parseSections(objFilePath);
 
-    // Step 4: Find function owner for each mapping
-    for (auto& mapping : lineMappings) {
-        for (const auto& func : functions) {
-            quint64 funcAddr = parseHexAddress(func.address);
-            // Simple heuristic: mapping belongs to nearest preceding function
-            if (funcAddr <= mapping.vaddr) {
-                if (mapping.functionName.isEmpty() ||
-                    funcAddr > parseHexAddress(functions.isEmpty() ? "0" :
-                        [this, &functions, &mapping]() {
-                            for (const auto& f : functions)
-                                if (f.name == mapping.functionName)
-                                    return f.address;
-                            return QString("0");
-                        }())) {
-                    mapping.functionName = func.name;
-                }
-            }
-        }
-    }
-
-    // Step 5: Compute fileOffset from vaddr using sections
-    for (auto& mapping : lineMappings) {
+    // Step 3: A raw DWARF address without a section is ambiguous if sections
+    // overlap. Keep one record per candidate section; do not guess a symbol.
+    QVector<SourceLineMapping> sectionMappings;
+    for (const auto& raw : lineMappings) {
+        bool found = false;
         for (const auto& sec : sections) {
-            if (mapping.vaddr >= sec.vaddr && mapping.vaddr < sec.vaddr + sec.size) {
-                mapping.fileOffset = static_cast<qint64>(sec.fileOffset + (mapping.vaddr - sec.vaddr));
-                break;
+            if (raw.vaddr >= sec.vaddr && raw.vaddr - sec.vaddr < sec.size) {
+                SourceLineMapping mapping = raw;
+                mapping.sectionName = sec.name;
+                mapping.buildId = index.buildId;
+                mapping.fileOffset = static_cast<qint64>(sec.fileOffset + (raw.vaddr - sec.vaddr));
+                sectionMappings.append(mapping);
+                found = true;
             }
+        }
+        if (!found) {
+            SourceLineMapping mapping = raw;
+            mapping.buildId = index.buildId;
+            sectionMappings.append(mapping);
         }
     }
 
-    // Step 6: Build indices
-    for (const auto& mapping : lineMappings) {
+    // Step 4: Preserve all rows, including repeated source lines and addresses.
+    for (const auto& mapping : sectionMappings) {
         QString key = mapping.filePath + ":" + QString::number(mapping.lineNumber);
-        index.bySourceLine[key] = mapping;
-        index.byVaddr[mapping.vaddr] = mapping;
+        index.bySourceLine[key].append(mapping);
+        index.byVaddr[sourceAddressKey(mapping.sectionName, mapping.vaddr)].append(mapping);
     }
-
-    // Step 7: Get instructions (reuse r2)
-    QString disasmOutput = runR2Command(objFilePath, "aa;pdf");
-    // Instructions are secondary — focus on line mappings for now
 
     index.indexed = true;
     if (!lineMappings.isEmpty())

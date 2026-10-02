@@ -23,6 +23,7 @@
 #include <QDir>
 #include <QDirIterator>
 #include <QFileSystemWatcher>
+#include <QInputDialog>
 
 IDEWindow::IDEWindow(QString ProjectPath, QWidget *parent)
     : QMainWindow(parent)
@@ -494,11 +495,26 @@ void IDEWindow::connectCanvasNavigation(CanvasTab* canvas)
 
             // Jump to ASM address if indexed
             if (m_sourceBinaryStore && !m_sourceBinaryStore->isEmpty()) {
-                auto mapping = m_sourceBinaryStore->findBySourceLine(filePath, lineNumber);
-                if (mapping.has_value() && mapping->vaddr > 0) {
+                const auto mappings = m_sourceBinaryStore->findAllBySourceLine(filePath, lineNumber);
+                int chosen = 0;
+                if (mappings.size() > 1) {
+                    QStringList choices;
+                    for (int i = 0; i < mappings.size(); ++i) {
+                        const auto& item = mappings.at(i);
+                        choices << QString("%1. %2:0x%3 · build %4")
+                                       .arg(i + 1).arg(item.sectionName)
+                                       .arg(item.vaddr, 0, 16).arg(item.buildId.left(12));
+                    }
+                    bool ok = false;
+                    const auto selection = QInputDialog::getItem(this, tr("Choose instruction"),
+                        tr("Several instruction ranges map to this source line:"), choices, 0, false, &ok);
+                    if (!ok) return;
+                    chosen = choices.indexOf(selection);
+                }
+                if (chosen >= 0 && chosen < mappings.size() && mappings.at(chosen).vaddr > 0) {
                     DisassemblerTab* disasm = disassemblerTab();
                     if (disasm)
-                        disasm->jumpToAddress(QString("0x%1").arg(mapping->vaddr, 0, 16));
+                        disasm->jumpToAddress(QString("0x%1").arg(mappings.at(chosen).vaddr, 0, 16));
                 }
             }
         });
@@ -510,18 +526,35 @@ void IDEWindow::connectCanvasNavigation(CanvasTab* canvas)
             [this](quint64 vaddr) {
                 if (!m_sourceBinaryStore || m_sourceBinaryStore->isEmpty())
                     return;
-                auto mapping = m_sourceBinaryStore->findByVaddr(vaddr);
-                if (!mapping.has_value()) return;
+                const auto mappings = m_sourceBinaryStore->findAllByVaddr(vaddr);
+                if (mappings.isEmpty()) return;
+                int chosen = 0;
+                if (mappings.size() > 1) {
+                    QStringList choices;
+                    for (int i = 0; i < mappings.size(); ++i) {
+                        const auto& item = mappings.at(i);
+                        choices << QString("%1. %2:%3 · %4 · build %5")
+                                       .arg(i + 1).arg(item.filePath).arg(item.lineNumber)
+                                       .arg(item.sectionName).arg(item.buildId.left(12));
+                    }
+                    bool ok = false;
+                    const auto selection = QInputDialog::getItem(this, tr("Choose source location"),
+                        tr("This address has several possible mappings:"), choices, 0, false, &ok);
+                    if (!ok) return;
+                    chosen = choices.indexOf(selection);
+                }
+                if (chosen < 0 || chosen >= mappings.size()) return;
+                const auto& mapping = mappings.at(chosen);
 
                 // Open source file
                 m_filesTabWidget->openFile(
-                    projectPath() + "/" + mapping->filePath,
-                    QFileInfo(mapping->filePath).fileName());
+                    projectPath() + "/" + mapping.filePath,
+                    QFileInfo(mapping.filePath).fileName());
 
                 // Highlight on canvas
                 CanvasTab* canvas = canvasTab();
                 if (canvas)
-                    canvas->highlightNodeByPath(mapping->filePath);
+                    canvas->highlightNodeByPath(mapping.filePath);
             });
     }
 }

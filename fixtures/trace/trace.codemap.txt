@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "id": "trace-fixture",
+  "stableId": "trace-fixture-v1",
+  "title": "Trace fixture scenarios",
+  "metadata": {"generationSource": "human", "mode": "prototype"},
+  "traces": [
+    {"id":"scenario-one","title":"REQ-ONE","locations":[
+      {"id":"one-entry","path":"head/demo.cpp","lineNumber":30,"title":"scenario_one"},
+      {"id":"one-helper","path":"head/demo.cpp","lineNumber":5,"title":"shared_helper"}
+    ]},
+    {"id":"scenario-two","title":"REQ-TWO","locations":[
+      {"id":"two-entry","path":"head/demo.cpp","lineNumber":34,"title":"scenario_two"},
+      {"id":"two-helper","path":"head/demo.cpp","lineNumber":5,"title":"shared_helper"}
+    ]}
+  ]
+}

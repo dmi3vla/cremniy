@@ -1,0 +1,3 @@
+# Preserve raw tool output and Git diff context exactly as generated.
+fixtures/trace/artifacts/*.objdump.txt -whitespace
+fixtures/trace/base-head.diff -whitespace

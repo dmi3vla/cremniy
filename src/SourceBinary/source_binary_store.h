@@ -18,9 +18,19 @@ public:
     std::optional<SourceLineMapping> findBySourceLine(
         const QString& relativePath, int line) const;
 
+    QVector<SourceLineMapping> findAllBySourceLine(
+        const QString& relativePath, int line, const QString& buildId = {}) const;
+
     std::optional<SourceLineMapping> findByVaddr(quint64 vaddr) const;
 
+    QVector<SourceLineMapping> findAllByVaddr(
+        const QString& section, quint64 vaddr, const QString& buildId = {}) const;
+
+    QVector<SourceLineMapping> findAllByVaddr(quint64 vaddr,
+                                               const QString& buildId = {}) const;
+
     QVector<DisasmInstruction> instructionsInRange(
+        const QString& buildId, const QString& section,
         quint64 vaddrStart, quint64 vaddrEnd) const;
 
     bool isEmpty() const { return m_indices.isEmpty(); }

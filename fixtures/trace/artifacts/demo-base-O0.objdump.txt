@@ -1,0 +1,251 @@
+
+/home/resu/Documents/dev/cremniy/fixtures/trace/artifacts/demo-base-O0:     file format elf64-x86-64
+
+
+Disassembly of section .init:
+
+0000000000401000 <_init>:
+  401000:	f3 0f 1e fa          	endbr64
+  401004:	48 83 ec 08          	sub    rsp,0x8
+  401008:	48 8b 05 d1 2f 00 00 	mov    rax,QWORD PTR [rip+0x2fd1]        # 403fe0 <__gmon_start__@Base>
+  40100f:	48 85 c0             	test   rax,rax
+  401012:	74 02                	je     401016 <_init+0x16>
+  401014:	ff d0                	call   rax
+  401016:	48 83 c4 08          	add    rsp,0x8
+  40101a:	c3                   	ret
+
+Disassembly of section .text:
+
+0000000000401020 <_start>:
+  401020:	f3 0f 1e fa          	endbr64
+  401024:	31 ed                	xor    ebp,ebp
+  401026:	49 89 d1             	mov    r9,rdx
+  401029:	5e                   	pop    rsi
+  40102a:	48 89 e2             	mov    rdx,rsp
+  40102d:	48 83 e4 f0          	and    rsp,0xfffffffffffffff0
+  401031:	50                   	push   rax
+  401032:	54                   	push   rsp
+  401033:	45 31 c0             	xor    r8d,r8d
+  401036:	31 c9                	xor    ecx,ecx
+  401038:	48 c7 c7 0b 12 40 00 	mov    rdi,0x40120b
+  40103f:	ff 15 93 2f 00 00    	call   QWORD PTR [rip+0x2f93]        # 403fd8 <__libc_start_main@GLIBC_2.34>
+  401045:	f4                   	hlt
+  401046:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+  40104d:	00 00 00 
+
+0000000000401050 <_dl_relocate_static_pie>:
+  401050:	f3 0f 1e fa          	endbr64
+  401054:	c3                   	ret
+  401055:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+  40105c:	00 00 00 
+  40105f:	90                   	nop
+
+0000000000401060 <deregister_tm_clones>:
+  401060:	b8 10 40 40 00       	mov    eax,0x404010
+  401065:	48 3d 10 40 40 00    	cmp    rax,0x404010
+  40106b:	74 13                	je     401080 <deregister_tm_clones+0x20>
+  40106d:	b8 00 00 00 00       	mov    eax,0x0
+  401072:	48 85 c0             	test   rax,rax
+  401075:	74 09                	je     401080 <deregister_tm_clones+0x20>
+  401077:	bf 10 40 40 00       	mov    edi,0x404010
+  40107c:	ff e0                	jmp    rax
+  40107e:	66 90                	xchg   ax,ax
+  401080:	c3                   	ret
+  401081:	66 66 2e 0f 1f 84 00 	data16 cs nop WORD PTR [rax+rax*1+0x0]
+  401088:	00 00 00 00 
+  40108c:	0f 1f 40 00          	nop    DWORD PTR [rax+0x0]
+
+0000000000401090 <register_tm_clones>:
+  401090:	be 10 40 40 00       	mov    esi,0x404010
+  401095:	48 81 ee 10 40 40 00 	sub    rsi,0x404010
+  40109c:	48 89 f0             	mov    rax,rsi
+  40109f:	48 c1 ee 3f          	shr    rsi,0x3f
+  4010a3:	48 c1 f8 03          	sar    rax,0x3
+  4010a7:	48 01 c6             	add    rsi,rax
+  4010aa:	48 d1 fe             	sar    rsi,1
+  4010ad:	74 11                	je     4010c0 <register_tm_clones+0x30>
+  4010af:	b8 00 00 00 00       	mov    eax,0x0
+  4010b4:	48 85 c0             	test   rax,rax
+  4010b7:	74 07                	je     4010c0 <register_tm_clones+0x30>
+  4010b9:	bf 10 40 40 00       	mov    edi,0x404010
+  4010be:	ff e0                	jmp    rax
+  4010c0:	c3                   	ret
+  4010c1:	66 66 2e 0f 1f 84 00 	data16 cs nop WORD PTR [rax+rax*1+0x0]
+  4010c8:	00 00 00 00 
+  4010cc:	0f 1f 40 00          	nop    DWORD PTR [rax+0x0]
+
+00000000004010d0 <__do_global_dtors_aux>:
+  4010d0:	f3 0f 1e fa          	endbr64
+  4010d4:	80 3d 35 2f 00 00 00 	cmp    BYTE PTR [rip+0x2f35],0x0        # 404010 <__TMC_END__>
+  4010db:	75 13                	jne    4010f0 <__do_global_dtors_aux+0x20>
+  4010dd:	55                   	push   rbp
+  4010de:	48 89 e5             	mov    rbp,rsp
+  4010e1:	e8 7a ff ff ff       	call   401060 <deregister_tm_clones>
+  4010e6:	c6 05 23 2f 00 00 01 	mov    BYTE PTR [rip+0x2f23],0x1        # 404010 <__TMC_END__>
+  4010ed:	5d                   	pop    rbp
+  4010ee:	c3                   	ret
+  4010ef:	90                   	nop
+  4010f0:	c3                   	ret
+  4010f1:	66 66 2e 0f 1f 84 00 	data16 cs nop WORD PTR [rax+rax*1+0x0]
+  4010f8:	00 00 00 00 
+  4010fc:	0f 1f 40 00          	nop    DWORD PTR [rax+0x0]
+
+0000000000401100 <frame_dummy>:
+  401100:	f3 0f 1e fa          	endbr64
+  401104:	eb 8a                	jmp    401090 <register_tm_clones>
+
+0000000000401106 <shared_helper>:
+  401106:	f3 0f 1e fa          	endbr64
+  40110a:	55                   	push   rbp
+  40110b:	48 89 e5             	mov    rbp,rsp
+  40110e:	89 7d fc             	mov    DWORD PTR [rbp-0x4],edi
+  401111:	8b 55 fc             	mov    edx,DWORD PTR [rbp-0x4]
+  401114:	89 d0                	mov    eax,edx
+  401116:	01 c0                	add    eax,eax
+  401118:	01 d0                	add    eax,edx
+  40111a:	83 c0 07             	add    eax,0x7
+  40111d:	5d                   	pop    rbp
+  40111e:	c3                   	ret
+
+000000000040111f <calculate_alpha>:
+  40111f:	f3 0f 1e fa          	endbr64
+  401123:	55                   	push   rbp
+  401124:	48 89 e5             	mov    rbp,rsp
+  401127:	89 7d ec             	mov    DWORD PTR [rbp-0x14],edi
+  40112a:	8b 45 ec             	mov    eax,DWORD PTR [rbp-0x14]
+  40112d:	01 c0                	add    eax,eax
+  40112f:	89 45 fc             	mov    DWORD PTR [rbp-0x4],eax
+  401132:	8b 45 fc             	mov    eax,DWORD PTR [rbp-0x4]
+  401135:	83 c0 05             	add    eax,0x5
+  401138:	5d                   	pop    rbp
+  401139:	c3                   	ret
+
+000000000040113a <calculate_clone>:
+  40113a:	f3 0f 1e fa          	endbr64
+  40113e:	55                   	push   rbp
+  40113f:	48 89 e5             	mov    rbp,rsp
+  401142:	89 7d ec             	mov    DWORD PTR [rbp-0x14],edi
+  401145:	8b 45 ec             	mov    eax,DWORD PTR [rbp-0x14]
+  401148:	01 c0                	add    eax,eax
+  40114a:	89 45 fc             	mov    DWORD PTR [rbp-0x4],eax
+  40114d:	8b 45 fc             	mov    eax,DWORD PTR [rbp-0x4]
+  401150:	83 c0 05             	add    eax,0x5
+  401153:	5d                   	pop    rbp
+  401154:	c3                   	ret
+
+0000000000401155 <calculate_beta>:
+  401155:	f3 0f 1e fa          	endbr64
+  401159:	55                   	push   rbp
+  40115a:	48 89 e5             	mov    rbp,rsp
+  40115d:	89 7d ec             	mov    DWORD PTR [rbp-0x14],edi
+  401160:	8b 45 ec             	mov    eax,DWORD PTR [rbp-0x14]
+  401163:	01 c0                	add    eax,eax
+  401165:	89 45 fc             	mov    DWORD PTR [rbp-0x4],eax
+  401168:	8b 45 fc             	mov    eax,DWORD PTR [rbp-0x4]
+  40116b:	83 c0 05             	add    eax,0x5
+  40116e:	5d                   	pop    rbp
+  40116f:	c3                   	ret
+
+0000000000401170 <calculate_with_state>:
+  401170:	f3 0f 1e fa          	endbr64
+  401174:	55                   	push   rbp
+  401175:	48 89 e5             	mov    rbp,rsp
+  401178:	89 7d ec             	mov    DWORD PTR [rbp-0x14],edi
+  40117b:	8b 45 ec             	mov    eax,DWORD PTR [rbp-0x14]
+  40117e:	01 c0                	add    eax,eax
+  401180:	89 45 fc             	mov    DWORD PTR [rbp-0x4],eax
+  401183:	8b 45 fc             	mov    eax,DWORD PTR [rbp-0x4]
+  401186:	89 05 88 2e 00 00    	mov    DWORD PTR [rip+0x2e88],eax        # 404014 <_ZL5state>
+  40118c:	8b 45 fc             	mov    eax,DWORD PTR [rbp-0x4]
+  40118f:	83 c0 05             	add    eax,0x5
+  401192:	5d                   	pop    rbp
+  401193:	c3                   	ret
+
+0000000000401194 <scenario_one>:
+  401194:	f3 0f 1e fa          	endbr64
+  401198:	55                   	push   rbp
+  401199:	48 89 e5             	mov    rbp,rsp
+  40119c:	53                   	push   rbx
+  40119d:	48 83 ec 08          	sub    rsp,0x8
+  4011a1:	89 7d f4             	mov    DWORD PTR [rbp-0xc],edi
+  4011a4:	8b 45 f4             	mov    eax,DWORD PTR [rbp-0xc]
+  4011a7:	89 c7                	mov    edi,eax
+  4011a9:	e8 71 ff ff ff       	call   40111f <calculate_alpha>
+  4011ae:	89 c3                	mov    ebx,eax
+  4011b0:	8b 45 f4             	mov    eax,DWORD PTR [rbp-0xc]
+  4011b3:	89 c7                	mov    edi,eax
+  4011b5:	e8 4c ff ff ff       	call   401106 <shared_helper>
+  4011ba:	01 d8                	add    eax,ebx
+  4011bc:	48 8b 5d f8          	mov    rbx,QWORD PTR [rbp-0x8]
+  4011c0:	c9                   	leave
+  4011c1:	c3                   	ret
+
+00000000004011c2 <scenario_two>:
+  4011c2:	f3 0f 1e fa          	endbr64
+  4011c6:	55                   	push   rbp
+  4011c7:	48 89 e5             	mov    rbp,rsp
+  4011ca:	48 83 ec 08          	sub    rsp,0x8
+  4011ce:	89 7d fc             	mov    DWORD PTR [rbp-0x4],edi
+  4011d1:	8b 45 fc             	mov    eax,DWORD PTR [rbp-0x4]
+  4011d4:	89 c7                	mov    edi,eax
+  4011d6:	e8 7a ff ff ff       	call   401155 <calculate_beta>
+  4011db:	c9                   	leave
+  4011dc:	c3                   	ret
+
+00000000004011dd <_ZL10debug_onlyi>:
+  4011dd:	f3 0f 1e fa          	endbr64
+  4011e1:	55                   	push   rbp
+  4011e2:	48 89 e5             	mov    rbp,rsp
+  4011e5:	89 7d fc             	mov    DWORD PTR [rbp-0x4],edi
+  4011e8:	8b 45 fc             	mov    eax,DWORD PTR [rbp-0x4]
+  4011eb:	83 c0 11             	add    eax,0x11
+  4011ee:	5d                   	pop    rbp
+  4011ef:	c3                   	ret
+
+00000000004011f0 <removed_probe>:
+  4011f0:	f3 0f 1e fa          	endbr64
+  4011f4:	55                   	push   rbp
+  4011f5:	48 89 e5             	mov    rbp,rsp
+  4011f8:	48 83 ec 08          	sub    rsp,0x8
+  4011fc:	89 7d fc             	mov    DWORD PTR [rbp-0x4],edi
+  4011ff:	8b 45 fc             	mov    eax,DWORD PTR [rbp-0x4]
+  401202:	89 c7                	mov    edi,eax
+  401204:	e8 d4 ff ff ff       	call   4011dd <_ZL10debug_onlyi>
+  401209:	c9                   	leave
+  40120a:	c3                   	ret
+
+000000000040120b <main>:
+  40120b:	f3 0f 1e fa          	endbr64
+  40120f:	55                   	push   rbp
+  401210:	48 89 e5             	mov    rbp,rsp
+  401213:	53                   	push   rbx
+  401214:	48 83 ec 10          	sub    rsp,0x10
+  401218:	89 7d f4             	mov    DWORD PTR [rbp-0xc],edi
+  40121b:	48 89 75 e8          	mov    QWORD PTR [rbp-0x18],rsi
+  40121f:	8b 45 f4             	mov    eax,DWORD PTR [rbp-0xc]
+  401222:	89 c7                	mov    edi,eax
+  401224:	e8 6b ff ff ff       	call   401194 <scenario_one>
+  401229:	89 c3                	mov    ebx,eax
+  40122b:	8b 45 f4             	mov    eax,DWORD PTR [rbp-0xc]
+  40122e:	89 c7                	mov    edi,eax
+  401230:	e8 8d ff ff ff       	call   4011c2 <scenario_two>
+  401235:	01 c3                	add    ebx,eax
+  401237:	8b 45 f4             	mov    eax,DWORD PTR [rbp-0xc]
+  40123a:	89 c7                	mov    edi,eax
+  40123c:	e8 2f ff ff ff       	call   401170 <calculate_with_state>
+  401241:	01 c3                	add    ebx,eax
+  401243:	8b 45 f4             	mov    eax,DWORD PTR [rbp-0xc]
+  401246:	89 c7                	mov    edi,eax
+  401248:	e8 a3 ff ff ff       	call   4011f0 <removed_probe>
+  40124d:	01 d8                	add    eax,ebx
+  40124f:	48 8b 5d f8          	mov    rbx,QWORD PTR [rbp-0x8]
+  401253:	c9                   	leave
+  401254:	c3                   	ret
+
+Disassembly of section .fini:
+
+0000000000401258 <_fini>:
+  401258:	f3 0f 1e fa          	endbr64
+  40125c:	48 83 ec 08          	sub    rsp,0x8
+  401260:	48 83 c4 08          	add    rsp,0x8
+  401264:	c3                   	ret

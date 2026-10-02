@@ -13,6 +13,8 @@ ui_*.h
 *.pro.user
 *.autosave
 .cache/
+__pycache__/
+*.pyc
 compile_commands.json
 
 # Cremniy local state / secrets

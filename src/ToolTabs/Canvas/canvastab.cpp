@@ -8,6 +8,7 @@
 #include "digest_panel.h"
 #include "codemap.h"
 #include "codemap_store.h"
+#include "trace_explorer.h"
 #include "core/ToolTabFactory.h"
 #include <QToolButton>
 #include <QHBoxLayout>
@@ -54,6 +55,7 @@ CanvasTab::CanvasTab(FileDataBuffer* buffer, QWidget* parent)
     // Semantic / Structural toggle (segmented control)
     m_semanticBtn = createToolButton("Semantic", "Concept map / codemap layout");
     m_graphBtn = createToolButton("Graph", "Dependency graph (#include)");
+    auto* traceBtn = createToolButton("Trace…", "Requirements, symbols, Git diff and instructions");
     m_semanticBtn->setCheckable(true);
     m_graphBtn->setCheckable(true);
     m_graphBtn->setChecked(true);
@@ -82,6 +84,13 @@ CanvasTab::CanvasTab(FileDataBuffer* buffer, QWidget* parent)
     });
     connect(m_semanticBtn, &QToolButton::clicked, this, &CanvasTab::enterSemanticMode);
     connect(m_graphBtn, &QToolButton::clicked, this, &CanvasTab::enterStructuralMode);
+    connect(traceBtn, &QToolButton::clicked, this, [this] {
+        auto* explorer = new TraceExplorer(this);
+        explorer->setAttribute(Qt::WA_DeleteOnClose);
+        const QString manifest = QDir(m_projectPath).filePath("trace-manifest.json");
+        if (QFileInfo::exists(manifest)) explorer->openManifest(manifest);
+        explorer->show();
+    });
 
     toolbarLayout->addWidget(zoomInBtn);
     toolbarLayout->addWidget(zoomOutBtn);
@@ -89,6 +98,7 @@ CanvasTab::CanvasTab(FileDataBuffer* buffer, QWidget* parent)
     toolbarLayout->addSpacing(8);
     toolbarLayout->addWidget(m_semanticBtn);
     toolbarLayout->addWidget(m_graphBtn);
+    toolbarLayout->addWidget(traceBtn);
     toolbarLayout->addStretch();
     toolbarLayout->addWidget(m_playBtn);
     toolbarLayout->addWidget(m_pauseBtn);
