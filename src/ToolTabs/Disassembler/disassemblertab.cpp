@@ -21,6 +21,7 @@
 #include <QColor>
 #include <QDateTime>
 #include <QFileDialog>
+#include <QDir>
 #include <QStandardPaths>
 #include <QTimer>
 #include <QToolTip>
@@ -414,6 +415,25 @@ void DisassemblerTab::setupUi()
     m_logToggleBtn->setChecked(false);
     m_logToggleBtn->setToolTip(tr("Toggle diagnostic log panel"));
     toolLayout->addWidget(m_logToggleBtn);
+
+    toolLayout->addStretch(1);
+
+    m_openBinaryBtn = new QPushButton(tr("Open Binary..."), m_toolbar);
+    m_openBinaryBtn->setFixedHeight(26);
+    toolLayout->addWidget(m_openBinaryBtn);
+
+    connect(m_openBinaryBtn, &QPushButton::clicked, this, [this]() {
+        const QString path = QFileDialog::getOpenFileName(
+            this,
+            tr("Open Binary File"),
+            m_fileContext ? QFileInfo(m_fileContext->filePath()).dir().absolutePath()
+                          : QDir::homePath(),
+            tr("Binary files (*.o *.obj *.elf *.so *.dll *.exe cremniy);;"
+               "All files (*)"));
+        if (path.isEmpty()) return;
+
+        emit fileOpenRequested(path);
+    });
 
     mainLayout->addWidget(m_toolbar);
 
@@ -887,7 +907,10 @@ void DisassemblerTab::startDisassembly()
         showPlaceholder(tr("Open a binary file (ELF/PE/.o) to disassemble"));
         return;
     }
-    if (m_fileContext->filePath().isEmpty()) { showPlaceholder(tr("No file path set")); return; }
+    if (!m_fileContext || m_fileContext->filePath().isEmpty()) {
+        showPlaceholder(tr("No file path set"));
+        return;
+    }
 
     // If radare2 backend is selected, ensure r2 is available. If not, prompt for path.
     if (AppSettings::disasmBackend() == AppSettings::DisasmBackend::Radare2) {
@@ -1168,6 +1191,7 @@ void DisassemblerTab::setRunningState(bool running)
     m_running = running;
     m_runBtn->setVisible(!running);
     m_cancelBtn->setVisible(running);
+    m_openBinaryBtn->setEnabled(!running);
 }
 
 void DisassemblerTab::showPlaceholder(const QString &msg)

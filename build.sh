@@ -4,7 +4,7 @@
 cd "$(dirname "$0")"
 
 # Путь к локальной сборке Qt
-QT_PATH="$(pwd)/third_party/qt-src/third_party/qt-src/build/third_party/qt-src/qtbase-everywhere-src-6.8.3/build/lib/cmake/Qt6"
+QT_PATH="$(pwd)/qt-6.8.3-install/lib/cmake/Qt6"
 
 # Проверка наличия Qt
 if [ ! -f "$QT_PATH/Qt6Config.cmake" ]; then

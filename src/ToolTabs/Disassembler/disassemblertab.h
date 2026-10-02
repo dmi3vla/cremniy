@@ -122,6 +122,7 @@ private:
     QLineEdit      *m_searchEdit     = nullptr;
     QPushButton    *m_runBtn         = nullptr;
     QPushButton    *m_cancelBtn      = nullptr;
+    QPushButton    *m_openBinaryBtn  = nullptr;
     QPushButton    *m_logToggleBtn   = nullptr;
     QProgressBar   *m_progressBar    = nullptr;
     QLabel         *m_statusLabel    = nullptr;
